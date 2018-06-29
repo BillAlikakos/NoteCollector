@@ -1,0 +1,384 @@
+package com.mygdx.notecollector.screens.menu.Multiplayer;
+
+import android.annotation.TargetApi;
+import android.os.Build;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.List;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Scaling;
+import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.utils.viewport.ScalingViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
+import com.esotericsoftware.kryonet.Client;
+import com.mygdx.notecollector.Multiplayer.ClientClass;
+import com.mygdx.notecollector.NoteCollector;
+import com.mygdx.notecollector.Utils.Assets;
+import com.mygdx.notecollector.Utils.Constants;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.util.ArrayList;
+
+public class MultiplayerClientScreen implements  Screen
+{
+    private Viewport viewport;
+    private Stage stage;
+    private BitmapFont font, fontList, fontH;
+
+
+    private static final int VIEWPORT_WIDTH = Constants.APP_WIDTH;
+    private static final int VIEWPORT_HEIGHT = Constants.APP_HEIGHT;
+    private NoteCollector noteCollector;
+    private Assets assetsManager;
+    private Texture img;
+    private TextureRegionDrawable selectionColor;
+    private TextureRegionDrawable selectionColorPressed;
+    private TextureRegionDrawable selectionColorList;
+    private Table table;
+    private ScrollPane scrollPane;
+    private List<Object> list;
+    private Skin skin;
+    private ArrayList<InetAddress> hosts = null;
+    private ArrayList<String> names = null;
+    private Table btn;
+    private int[] size;
+    private int sizeX;
+    private int sizeY;
+    private VerticalGroup verticalGroup;
+    private Client c;
+    private ClientClass client;
+    private boolean mode;
+
+
+    public MultiplayerClientScreen(NoteCollector noteCollector)
+    {
+        this.noteCollector = noteCollector;
+        assetsManager = noteCollector.getAssetsManager();
+        LoadAssets();
+        ListStyle();
+    }
+
+    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+    @Override
+    public void show()
+    {
+        setupCamera();
+        Gdx.input.setInputProcessor(stage);
+        createBackground();
+        btn = new Table();
+        btn.setFillParent(true);
+        createTable();
+        createList();
+        client=new ClientClass();
+        getHosts();
+        createLogo();
+        size = assetsManager.setButtonDimensions(sizeX, sizeY);
+        sizeX = size[0];
+        sizeY = size[1];
+        table.add(createLabel("Available Peers:")).padTop(70f);
+        table.row();
+       // table.bottom().padBottom(50f);
+        table.padBottom(50f);
+        createScrollPane();
+        ImageTextButton back = createButton("Back");
+        btn.left();
+        btn.add(back).bottom().left().expand().size(sizeX, sizeY);
+        //btn.setDebug(true);
+
+        stage.addActor(verticalGroup);
+        stage.addActor(table);
+        stage.addActor(btn);
+
+    }
+
+
+    private void createLogo()
+    {
+        img = assetsManager.assetManager.get(Constants.logo);
+        Image logo = new Image(img);
+        verticalGroup  = new VerticalGroup();
+        verticalGroup.setFillParent(true);
+        verticalGroup.center();
+        verticalGroup.addActor(logo);
+        assetsManager.setLogoPosition(verticalGroup);
+        stage.addActor(verticalGroup);
+    }
+
+    @Override
+    public void render(float delta)
+    {
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        stage.act();
+        stage.draw();
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        stage.getViewport().update(width,height);
+    }
+
+    @Override
+    public void pause() {
+
+    }
+
+    @Override
+    public void resume() {
+
+    }
+
+    @Override
+    public void hide() {
+
+    }
+
+    @Override
+    public void dispose()
+    {
+       // img.dispose();
+        stage.dispose();
+        font.dispose();
+        fontList.dispose();
+
+    }
+    //create a table for organize buttons and list of tracks
+    private void createTable(){
+        table = new Table();
+        table.center();
+        table.setFillParent(true);
+        table.pad(60f,10f,30f,10f);
+        if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)//old dimensions
+        {
+            table.pad(60f,10f,30f,10f);
+
+        }
+        if(VIEWPORT_WIDTH==1080 && VIEWPORT_HEIGHT==720)
+        {
+
+            table.pad(120f,10f,30f,10f);
+        }
+        if(VIEWPORT_WIDTH>1080 && VIEWPORT_HEIGHT>720)
+        {
+            table.pad(200f,10f,30f,10f);
+        }
+
+        table.setTouchable(Touchable.enabled);
+        //table.setDebug(true);
+    }
+    private ImageTextButton createButton(String text)
+    {
+        ImageTextButton.ImageTextButtonStyle textButtonStyle = createButtonStyle(selectionColor);
+        ImageTextButton MenuButton = new ImageTextButton(text, textButtonStyle);
+
+        AddButtonListener(MenuButton,text);
+        return MenuButton;
+    }
+
+    private void AddButtonListener(final ImageTextButton MenuButton, final String text){
+        MenuButton.addListener(new ClickListener() {
+
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+
+                Preferences prefs = Gdx.app.getPreferences("NoteCollectorPreferences");
+
+                if (MenuButton.isPressed()) {
+                    if (prefs.getBoolean("sound")) {
+                        noteCollector.getClick().play();
+                    }
+                    Timer.schedule(new Timer.Task() {
+                        @Override
+                        public void run() {
+                            if (text.equals("Back"))
+                            {
+                                System.out.println("Finishing connection...");
+                                //c.close();
+                                dispose();
+                                noteCollector.setScreen(new MultiplayerModeScreen(noteCollector));
+                            }
+
+
+                        }
+                    }, 0.15f);
+                }
+                return true;
+            }
+
+        });
+
+    }
+
+    private ImageTextButton.ImageTextButtonStyle createButtonStyle(TextureRegionDrawable ButtonImage){
+
+        ImageTextButton.ImageTextButtonStyle textButtonStyle = new ImageTextButton.ImageTextButtonStyle();
+        textButtonStyle.up = ButtonImage;
+        textButtonStyle.down = selectionColorPressed;
+        textButtonStyle.over = ButtonImage;
+        textButtonStyle.font = font;
+        return textButtonStyle;
+    }
+
+
+    private void LoadAssets(){
+        fontH = assetsManager.createBimapFont(45);
+        font = assetsManager.createBitmapFont();
+        selectionColor =new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.ButtonImage,Texture.class))) ;
+        selectionColor.setRightWidth(5f);
+        selectionColor.setBottomHeight(2f);
+        selectionColorPressed = new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.ButtonPressed,Texture.class)));
+        selectionColorPressed.setRightWidth(5f);
+        selectionColorPressed.setBottomHeight(2f);
+
+
+    }
+
+    private void ListStyle(){
+        assetsManager.LoadListAssets();
+        fontList = assetsManager.createBitmapFont();
+        selectionColorList = new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.SelectionColor,Texture.class)));
+        skin = assetsManager.assetManager.get(Constants.Skin,Skin.class);
+    }
+
+    private void createList()  {
+        list = new List<Object>(skin);
+        list.getStyle().selection = selectionColorList;
+        list.getStyle().font = fontList;
+        addListener(list);
+    }
+
+    private void createScrollPane(){
+        scrollPane = new ScrollPane(list);
+        scrollPane.setSmoothScrolling(false);
+        scrollPane.setScrollingDisabled(true,false);
+        table.add(scrollPane).expand().fill().padBottom(50f);
+        table.row();
+    }
+
+
+    private void addListener(Actor actor){
+        actor.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                String hostName=names.get(list.getSelectedIndex());
+                String address=hosts.get(list.getSelectedIndex()).toString();
+                InetAddress adr=hosts.get(list.getSelectedIndex());
+                System.out.println("Selected host:"+hostName);
+                System.out.println("Host address:"+address);
+                client.connect(adr);//Connect to selected device
+                Timer.schedule(new Timer.Task()
+                {
+                    @Override
+                    public void run()
+                    {
+                        dispose();
+                        noteCollector.setScreen(new MultiplayerWaitingScreen(noteCollector,client));
+                    }
+                }, 0.2f);
+
+            }
+        });
+    }
+    private Label createLabel(String text){
+        Label.LabelStyle labelstyle = new Label.LabelStyle(fontH, Color.WHITE);
+        Label fileLabel = new Label(text, labelstyle);
+        return  fileLabel;
+
+    }
+    private void getHosts()//Method to acquire a list of available servers
+    {
+        hosts = new ArrayList<InetAddress>();
+        names = new ArrayList<String>();
+
+            final ClientClass client= new ClientClass();
+            hosts=client.discoverServers();
+
+        if(hosts.size()==0)
+            {
+                Thread t=new Thread()
+                {
+                    @Override public void run()//Start a thread to manage host discovery
+                    {
+                        while(hosts.size()==0)
+                        {
+                            hosts=client.discoverServers();
+                            if(hosts.size()!=0)
+                            {
+                                this.interrupt();
+                                addToList();
+                            }
+                        }
+                    }
+                };
+                t.start();
+
+            }
+            else
+            {
+                addToList();
+
+            }
+
+
+    }
+
+    private void addToList()//Method to display discovered hosts
+    {
+        c=client.getClient();
+        for (int i = 0; i <hosts.size() ; i++)
+        {
+            System.out.println(i);
+
+            System.out.println("Hosts.get(i) "+hosts.get(i));
+            System.out.println("getHostName "+hosts.get(i).getHostName());
+            if(hosts.get(i).getHostName().equalsIgnoreCase("localhost"))//Ignore localhost listing
+            {
+                continue;
+            }
+            names.add(hosts.get(i).getHostName());
+
+        }
+        list.setItems(names.toArray());
+    }
+
+    private void createBackground()
+    {
+        FileHandle file = Gdx.files.internal(Constants.getBackgroundMenu().toString());
+        Image background=assetsManager.scaleBackground(file);
+        stage.addActor(background);
+
+    }
+
+    private void setupCamera(){
+        viewport = new ScalingViewport(Scaling.stretch, VIEWPORT_WIDTH, VIEWPORT_HEIGHT, new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT));
+        stage = new Stage(viewport);
+        stage.getCamera().update();
+    }
+
+
+}

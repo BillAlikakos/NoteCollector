@@ -1,0 +1,396 @@
+package com.mygdx.notecollector.screens.menu.TrackSearch;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Net;
+import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.List;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Scaling;
+import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.utils.viewport.ScalingViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
+
+import com.mygdx.notecollector.NoteCollector;
+import com.mygdx.notecollector.Utils.Assets;
+import com.mygdx.notecollector.Utils.Constants;
+import com.mygdx.notecollector.Utils.SongObj;
+import com.mygdx.notecollector.screens.menu.MainMenuScreen;
+
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+
+
+
+public class Results implements Screen {
+
+    private Viewport viewport;
+    private Stage stage;
+    private BitmapFont font, fontList, fontH;
+    private Texture img;
+
+    private static final int VIEWPORT_WIDTH = Constants.APP_WIDTH;
+    private static final int VIEWPORT_HEIGHT = Constants.APP_HEIGHT;
+    private NoteCollector noteCollector;
+    private Assets assetsManager;
+    private TextureRegionDrawable selectionColor;
+    private TextureRegionDrawable selectionColorPressed;
+    private TextureRegionDrawable selectionColorList;
+    private Table table;
+    private ScrollPane scrollPane;
+    private List<Object> list;
+    private Skin skin;
+    private ArrayList<String> item = null;
+
+    private Table btn;
+    private int[] size;
+    private int sizeX;
+    private int sizeY;
+    private VerticalGroup verticalGroup;
+    private String root=Constants.root;
+    private ArrayList<SongObj> songs;
+
+    public Results(NoteCollector noteCollector, ArrayList<SongObj> songList)
+    {
+        this.noteCollector = noteCollector;
+        this.songs=songList;
+        assetsManager = noteCollector.getAssetsManager();
+
+        LoadAssets();
+        ListStyle();
+    }
+
+    @Override
+    public void show() {
+        setupCamera();
+        Gdx.input.setInputProcessor(stage);
+        createBackground();
+        btn = new Table();
+        //btn.padTop(880f);
+        btn.setFillParent(true);
+        createTable();
+        createList();
+        getSongs();
+        createLogo();
+        size = assetsManager.setButtonDimensions(sizeX, sizeY);
+        sizeX = size[0];
+        sizeY = size[1];
+        table.add(createLabel("Select a Song:")).padTop(70f);
+        table.row();
+        //table.bottom().padBottom(50f);
+        createScrollPane();
+
+        ImageTextButton back = createButton("Back");
+        btn.left();
+        btn.add(back).bottom().left().expand().size(sizeX, sizeY);
+        btn.setDebug(true);
+        table.setDebug(true);
+        stage.addActor(btn);
+
+        stage.addActor(verticalGroup);
+        stage.addActor(table);
+
+
+    }
+
+    private void createLogo() {
+        Texture img = assetsManager.assetManager.get(Constants.logo);
+        Image logo = new Image(img);
+        verticalGroup = new VerticalGroup();
+        verticalGroup.setFillParent(true);
+        verticalGroup.center();
+        verticalGroup.addActor(logo);
+        assetsManager.setLogoPosition(verticalGroup);
+        stage.addActor(verticalGroup);
+
+    }
+
+    @Override
+    public void render(float delta) {
+
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        stage.act();
+        stage.draw();
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        stage.getViewport().update(width, height);
+    }
+
+    @Override
+    public void pause() {
+
+    }
+
+    @Override
+    public void resume() {
+
+    }
+
+    @Override
+    public void hide() {
+
+    }
+
+    @Override
+    public void dispose() {
+        table.clear();
+        stage.dispose();
+        font.dispose();
+        fontList.dispose();
+        //img.dispose();
+
+
+    }
+
+    //create a table to organize buttons and list of tracks
+    private void createTable() {
+        table = new Table();
+        table.center();
+        table.setFillParent(true);
+        //table.pad(60f, 10f, 30f, 10f);
+        if (VIEWPORT_WIDTH == 800 && VIEWPORT_HEIGHT == 480)//old dimensions
+        {
+            table.pad(60f, 10f, 30f, 10f);
+
+        }
+        if (VIEWPORT_WIDTH == 1080 && VIEWPORT_HEIGHT == 720) {
+
+            table.pad(120f, 10f, 30f, 10f);
+        }
+        if (VIEWPORT_WIDTH > 1080 && VIEWPORT_HEIGHT > 720)
+        {
+            table.pad(200f, 10f, 100f, 10f);
+           // table.padBottom(150);
+        }
+        //table.setDebug(true);
+    }
+
+    private ImageTextButton createButton(String text)
+    {
+        ImageTextButton.ImageTextButtonStyle textButtonStyle = createButtonStyle(selectionColor);
+        ImageTextButton MenuButton = new ImageTextButton(text, textButtonStyle);
+
+        AddButtonListener(MenuButton, text);
+        return MenuButton;
+    }
+
+    private void AddButtonListener(final ImageTextButton MenuButton, final String text) {
+        MenuButton.addListener(new ClickListener() {
+
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+
+                Preferences prefs = Gdx.app.getPreferences("NoteCollectorPreferences");
+
+                if (MenuButton.isPressed()) {
+                    if (prefs.getBoolean("sound")) {
+                        noteCollector.getClick().play();
+                    }
+                    Timer.schedule(new Timer.Task() {
+                        @Override
+                        public void run() {
+                            if (text.equals("Back"))
+                            {
+                                dispose();
+                                noteCollector.setScreen(new SearchTrack(noteCollector));
+                            }
+
+
+                        }
+                    }, 0.4f);
+                }
+                return true;
+            }
+
+        });
+
+    }
+
+    private ImageTextButton.ImageTextButtonStyle createButtonStyle(TextureRegionDrawable ButtonImage) {
+
+        ImageTextButton.ImageTextButtonStyle textButtonStyle = new ImageTextButton.ImageTextButtonStyle();
+        textButtonStyle.up = ButtonImage;
+        textButtonStyle.down = selectionColorPressed;
+        textButtonStyle.over = ButtonImage;
+        textButtonStyle.font = font;
+        return textButtonStyle;
+    }
+
+
+    private void LoadAssets() {
+        fontH = assetsManager.createBimapFont(45);
+        font = assetsManager.createBitmapFont();
+        selectionColor = new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.ButtonImage, Texture.class)));
+        selectionColor.setRightWidth(5f);
+        selectionColor.setBottomHeight(2f);
+        selectionColorPressed = new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.ButtonPressed, Texture.class)));
+        selectionColorPressed.setRightWidth(5f);
+        selectionColorPressed.setBottomHeight(2f);
+
+
+    }
+
+    private void ListStyle() {
+        assetsManager.LoadListAssets();
+        fontList = assetsManager.createBitmapFont();
+        selectionColorList = new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.SelectionColor, Texture.class)));
+        skin = assetsManager.assetManager.get(Constants.Skin, Skin.class);
+    }
+
+    private void createList() {
+        list = new List<Object>(skin);
+        list.getStyle().selection = selectionColorList;
+        list.getStyle().font = fontList;
+        addListener(list);
+    }
+
+    private void createScrollPane() {
+        scrollPane = new ScrollPane(list);
+        scrollPane.setSmoothScrolling(false);
+        scrollPane.setScrollingDisabled(true, false);
+        table.add(scrollPane).expand().fill().padBottom(50f);
+        table.row();
+    }
+
+
+    private void addListener(Actor actor) {
+        actor.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+
+                SongObj s = songs.get(list.getSelectedIndex());//Get the selected track
+                String name = item.get(list.getSelectedIndex());//Get the selected instrument
+                System.out.println("Selected Song: " +name);
+                System.out.println("Song Url: " + s.getUrl());
+                downloadFile(s.getUrl(),name);
+                //Hide tables and show message of completion
+                btn.clear();
+                table.clear();
+                stage.addActor(createLabel("File downloaded"));
+                Timer.schedule(new Timer.Task()//Wait for 0,4s and then return to main menu
+                {
+                    @Override
+                    public void run()
+                    {
+                        dispose();
+                        noteCollector.setScreen(new MainMenuScreen(noteCollector));
+                    }
+                }, 0.4f);
+            }
+        });
+    }
+
+    private void downloadFile(String url, final String name)//Method to request and download selected file from list
+    {
+        Net.HttpRequest request = new Net.HttpRequest(Net.HttpMethods.GET);
+        request.setTimeOut(2500);
+        request.setUrl(url);
+
+        // Send the request, listen for the response
+        Gdx.net.sendHttpRequest(request, new Net.HttpResponseListener()
+        {
+            @Override
+            public void handleHttpResponse (Net.HttpResponse httpResponse)
+            {
+                System.out.println("Sending request");
+                // Determine how much we have to download
+                long length = Long.parseLong(httpResponse.getHeader("Content-Length"));
+
+                // We're going to download the file to external storage, create the streams
+                System.out.println("Creating streams");
+                InputStream is = httpResponse.getResultAsStream();
+                OutputStream os = Gdx.files.external("/Note Collector/Sample Tracks/"+name+".midi").write(false);
+                System.out.println("Writing file");
+                byte[] bytes = new byte[125000];//1,25 Mb buffer
+                int count = -1;
+                long read = 0;
+                try
+                {
+                    // Keep reading bytes from inputStream and storing them until there are no more.
+                    while ((count = is.read(bytes, 0, bytes.length)) != -1)
+                    {
+                        os.write(bytes, 0, count);
+                        read += count;
+                    }
+                    System.out.println("File downloaded");
+                }
+                catch (IOException e)
+                {
+                    System.out.println("IOException");
+                }
+            }
+            @Override
+            public void failed(Throwable t)
+            {
+                Gdx.app.log("WebRequest", "HTTP request failed");
+            }
+
+            @Override
+            public void cancelled() {
+                Gdx.app.log("WebRequest", "HTTP request cancelled");
+            }
+        });
+    }
+
+    private Label createLabel(String text)
+    {
+        Label.LabelStyle labelstyle = new Label.LabelStyle(fontH, Color.WHITE);
+        Label fileLabel = new Label(text, labelstyle);
+        fileLabel.setPosition((viewport.getScreenWidth()/2)-fileLabel.getWidth()/2,viewport.getScreenHeight()/2);
+        return fileLabel;
+
+    }
+
+    private void getSongs()//Method that finds all the instruments that are used in each track
+    {
+        item=new ArrayList<>();
+        for (int i = 0; i < songs.size(); i++)
+        {
+            //System.out.println(songs.get(i).getName());
+            item.add(songs.get(i).getName());
+        }
+        list.setItems(item.toArray());
+    }
+
+
+    private void createBackground() {
+        FileHandle file = Gdx.files.internal(Constants.getBackgroundMenu().toString());
+        Image background = assetsManager.scaleBackground(file);
+        stage.addActor(background);
+
+    }
+
+    private void setupCamera() {
+        viewport = new ScalingViewport(Scaling.stretch, VIEWPORT_WIDTH, VIEWPORT_HEIGHT, new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT));
+        stage = new Stage(viewport);
+        stage.getCamera().update();
+    }
+
+}
