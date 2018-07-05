@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -139,8 +140,11 @@ public class Browse implements Screen {
         stage.addActor(exitBtnTable);
         createScrollPane();
 
-
         stage.addActor(table);
+        table.getColor().a=0;//Set actor's alpha value to 0(Transparent) to enable fading
+        exitBtnTable.getColor().a=0;
+        table.addAction(Actions.sequence(Actions.fadeIn(0.2f)));//Fade button table in
+        exitBtnTable.addAction(Actions.sequence(Actions.fadeIn(0.2f)));
         //stage.addActor(verticalGroupLogo);
     }
     @Override
@@ -149,7 +153,7 @@ public class Browse implements Screen {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        stage.act();
+        stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
     }
 
@@ -229,6 +233,8 @@ public class Browse implements Screen {
                     if (prefs.getBoolean("sound")) {
                         noteCollector.getClick().play();
                     }
+                    table.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out table
+                    exitBtnTable.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out icon table
                     Timer.schedule(new Timer.Task() {
                         @Override
                         public void run() {
@@ -263,7 +269,7 @@ public class Browse implements Screen {
                             }
 
                         }
-                    }, 0.2f);
+                    }, 0.4f);
                 }
                 return true;
             }
@@ -352,8 +358,7 @@ public class Browse implements Screen {
     }
     // with this method change directory
     private void changeDirectory(int position)  {
-        File file = new File(path.get(position));
-
+        final File file = new File(path.get(position));
         if (file.isDirectory())
         {
 
@@ -364,17 +369,26 @@ public class Browse implements Screen {
         }
         else
         {
+            table.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out table
+            exitBtnTable.addAction(Actions.sequence(Actions.fadeOut(0.4f)));
             filepath = file.getAbsolutePath();
-            if(multiplayer==false)
-            {
-                dispose();
-                noteCollector.setScreen(new TrackSelect(noteCollector,speed,delay,file,mode));
-            }
-            else
-            {
-                dispose();
-                noteCollector.setScreen(new TrackSelect(noteCollector,speed,delay,file,srv,mode,difficulty));
-            }
+            Timer.schedule(new Timer.Task() {
+                @Override
+                public void run()
+                {
+                    if(multiplayer==false)
+                    {
+                        dispose();
+                        noteCollector.setScreen(new TrackSelect(noteCollector,speed,delay,file,mode));
+                    }
+                    else
+                    {
+                        dispose();
+                        noteCollector.setScreen(new TrackSelect(noteCollector,speed,delay,file,srv,mode,difficulty));
+                    }
+                }
+            },0.4f);
+
 
         }
     }

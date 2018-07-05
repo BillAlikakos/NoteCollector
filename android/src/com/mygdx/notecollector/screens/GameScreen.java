@@ -130,9 +130,6 @@ public class GameScreen implements  Screen {
                 game.setScreen(new EndGameScreen(game,stage.getScore(),difficulty));
             }
 
-
-           // stage.dispose();
-           // game.setScreen(new EndGameScreen(game,stage.getScore(),difficulty));
         }
 
         if(isGuest)//Terminate session if opponent leaves

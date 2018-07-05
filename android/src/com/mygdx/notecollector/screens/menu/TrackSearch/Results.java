@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -65,6 +66,7 @@ public class Results implements Screen {
     private ArrayList<String> item = null;
 
     private Table btn;
+    private Label label;
     private int[] size;
     private int sizeX;
     private int sizeY;
@@ -105,13 +107,16 @@ public class Results implements Screen {
         ImageTextButton back = createButton("Back");
         btn.left();
         btn.add(back).bottom().left().expand().size(sizeX, sizeY);
-        btn.setDebug(true);
-        table.setDebug(true);
+        //btn.setDebug(true);
+        //table.setDebug(true);
         stage.addActor(btn);
 
         stage.addActor(verticalGroup);
         stage.addActor(table);
-
+        table.getColor().a=0;//Set actor's alpha value to 0(Transparent) to enable fading
+        btn.getColor().a=0;
+        table.addAction(Actions.sequence(Actions.fadeIn(0.2f)));
+        btn.addAction(Actions.sequence(Actions.fadeIn(0.2f)));
 
     }
 
@@ -212,6 +217,8 @@ public class Results implements Screen {
                     if (prefs.getBoolean("sound")) {
                         noteCollector.getClick().play();
                     }
+                    table.addAction(Actions.fadeOut(0.4f));
+                    btn.addAction(Actions.fadeOut(0.4f));
                     Timer.schedule(new Timer.Task() {
                         @Override
                         public void run() {
@@ -291,9 +298,17 @@ public class Results implements Screen {
                 System.out.println("Song Url: " + s.getUrl());
                 downloadFile(s.getUrl(),name);
                 //Hide tables and show message of completion
-                btn.clear();
-                table.clear();
-                stage.addActor(createLabel("File downloaded"));
+
+                //btn.clear();
+                //table.clear();
+                table.addAction(Actions.fadeOut(0.4f));//Fade table out
+                btn.addAction(Actions.fadeOut(0.4f));
+                label=createLabel("File downloaded");
+                //stage.addActor(createLabel("File downloaded"));
+                stage.addActor(label);
+                label.getColor().a=0;
+                label.addAction(Actions.fadeIn(0.2f));
+                label.addAction(Actions.fadeOut(0.4f));
                 Timer.schedule(new Timer.Task()//Wait for 0,4s and then return to main menu
                 {
                     @Override

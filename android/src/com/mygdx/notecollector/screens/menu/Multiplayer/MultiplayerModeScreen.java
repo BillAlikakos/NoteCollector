@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -44,6 +45,8 @@ public class MultiplayerModeScreen implements Screen
     private TextureRegionDrawable selectionColor;//Textures for the buttons
     private TextureRegionDrawable selectionColorPressed;
     private Table table;//Table for the play button (For format purposes)
+    private Table btn;
+    private Image icon;
 
     private int[] size;
     private int sizeX;
@@ -73,7 +76,7 @@ public class MultiplayerModeScreen implements Screen
         sizeY = size[1];
         ImageTextButton back = createBackButton("Back");
         createBackground();
-        Table btn=new Table();
+        btn=new Table();
         btn.left();
         btn.add(back).bottom().left().expand().size(sizeX, sizeY);
         stage.addActor(btn);
@@ -84,7 +87,6 @@ public class MultiplayerModeScreen implements Screen
         {
             createButton("Host Game");
             createButton("Join Game");
-
         }
         else
         {
@@ -100,6 +102,10 @@ public class MultiplayerModeScreen implements Screen
                 createLabel("Please Connect to a Network", stage.getCamera().viewportHeight / 2 + 65);
             }
         }
+        table.getColor().a=0;//Set actor's alpha value to 0(Transparent) to enable fading
+        btn.getColor().a=0;
+        table.addAction(Actions.sequence(Actions.fadeIn(0.2f)));
+        btn.addAction(Actions.sequence(Actions.fadeIn(0.2f)));
 
 
     }
@@ -163,7 +169,7 @@ public class MultiplayerModeScreen implements Screen
     private void createImg()
     {
         img = assetsManager.assetManager.get(Constants.noConn);
-        Image icon = new Image(img);
+        icon = new Image(img);
 
         if(VIEWPORT_WIDTH == 800 && VIEWPORT_HEIGHT == 480)
         {
@@ -182,6 +188,8 @@ public class MultiplayerModeScreen implements Screen
             icon.setPosition((stage.getCamera().viewportWidth - 375)/2,stage.getCamera().viewportHeight/2-325);
         }
         stage.addActor(icon);
+        icon.getColor().a=0;//Set actor's alpha value to 0(Transparent) to enable fading
+        icon.addAction(Actions.sequence(Actions.fadeIn(0.2f)));
         // addVerticalGroup(icon);
     }
 
@@ -225,13 +233,7 @@ public class MultiplayerModeScreen implements Screen
         table.row();
 
     }
-    private void playSound( Preferences prefs)
-    {
-        if (prefs.getBoolean("sound"))
-        {
-            noteCollector.getClick().play();
-        }
-    }
+
 
     private void AddButtonListener(final ImageTextButton MenuButton, final String text)
     {
@@ -248,7 +250,12 @@ public class MultiplayerModeScreen implements Screen
                         noteCollector.getClick().play();
 
                     }
-
+                    table.addAction(Actions.sequence(Actions.fadeOut(0.4f)));
+                    btn.addAction(Actions.sequence(Actions.fadeOut(0.4f)));
+                    if(!networkAccess)
+                    {
+                        icon.addAction(Actions.fadeOut(0.4f));
+                    }
                     Timer.schedule(new Timer.Task()
                     {
                         @Override
@@ -266,7 +273,7 @@ public class MultiplayerModeScreen implements Screen
 
                                 }
                             }
-                        }, 0.2f);
+                        }, 0.4f);//prev 0.2f
 
                     }
                     return true;

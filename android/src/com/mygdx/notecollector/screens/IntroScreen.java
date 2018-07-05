@@ -23,6 +23,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.fadeIn;
+
 /**
  * Created by bill on 7/19/16.
  */
@@ -37,7 +39,8 @@ public class IntroScreen implements Screen {
     private Preferences prefs;
 
 
-    public IntroScreen(NoteCollector noteCollector) {
+    public IntroScreen(NoteCollector noteCollector)
+    {
 
         this.noteCollector =noteCollector;
         noteCollector.getAssetsManager().assetManager.load(Constants.IntroImage, Texture.class);
@@ -76,6 +79,8 @@ public class IntroScreen implements Screen {
     }
     @Override
     public void show() {
+        stage.getRoot().getColor().a = 0;
+        stage.getRoot().addAction(fadeIn(0.4f));
         Timer.schedule(new Timer.Task() {
             @Override
             public void run() {
@@ -89,7 +94,8 @@ public class IntroScreen implements Screen {
     public void render(float delta) {
         Gdx.gl.glClearColor(1f, 1f, 1f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        stage.act(delta);
+        //stage.act(delta);
+        stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
     }
 

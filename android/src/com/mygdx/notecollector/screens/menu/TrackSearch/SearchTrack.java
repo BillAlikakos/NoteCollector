@@ -20,6 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -62,6 +63,11 @@ public class SearchTrack implements Screen {
     private TextureRegionDrawable selectionColor;
     private TextureRegionDrawable selectionColorPressed;
     private BitmapFont font;
+    private Image icon;
+    private Label err1;
+    private Label err2;
+    private Label search;
+    private Label noRes;
     private NoteCollector noteCollector;
     private TextureRegionDrawable selectionColorList;
     private boolean touched;
@@ -103,19 +109,19 @@ public class SearchTrack implements Screen {
 
             if (VIEWPORT_WIDTH == 800 && VIEWPORT_HEIGHT == 480)//old dimensions
             {
-                createLabel("Search For Track", stage.getCamera().viewportHeight / 2 + 50);
+                search=createLabel("Search For Track", stage.getCamera().viewportHeight / 2 + 50);
                 createButton("Submit", 305, 140f, sizeX, sizeY);
                 //createButton("Submit", 350, 130f, 75, 100);//For search modes
             }
             if (VIEWPORT_WIDTH == 1080 && VIEWPORT_HEIGHT == 720)
             {
-                createLabel("Search For Track", stage.getCamera().viewportHeight / 2 + 100);
+                search=createLabel("Search For Track", stage.getCamera().viewportHeight / 2 + 100);
                 createButton("Submit", 410f, 300f, sizeX, sizeY);
                 //createButton("Submit", 410f, 200f, sizeX, sizeY);//For search modes
             }
             if (VIEWPORT_WIDTH > 1080 && VIEWPORT_HEIGHT > 720)
             {
-                createLabel("Search For Track", stage.getCamera().viewportHeight / 2 + 100);
+                search=createLabel("Search For Track", stage.getCamera().viewportHeight / 2 + 100);
                 //createButton("Submit", 820f, 420f, sizeX, sizeY);
                 //createButton("Submit", (viewport.getScreenWidth() / 2) - sizeX / 2, 200f, sizeX, sizeY);//Dimensions if the search modes are rendered
                 createButton("Submit", (viewport.getScreenWidth() / 2) - sizeX / 2, 420f, sizeX, sizeY);
@@ -128,30 +134,39 @@ public class SearchTrack implements Screen {
             createImg();
             if(VIEWPORT_HEIGHT==480 && VIEWPORT_WIDTH==800)
             {
-                createLabel("Network Connection Unavailable", stage.getCamera().viewportHeight / 2 + 60);
-                createLabel("Please Connect to a Network", stage.getCamera().viewportHeight / 2 + 30);
+                err1=createLabel("Network Connection Unavailable", stage.getCamera().viewportHeight / 2 + 60);
+                err2=createLabel("Please Connect to a Network", stage.getCamera().viewportHeight / 2 + 30);
             }
             else
             {
-                createLabel("Network Connection Unavailable", stage.getCamera().viewportHeight / 2 + 100);
-                createLabel("Please Connect to a Network", stage.getCamera().viewportHeight / 2 + 65);
+                err1=createLabel("Network Connection Unavailable", stage.getCamera().viewportHeight / 2 + 100);
+                err2=createLabel("Please Connect to a Network", stage.getCamera().viewportHeight / 2 + 65);
             }
-
+            err1.getColor().a=0;
+            err2.getColor().a=0;
+            table.getColor().a=0;
+            table.addAction(Actions.fadeIn(0.2f));
+            err1.addAction(Actions.fadeIn(0.2f));
+            err2.addAction(Actions.fadeIn(0.2f));
         }
         Gdx.input.setInputProcessor(stage);
         stage.addActor(table);
-
+        table.getColor().a=0;
+        search.getColor().a=0;
+        textField.getColor().a=0;
+        table.addAction(Actions.fadeIn(0.2f));
+        search.addAction(Actions.fadeIn(0.2f));
+        textField.addAction(Actions.fadeIn(0.2f));
 
     }
 
     private void createImg()
     {
         Texture img = AssetsManager.assetManager.get(Constants.noConn);
-        Image icon = new Image(img);
+        icon = new Image(img);
 
         if(VIEWPORT_WIDTH == 800 && VIEWPORT_HEIGHT == 480)
         {
-            //icon.setSize(50f,50f);
             icon.setScale(.25f,.25f);
             icon.setPosition((stage.getCamera().viewportWidth -175)/2,stage.getCamera().viewportHeight/2-125);
         }
@@ -166,7 +181,8 @@ public class SearchTrack implements Screen {
             icon.setPosition((stage.getCamera().viewportWidth - 375)/2,stage.getCamera().viewportHeight/2-325);
         }
         stage.addActor(icon);
-        // addVerticalGroup(icon);
+        icon.getColor().a=0;
+        icon.addAction(Actions.fadeIn(0.2f));
     }
 
     private void createSearchModes()
@@ -306,7 +322,7 @@ public class SearchTrack implements Screen {
         table.clear();
     }
 
-    private void createLabel(String text, float Yaxis) //Method for label creation
+    private Label createLabel(String text, float Yaxis) //Method for label creation
     {
         Label.LabelStyle labelstyle = new Label.LabelStyle(font, Color.WHITE);
         Label label = new Label(text, labelstyle);
@@ -321,9 +337,8 @@ public class SearchTrack implements Screen {
         if (VIEWPORT_WIDTH > 1080 && VIEWPORT_HEIGHT > 720) {
             label.setPosition((stage.getCamera().viewportWidth - label.getWidth()) / 2, Yaxis + 50);
         }
-
         stage.addActor(label);
-
+        return label;
     }
 
     private void createTable() {
@@ -401,21 +416,20 @@ public class SearchTrack implements Screen {
                         ByArtist.setStyle(createButtonStyle(selectionColorPressed));
                         ByName.setStyle(createButtonStyle(selectionColor));
                     }
+
+                    if(!networkAccess)
+                    {
+                        err1.addAction(Actions.fadeOut(0.4f));
+                        err2.addAction(Actions.fadeOut(0.4f));
+                        icon.addAction(Actions.fadeOut(0.4f));
+                        table.addAction(Actions.fadeOut(0.4f));
+                    }
                     Timer.schedule(new Timer.Task() {
                         @Override
                         public void run() {
                             if (text.equals("Submit"))
                             {
                                 System.out.println(textField.getText());
-                                /*if(searchByName)
-                                {
-
-                                }
-                                else
-                                {
-
-                                }*/
-
                                 sendRequest();
                             }
                             else if(text.equals("Back"))
@@ -473,7 +487,9 @@ public class SearchTrack implements Screen {
                     {
                         Yaxis=175;
                     }
-                    createLabel("No results for your query",Yaxis);
+                    noRes=createLabel("No results for your query",Yaxis);
+                    noRes.getColor().a=0;
+                    noRes.addAction(Actions.fadeIn(0.1f));
                 }
                 else
                 {
@@ -490,6 +506,15 @@ public class SearchTrack implements Screen {
                         SongObj song=new SongObj(lines[0],address[1]);
                         songs.add(song);
                     }
+                    if(songs.size()!=0)
+                    {
+                        table.addAction(Actions.fadeOut(0.4f));
+                        search.addAction(Actions.fadeOut(0.4f));
+                        textField.addAction(Actions.fadeOut(0.4f));
+                        noRes.addAction(Actions.fadeOut(0.4f));
+                    }
+
+
                     Timer.schedule(new Timer.Task() {
                         @Override
                         public void run()

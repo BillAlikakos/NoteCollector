@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -114,11 +115,12 @@ public class EndGameScreen implements Screen {
         createTable();
         createBackground();
         createLogo();
-        createButtons();
         createLabels();
-
+        createButtons();
+        stage.addActor(table);
         Gdx.input.setInputProcessor(stage);
-
+        table.getColor().a=0;
+        table.addAction(Actions.sequence(Actions.fadeIn(0.2f)));//Fade button table in
     }
 
     private void sendMessage()//Start threads to send the player's score to the second
@@ -293,16 +295,20 @@ public class EndGameScreen implements Screen {
         Label.LabelStyle labelstyle = new Label.LabelStyle(font, Color.WHITE);
         Label label = new Label(text, labelstyle);
         label.setPosition((stage.getCamera().viewportWidth-label.getWidth())/2,Yaxis);
-        stage.addActor(label);
-
+        //stage.addActor(label);
+        table.center();
+        table.add(label);
+        table.row();
+        label.addAction(Actions.fadeIn(0.2f));
     }
-    //create a table for organize buttons and labels
+    //create a table to organize buttons and labels
     private void createTable(){
         table = new Table();
         table.center();
         table.setFillParent(true);
         table.pad(10f,10f,30f,10f);
-        table.setTouchable(Touchable.enabled);
+
+        //table.setTouchable(Touchable.enabled);
     }
     private void LoadAssets(){
         //font = AssetsManager.createBimapFont(45);
@@ -342,8 +348,11 @@ public class EndGameScreen implements Screen {
         AddButtonListener(MenuButton,text);
         System.out.println(MenuButton.getWidth());
         MenuButton.setPosition(Xaxis,Yaxis);
-        MenuButton.setSize(sizeX,sizeY);
-        stage.addActor(MenuButton);
+        //MenuButton.setSize(sizeX,sizeY);
+        table.add(MenuButton).size(sizeX,sizeY);
+
+        //stage.addActor(MenuButton);
+        MenuButton.addAction(Actions.fadeIn(0.2f));
     }
 
     private void AddButtonListener(final ImageTextButton MenuButton, final String text){
@@ -357,6 +366,7 @@ public class EndGameScreen implements Screen {
                     if (prefs.getBoolean("sound")) {
                         notecollector.getClick().play();
                     }
+                    table.addAction(Actions.fadeOut(0.4f));
                     Timer.schedule(new Timer.Task() {
                         @Override
                         public void run() {

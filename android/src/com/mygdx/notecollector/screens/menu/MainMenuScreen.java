@@ -1,18 +1,23 @@
 package com.mygdx.notecollector.screens.menu;
 
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
@@ -32,6 +37,10 @@ import com.mygdx.notecollector.screens.menu.Multiplayer.MultiplayerModeScreen;
 import com.mygdx.notecollector.screens.menu.TrackSearch.SearchTrack;
 
 import java.util.ArrayList;
+
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.fadeIn;
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.fadeOut;
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.run;
 
 public class MainMenuScreen implements Screen {
 
@@ -87,6 +96,13 @@ public class MainMenuScreen implements Screen {
         stage.addActor(verticalGroup);
         stage.addActor(table);
         stage.addActor(top);
+        table.getColor().a=0;//Set actor's alpha value to 0(Transparent) to enable fading
+        top.getColor().a=0;
+        table.addAction(Actions.sequence(Actions.fadeIn(0.2f)));
+        top.addAction(Actions.sequence(Actions.fadeIn(0.2f)));
+       /* stage.getRoot().getColor().a = 0;
+        stage.getRoot().addAction(fadeIn(0.5f));*/
+
 
     }
 
@@ -98,9 +114,7 @@ public class MainMenuScreen implements Screen {
     private void LoadAssets(){
         assetsManager.LoadMenuAssets();
 
-        //font = assetsManager.getFontBig();
         font = assetsManager.createBitmapFont();
-       // font=assetsManager.createBitmapFont();
         scoreBtn=new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.scoresImage,Texture.class)));
         helpBtn=new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.helpImage,Texture.class)));
         settingsBtn=new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.settingsImage,Texture.class)));
@@ -144,10 +158,11 @@ public class MainMenuScreen implements Screen {
 
     }
 
-    private void createButton(String text)
+    private ImageTextButton createButton(String text)
     {
         ImageTextButton.ImageTextButtonStyle textButtonStyle = createButtonStyle(selectionColor);
         ImageTextButton MenuButton = new ImageTextButton(text, textButtonStyle);
+        MenuButton.setColor(Color.WHITE);
         AddButtonListener(MenuButton,text);
 
         if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)
@@ -163,6 +178,7 @@ public class MainMenuScreen implements Screen {
             table.add(MenuButton).size(300,200);
         }
         table.row();
+        return MenuButton;
 
     }
 
@@ -186,6 +202,8 @@ public class MainMenuScreen implements Screen {
                if(scoreButton.isPressed())
                {
                    playSound(prefs);
+                   table.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out table
+                   top.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out icon table
                    Timer.schedule(new Timer.Task()
                    {
                        @Override
@@ -210,6 +228,8 @@ public class MainMenuScreen implements Screen {
                 if(helpButton.isPressed())
                 {
                     playSound(prefs);
+                    table.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out table
+                    top.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out icon table
                     Timer.schedule(new Timer.Task()
                     {
                         @Override
@@ -232,6 +252,8 @@ public class MainMenuScreen implements Screen {
                 if(settingsButton.isPressed())
                 {
                     playSound(prefs);
+                    table.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out table
+                    top.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out icon table
                     Timer.schedule(new Timer.Task()
                     {
                         @Override
@@ -254,6 +276,8 @@ public class MainMenuScreen implements Screen {
                 if(exitButton.isPressed())
                 {
                     playSound(prefs);
+                    table.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out table
+                    top.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out icon table
                     Timer.schedule(new Timer.Task()
                     {
                         @Override
@@ -312,10 +336,12 @@ public class MainMenuScreen implements Screen {
                          if (prefs.getBoolean("sound")) {
                           noteCollector.getClick().play();
                          }
-
+                        table.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out table
+                        top.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out icon table
                         Timer.schedule(new Timer.Task() {
                          @Override
                          public void run() {
+
                                 dispose();
                               switch (text) {
                                   case "Play":
@@ -361,7 +387,8 @@ public class MainMenuScreen implements Screen {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        stage.act();
+        //stage.act();
+        stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
 
 
@@ -392,6 +419,7 @@ public class MainMenuScreen implements Screen {
     @Override
     public void dispose()//TODO Change the icon dispose functions (takes too much time on slower phones) reposition gameOver buttons, optimize network discovery , optimize track select
     {
+        table.clear();
         assetsManager.disposeMenuAssets();
         font.dispose();
         stage.dispose();
