@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -93,7 +94,10 @@ public class OptionsScreen implements Screen{
         stage.addActor(table);
         stage.addActor(exitBtnTable);
         createBackButton("Menu");
-
+        table.getColor().a=0;//Fade table in
+        exitBtnTable.getColor().a=0;//Fade table in
+        table.addAction(Actions.fadeIn(0.2f));
+        exitBtnTable.addAction(Actions.fadeIn(0.2f));
     }
     private void createButtonMusic(){
         Label title = createLabel("Music:");
@@ -345,6 +349,8 @@ public class OptionsScreen implements Screen{
                     if (prefs.getBoolean("sound")) {
                         noteCollector.getClick().play();
                     }
+                    table.addAction(Actions.fadeOut(0.4f));
+                    exitBtnTable.addAction(Actions.fadeOut(0.4f));
                     Timer.schedule(new Timer.Task() {
 
                         @Override
@@ -379,7 +385,7 @@ public class OptionsScreen implements Screen{
         table.setFillParent(true);
         table.padTop(10f);
         // table.pad(0f,100f,0f,0f);*/
-        table.setTouchable(Touchable.enabled);
+        //table.setTouchable(Touchable.enabled);
     }
     private void setupCamera(){
         viewport = new ScalingViewport(Scaling.stretch, VIEWPORT_WIDTH, VIEWPORT_HEIGHT, new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT));

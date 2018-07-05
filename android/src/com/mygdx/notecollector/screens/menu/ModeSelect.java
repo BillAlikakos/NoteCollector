@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -28,6 +29,8 @@ import com.mygdx.notecollector.Multiplayer.ServerClass;
 import com.mygdx.notecollector.NoteCollector;
 import com.mygdx.notecollector.Utils.Assets;
 import com.mygdx.notecollector.Utils.Constants;
+
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.fadeIn;
 
 public class ModeSelect implements Screen
 {
@@ -111,8 +114,13 @@ public class ModeSelect implements Screen
         stage.addActor(table);
         stage.addActor(exitBtnTable);
         stage.addActor(verticalGroup);
+        table.getColor().a=0;//Set actor's alpha value to 0(Transparent) to enable fading
+        exitBtnTable.getColor().a=0;
+        table.addAction(Actions.sequence(Actions.fadeIn(0.2f)));//Fade button table in
+        exitBtnTable.addAction(Actions.sequence(Actions.fadeIn(0.2f)));
         //stage.addActor(MenuButton);
-
+        //stage.getRoot().getColor().a = 0;
+        //stage.getRoot().addAction(fadeIn(0.01f));
 
     }
 
@@ -211,11 +219,12 @@ public class ModeSelect implements Screen
                     if (prefs.getBoolean("sound")) {
                         noteCollector.getClick().play();
                     }
+                    table.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out table
+                    exitBtnTable.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out icon table
                     Timer.schedule(new Timer.Task() {
                         @Override
                         public void run()
                         {
-
                                 dispose();
                                 if (multiplayer == false) {
                                     switch (text) {
@@ -246,7 +255,7 @@ public class ModeSelect implements Screen
 
 
                         }
-                    }, 0.2f);
+                    }, 0.4f);
                 }
                 return true;
             }
@@ -272,7 +281,8 @@ public class ModeSelect implements Screen
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        stage.act();
+        //stage.act();
+        stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
 
 

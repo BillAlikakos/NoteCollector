@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -164,7 +165,10 @@ public class TrackSelect implements Screen
         }
         stage.addActor(verticalGroup);
         stage.addActor(table);
-
+        table.getColor().a=0;//Set actor's alpha value to 0(Transparent) to enable fading
+        btn.getColor().a=0;
+        table.addAction(Actions.sequence(Actions.fadeIn(0.2f)));//Fade button table in
+        btn.addAction(Actions.sequence(Actions.fadeIn(0.2f)));
     }
     private void createLogo()
     {
@@ -184,7 +188,7 @@ public class TrackSelect implements Screen
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        stage.act();
+        stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
     }
 
@@ -264,6 +268,8 @@ public class TrackSelect implements Screen
                     if (prefs.getBoolean("sound")) {
                         noteCollector.getClick().play();
                     }
+                    table.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out table
+                    btn.addAction(Actions.sequence(Actions.fadeOut(0.4f)));
                     Timer.schedule(new Timer.Task() {
                         @Override
                         public void run() {
@@ -344,45 +350,55 @@ public class TrackSelect implements Screen
     {
         actor.addListener(new ClickListener(){
             @Override
-            public void clicked(InputEvent event, float x, float y) {
+            public void clicked(InputEvent event, float x, float y)
+            {
 
-                MidiTrack t=track.get(list.getSelectedIndex());//Get the selected track
-                String program=item.get(list.getSelectedIndex());//Get the selected instrument
-                System.out.println("Selected Track: "+t.toString());
-                System.out.println("Selected Instrument: "+program);
+                final MidiTrack t = track.get(list.getSelectedIndex());//Get the selected track
+                String program = item.get(list.getSelectedIndex());//Get the selected instrument
+                System.out.println("Selected Track: " + t.toString());
+                System.out.println("Selected Instrument: " + program);
                 filepath = file.getAbsolutePath();
-                if(isHost)
+                table.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out table
+                btn.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out icon table
+                Timer.schedule(new Timer.Task()
                 {
-                    System.out.println("Host");
-                    System.out.println("Readying file");
-                    //File file = new File(path.get(list.getSelectedIndex()));
-                    System.out.println("Readying Filepath");
-                    filepath = file.getAbsolutePath();
-                    System.out.println("Setting obj params");
-                    byte[] arr=new byte[1250000];//1,25Mb buffer
-                    try
+                    @Override
+                    public void run()
                     {
-                        arr = readFileToByteArray(file);
+                        if(isHost)
+                        {
+                            System.out.println("Readying file");
+
+                            System.out.println("Readying Filepath");
+                            filepath = file.getAbsolutePath();
+                            System.out.println("Setting obj params");
+                            byte[] arr=new byte[1250000];//1,25Mb buffer
+                            try
+                            {
+                                arr = readFileToByteArray(file);
+                            }
+                            catch (IOException e)
+                            {
+                                e.printStackTrace();
+                            }
+                            srv.sendGameObj(arr,difficulty,true,mode);//Send file to client
+                            dispose();
+                            noteCollector.setScreen((new LoadingScreen(noteCollector,filepath,speed,delay,t,srv,mode)));
+                        }
+                        else if(isGuest)
+                        {
+                            System.out.println("Guest");
+                            dispose();
+                            noteCollector.setScreen((new LoadingScreen(noteCollector,filepath,speed,delay,t,c,mode)));
+                        }
+                        else
+                        {
+                            dispose();
+                            noteCollector.setScreen(new LoadingScreen(noteCollector,filepath,speed,delay,t,mode));
+                        }
                     }
-                    catch (IOException e)
-                    {
-                        e.printStackTrace();
-                    }
-                    srv.sendGameObj(arr,difficulty,true,mode);//Send file to client
-                    dispose();
-                    noteCollector.setScreen((new LoadingScreen(noteCollector,filepath,speed,delay,t,srv,mode)));
-                }
-                else if(isGuest)
-                {
-                    System.out.println("Guest");
-                    dispose();
-                    noteCollector.setScreen((new LoadingScreen(noteCollector,filepath,speed,delay,t,c,mode)));
-                }
-                else
-                {
-                    dispose();
-                    noteCollector.setScreen(new LoadingScreen(noteCollector,filepath,speed,delay,t,mode));
-                }
+                }, 0.4f);
+
             }
         });
     }
@@ -393,12 +409,6 @@ public class TrackSelect implements Screen
 
     }
 
-    private void getInstr(File file)
-    {
-
-
-
-    }
 
     private void getInstruments(File file)//Method that finds all the instruments that are used in each track
     {
@@ -418,8 +428,6 @@ public class TrackSelect implements Screen
         for (int i=0;i<filetracks.size();i++)
         {
             Iterator<MidiEvent> midiEventIterator = it.next().getEvents().iterator();
-            //Iterator<MetaEvent> metaEventIterator =
-            /*If midi file track has event continue */
             while (midiEventIterator.hasNext())
             {
                 MidiEvent E = midiEventIterator.next();
@@ -434,7 +442,6 @@ public class TrackSelect implements Screen
                     System.out.println(name);
                     item.add(name);
                     track.add(filetracks.get(i));
-                    //System.out.println(E.getClass().toString());
                     midiEvents.add(E);
                 }
             }

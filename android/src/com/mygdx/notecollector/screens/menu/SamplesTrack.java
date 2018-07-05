@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -132,6 +133,10 @@ public class SamplesTrack implements Screen {
         stage.addActor(verticalGroup);
         stage.addActor(table);
         stage.addActor(btn);
+        table.getColor().a=0;//Set actor's alpha value to 0(Transparent) to enable fading
+        btn.getColor().a=0;
+        table.addAction(Actions.sequence(Actions.fadeIn(0.2f)));//Fade button table in
+        btn.addAction(Actions.sequence(Actions.fadeIn(0.2f)));
     }
     private void createLogo(){
         Texture img = assetsManager.assetManager.get(Constants.logo);
@@ -202,7 +207,7 @@ public class SamplesTrack implements Screen {
         }
         if(VIEWPORT_WIDTH>1080 && VIEWPORT_HEIGHT>720)
         {
-            table.pad(200f,10f,30f,10f);
+            table.pad(200f,10f,50f,10f);
         }
 
         table.setTouchable(Touchable.enabled);
@@ -229,6 +234,8 @@ public class SamplesTrack implements Screen {
                     if (prefs.getBoolean("sound")) {
                         noteCollector.getClick().play();
                     }
+                    table.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out table
+                    btn.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out icon table
                     Timer.schedule(new Timer.Task() {
                         @Override
                         public void run() {
@@ -263,7 +270,7 @@ public class SamplesTrack implements Screen {
                             }
 
                         }
-                    }, 0.2f);
+                    }, 0.4f);
                 }
                 return true;
             }
@@ -323,48 +330,44 @@ public class SamplesTrack implements Screen {
         actor.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if(multiplayer==false)
+                table.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out table
+                btn.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out icon table
+                Timer.schedule(new Timer.Task()
                 {
-                    File file = new File(path.get(list.getSelectedIndex()));
-                    filepath = file.getAbsolutePath();
-                    //noteCollector.setScreen(new LoadingScreen(noteCollector,filepath,speed,delay));//OG
-                    noteCollector.setScreen(new TrackSelect(noteCollector,speed,delay,file,mode));//OG
-                }
-                else
-                {
-                    File file = new File(path.get(list.getSelectedIndex()));
-                    filepath = file.getAbsolutePath();
-                    byte[] arr=new byte[1250000];//1,25Mb buffer
-                    try
+                    @Override
+                    public void run()
                     {
-                        arr = readFileToByteArray(file);
+                        if (multiplayer == false)
+                        {
+                            File file = new File(path.get(list.getSelectedIndex()));
+                            filepath = file.getAbsolutePath();
+                            //noteCollector.setScreen(new LoadingScreen(noteCollector,filepath,speed,delay));//OG
+                            noteCollector.setScreen(new TrackSelect(noteCollector, speed, delay, file, mode));//OG
+                        } else
+                        {
+                            File file = new File(path.get(list.getSelectedIndex()));
+                            filepath = file.getAbsolutePath();
+                            byte[] arr = new byte[1250000];//1,25Mb buffer
+                            try
+                            {
+                                arr = readFileToByteArray(file);
+                            } catch (IOException e)
+                            {
+                                e.printStackTrace();
+                            }
+                            //srv.sendGameObj(arr,speed,delay,false,mode);//Old
+                            srv.sendGameObj(arr, difficulty, false, mode);
+                            System.out.println("Sent game obj to client");
+                            //noteCollector.setScreen(new LoadingScreen(noteCollector,filepath,speed,delay));//OG
+                            noteCollector.setScreen(new TrackSelect(noteCollector, speed, delay, file, srv, mode, difficulty));
+                        }
                     }
-                    catch (IOException e)
-                    {
-                        e.printStackTrace();
-                    }
-                    //srv.sendGameObj(arr,speed,delay,false,mode);//Old
-                    srv.sendGameObj(arr,difficulty,false,mode);
-                    System.out.println("Sent game obj to client");
-                    //noteCollector.setScreen(new LoadingScreen(noteCollector,filepath,speed,delay));//OG
-                    noteCollector.setScreen(new TrackSelect(noteCollector,speed,delay,file,srv,mode,difficulty));
-                }
+                },0.4f);
 
             }
         });
     }
-    /*public static class GameParamObject
-    {
-        public byte[] file;
-        public int speed;
-        public long delay;
 
-        public GameParamObject()
-        {
-            //this.file = null;
-        }
-
-    }*/
     private Label createLabel(String text){
         Label.LabelStyle labelstyle = new Label.LabelStyle(fontH, Color.WHITE);
         Label fileLabel = new Label(text, labelstyle);
@@ -404,11 +407,8 @@ public class SamplesTrack implements Screen {
 
     }
 
-    private void createBackground(){
-       /* Texture img = assetsManager.assetManager.get(Constants.BackgroundMenu, Texture.class);
-        Image background = new Image(img);
-        background.setScaling(Scaling.fit);
-        stage.addActor(background);*/
+    private void createBackground()
+    {
         FileHandle file = Gdx.files.internal(Constants.getBackgroundMenu().toString());
         Image background=assetsManager.scaleBackground(file);
         stage.addActor(background);

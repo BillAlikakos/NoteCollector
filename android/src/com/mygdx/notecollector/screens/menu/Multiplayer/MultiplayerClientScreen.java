@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -111,6 +112,10 @@ public class MultiplayerClientScreen implements  Screen
         stage.addActor(verticalGroup);
         stage.addActor(table);
         stage.addActor(btn);
+        table.getColor().a=0;//Set actor's alpha value to 0(Transparent) to enable fading
+        btn.getColor().a=0;
+        table.addAction(Actions.sequence(Actions.fadeIn(0.2f)));
+        btn.addAction(Actions.sequence(Actions.fadeIn(0.2f)));
 
     }
 
@@ -211,6 +216,8 @@ public class MultiplayerClientScreen implements  Screen
                     if (prefs.getBoolean("sound")) {
                         noteCollector.getClick().play();
                     }
+                    table.addAction(Actions.sequence(Actions.fadeOut(0.4f)));
+                    btn.addAction(Actions.sequence(Actions.fadeOut(0.4f)));
                     Timer.schedule(new Timer.Task() {
                         @Override
                         public void run() {
@@ -221,10 +228,8 @@ public class MultiplayerClientScreen implements  Screen
                                 dispose();
                                 noteCollector.setScreen(new MultiplayerModeScreen(noteCollector));
                             }
-
-
                         }
-                    }, 0.15f);
+                    }, 0.4f);//prev 0.15f
                 }
                 return true;
             }
@@ -291,6 +296,8 @@ public class MultiplayerClientScreen implements  Screen
                 System.out.println("Selected host:"+hostName);
                 System.out.println("Host address:"+address);
                 client.connect(adr);//Connect to selected device
+                table.addAction(Actions.sequence(Actions.fadeOut(0.4f)));
+                btn.addAction(Actions.sequence(Actions.fadeOut(0.4f)));
                 Timer.schedule(new Timer.Task()
                 {
                     @Override
@@ -299,7 +306,7 @@ public class MultiplayerClientScreen implements  Screen
                         dispose();
                         noteCollector.setScreen(new MultiplayerWaitingScreen(noteCollector,client));
                     }
-                }, 0.2f);
+                }, 0.4f);//prev 0.2f
 
             }
         });

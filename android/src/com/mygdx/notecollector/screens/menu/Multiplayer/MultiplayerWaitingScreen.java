@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
 import com.badlogic.gdx.scenes.scene2d.actions.RotateByAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -79,7 +80,8 @@ public class MultiplayerWaitingScreen implements Screen
         listen();
         createLabel("Waiting Host ....");
         stage.addActor(table);
-
+        table.getColor().a=0;//Set actor's alpha value to 0(Transparent) to enable fading
+        table.addAction(Actions.sequence(Actions.fadeIn(0.2f)));
     }
 
     private void setDifficultyParams(String difficulty)
@@ -172,23 +174,24 @@ public class MultiplayerWaitingScreen implements Screen
                     }
                     System.out.println(response.multiTrack);
                     setDifficultyParams(response.difficulty);
+                    table.addAction(Actions.fadeOut(0.4f));
                     Timer.schedule(new Timer.Task()
                     {
                         @Override
                         public void run()
                         {
+                            dispose();
                             if (response.multiTrack == false)
                             {
-                                dispose();
                                 noteCollector.setScreen(new LoadingScreen(noteCollector, track.getAbsolutePath(), speed, delay, response.mode));//
                             }
                             if (response.multiTrack == true)
                             {
-                                dispose();
+                                //dispose();
                                 noteCollector.setScreen(new TrackSelect(noteCollector, speed, delay, track, c, response.mode));//
                             }
                         }
-                    }, 0.2f);
+                    }, 0.4f);
                 }
 
             }

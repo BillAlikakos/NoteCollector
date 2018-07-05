@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -60,6 +61,7 @@ public class ScoresScreen implements Screen {
     private int sizeX;
     private int sizeY;
     private int[] size;
+    private Table table;
 
     public ScoresScreen(NoteCollector notecollector) {
         this.notecollector = notecollector;
@@ -87,12 +89,16 @@ public class ScoresScreen implements Screen {
         stage.addActor(verticalGroup);
         stage.addActor(exitBtnTable);
         Gdx.input.setInputProcessor(stage);
-
+        table.getColor().a=0;
+        exitBtnTable.getColor().a=0;
+        table.addAction(Actions.fadeIn(0.2f));
+        exitBtnTable.addAction(Actions.fadeIn(0.2f));
     }
 
     @Override
     public void render(float delta) {
 
+        Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 
@@ -175,7 +181,7 @@ public class ScoresScreen implements Screen {
             Label nameLabel=createLabel("Name", fontSize+5);
             Label trackLabel=createLabel("Song",fontSize+5);
             Label diffLabel=createLabel("Difficulty",fontSize+5);
-            Table table = new Table();
+            table = new Table();
             table.setFillParent(true);
             stage.addActor(table);
             table.add(title).center().colspan(4);
@@ -295,6 +301,8 @@ public class ScoresScreen implements Screen {
                         notecollector.getClick().play();
                     }
                     //notecollector.adsHandler.showAds(1);
+                    table.addAction(Actions.fadeOut(0.4f));
+                    exitBtnTable.addAction(Actions.fadeOut(0.4f));
                     Timer.schedule(new Timer.Task() {
 
                         @Override

@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -99,6 +100,10 @@ public class MultiplayerHostScreen implements  Screen
         stage.addActor(table);
         stage.addActor(btn);
         getRequest();
+        table.getColor().a=0;//Set actor's alpha value to 0(Transparent) to enable fading
+        btn.getColor().a=0;
+        table.addAction(Actions.sequence(Actions.fadeIn(0.2f)));
+        btn.addAction(Actions.sequence(Actions.fadeIn(0.2f)));
 
     }
 
@@ -198,6 +203,8 @@ public class MultiplayerHostScreen implements  Screen
                         if (prefs.getBoolean("sound")) {
                             noteCollector.getClick().play();
                         }
+                        table.addAction(Actions.sequence(Actions.fadeOut(0.4f)));
+                        btn.addAction(Actions.sequence(Actions.fadeOut(0.4f)));
                         Timer.schedule(new Timer.Task() {
                             @Override
                             public void run() {
@@ -268,6 +275,8 @@ public class MultiplayerHostScreen implements  Screen
                         ServerClass.SomeResponse response = new ServerClass.SomeResponse();
                         response.text = "Preparing match";
                         connection.sendTCP(response);
+                        table.addAction(Actions.sequence(Actions.fadeOut(0.4f)));
+                        btn.addAction(Actions.sequence(Actions.fadeOut(0.4f)));
                         Timer.schedule(new Timer.Task()
                         {
                             @Override

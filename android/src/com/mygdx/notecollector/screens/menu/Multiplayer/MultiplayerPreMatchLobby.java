@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
 import com.badlogic.gdx.scenes.scene2d.actions.RotateByAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -108,6 +109,8 @@ public class MultiplayerPreMatchLobby implements Screen
         createLabel("Initializing ....");
         send();
         stage.addActor(table);
+        table.getColor().a=0;//Set actor's alpha value to 0(Transparent) to enable fading
+        table.addAction(Actions.sequence(Actions.fadeIn(0.2f)));
 
     }
     private void send()
@@ -159,6 +162,7 @@ public class MultiplayerPreMatchLobby implements Screen
                             ServerClass.fileLoaded request = (ServerClass.fileLoaded)object;
                             System.out.println(request.loaded);
                             srv.getServer().removeListener(this);
+                            table.addAction(Actions.fadeOut(0.4f));
                             Timer.schedule(new Timer.Task()
                             {
                                 @Override
@@ -182,7 +186,7 @@ public class MultiplayerPreMatchLobby implements Screen
                                         e.printStackTrace();
                                     }
                                 }
-                            }, 0.2f);
+                            }, 0.4f);//Prev 0.2f
                         }
 
                     }
@@ -200,6 +204,7 @@ public class MultiplayerPreMatchLobby implements Screen
                             ClientClass.fileLoaded request = (ClientClass.fileLoaded)object;
                             System.out.println(request.loaded);
                             c.getClient().removeListener(this);
+                            table.addAction(Actions.fadeOut(0.4f));
                             Timer.schedule(new Timer.Task()
                             {
                                 @Override

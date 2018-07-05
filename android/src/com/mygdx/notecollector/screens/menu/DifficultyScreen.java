@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -116,11 +117,14 @@ public class DifficultyScreen implements Screen
         ImageTextButton MenuButton = new ImageTextButton("Back", textButtonStyle);
         AddButtonListener(MenuButton,"Back");
         exitBtnTable.add(MenuButton).bottom().left().padRight(5f).size(sizeX,sizeY);
-        //MenuButton.setPosition(5f,10f);
+
         stage.addActor(table);
         stage.addActor(exitBtnTable);
         stage.addActor(verticalGroup);
-        //stage.addActor(MenuButton);
+        table.getColor().a=0;//Set actor's alpha value to 0(Transparent) to enable fading
+        exitBtnTable.getColor().a=0;
+        table.addAction(Actions.sequence(Actions.fadeIn(0.2f)));//Fade button table in
+        exitBtnTable.addAction(Actions.sequence(Actions.fadeIn(0.2f)));
 
 
 
@@ -214,6 +218,8 @@ public class DifficultyScreen implements Screen
                     if (prefs.getBoolean("sound")) {
                         noteCollector.getClick().play();
                     }
+                    table.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out table
+                    exitBtnTable.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out icon table
                     Timer.schedule(new Timer.Task() {
                         @Override
                         public void run() {
@@ -362,7 +368,7 @@ public class DifficultyScreen implements Screen
 
 
                         }
-                    }, 0.2f);
+                    }, 0.4f);
                 }
                 return true;
             }
@@ -388,7 +394,7 @@ public class DifficultyScreen implements Screen
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        stage.act();
+        stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
 
 

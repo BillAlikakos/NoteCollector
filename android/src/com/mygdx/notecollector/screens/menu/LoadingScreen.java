@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
 import com.badlogic.gdx.scenes.scene2d.actions.RotateByAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -158,6 +159,11 @@ public class LoadingScreen implements Screen {
             initMidiManipulator();
         }
         stage.addActor(table);
+        spinnerImage.getColor().a=0;
+        table.getColor().a=0;//Set actor's alpha value to 0(Transparent) to enable fading
+        table.addAction(Actions.sequence(Actions.fadeIn(0.2f)));//Fade button table in
+
+
 
     }
 
@@ -169,6 +175,8 @@ public class LoadingScreen implements Screen {
         spinnerImage.setOrigin(spinnerImage.getWidth()/2, spinnerImage.getHeight()/2);
         createActions();
         stage.addActor(spinnerImage);
+        spinnerImage.getColor().a=0;//Set actor's alpha value to 0(Transparent) to enable fading
+        spinnerImage.addAction(Actions.sequence(Actions.fadeIn(0.2f)));//Fade button table in
 
     }
     private void createActions(){
@@ -254,111 +262,51 @@ public class LoadingScreen implements Screen {
        // t.interrupt();
     }
 
-    private void addListeners()//Old method
-    {
-        System.out.println("Listener added");
-        if(isHost)
-        {
-                srv.getServer().addListener(new Listener()//Wait for client to load
-                {
-
-                    public void received (Connection connection, Object object)
-                    {
-                        if (object instanceof ServerClass.fileLoaded)//When client responds start the game
-                        {
-                            System.out.println("Host received");
-                            ServerClass.fileLoaded request = (ServerClass.fileLoaded)object;
-                            System.out.println(request.loaded);
-                            //srv.getServer().removeListener(this);
-                            Timer.schedule(new Timer.Task()
-                            {
-                                @Override
-                                public void run()
-                                {
-                                    try
-                                    {
-
-                                        noteCollector.setScreen(new GameScreen(noteCollector,TickPerMsec,notes,filepath,speed,delay,mode));
-                                        //this.wait(1000);
-                                        dispose();
-                                    }
-                                    catch (IOException e)
-                                    {
-                                        e.printStackTrace();
-                                    }
-                                    catch (InterruptedException e)
-                                    {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            }, 0.2f);
-                        }
-
-                    }
-                });
-            System.out.println("Listener added");
-        }
-         if(isGuest)
-        {
-            c.getClient().addListener(new Listener()//Wait for client to load
-            {
-                public void received (Connection connection, Object object)
-                {
-                    if (object instanceof ClientClass.fileLoaded)//When client responds start the game
-                    {
-                        System.out.println("Host received");
-                        ClientClass.fileLoaded request = (ClientClass.fileLoaded)object;
-                        System.out.println(request.loaded);
-                        srv.getServer().removeListener(this);
-                        Timer.schedule(new Timer.Task()
-                        {
-                            @Override
-                            public void run()
-                            {
-                                try
-                                {
-                                    noteCollector.setScreen(new GameScreen(noteCollector,TickPerMsec,notes,filepath,speed,delay,mode));
-                                    //this.wait(1000);
-                                    dispose();
-                                }
-                                catch (IOException e)
-                                {
-                                    e.printStackTrace();
-                                }
-                                catch (InterruptedException e)
-                                {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }, 0.2f);
-                    }
-
-                }
-            });
-        }
-    }
 
     //if the method setupmidi isn't running show the game screen  
     private void showLoadProgress() throws IOException, InterruptedException//
     {
         if ( !t.isAlive() && AssetsManager.assetManager.update() && AssetsManager.assetManagerFiles.update())
         {
-            if(isHost)
+            table.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out table
+            spinnerImage.addAction(Actions.sequence(Actions.fadeOut(0.4f)));
+            Timer.schedule(new Timer.Task()
             {
-                dispose();
-                noteCollector.setScreen(new MultiplayerPreMatchLobby(noteCollector,TickPerMsec,notes,filepath,speed,delay,srv,mode));
+                @Override
+                public void run()
+                {
+                    dispose();
+                    if(isHost)
+                    {
+                        //dispose();
+                        noteCollector.setScreen(new MultiplayerPreMatchLobby(noteCollector,TickPerMsec,notes,filepath,speed,delay,srv,mode));
 
-            }
-            else if(isGuest)
-            {
-                dispose();
-                noteCollector.setScreen(new MultiplayerPreMatchLobby(noteCollector,TickPerMsec,notes,filepath,speed,delay,c,mode));
-            }
-            else//Single player
-            {
-                dispose();
-                noteCollector.setScreen(new GameScreen(noteCollector,TickPerMsec,notes,filepath,speed,delay,mode));
-            }
+                    }
+                    else if(isGuest)
+                    {
+                       // dispose();
+                        noteCollector.setScreen(new MultiplayerPreMatchLobby(noteCollector,TickPerMsec,notes,filepath,speed,delay,c,mode));
+                    }
+                    else//Single player
+                    {
+                        //dispose();
+                        try
+                        {
+                            noteCollector.setScreen(new GameScreen(noteCollector,TickPerMsec,notes,filepath,speed,delay,mode));
+                        }
+                        catch (IOException e)
+                        {
+                            e.printStackTrace();
+                        }
+                        catch (InterruptedException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            },0.4f);
+
+
 
         }
 
