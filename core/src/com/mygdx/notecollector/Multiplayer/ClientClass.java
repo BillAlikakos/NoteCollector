@@ -1,18 +1,11 @@
 package com.mygdx.notecollector.Multiplayer;
 
-import com.badlogic.gdx.utils.Timer;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
-import com.mygdx.notecollector.screens.menu.LoadingScreen;
-import com.mygdx.notecollector.screens.menu.Multiplayer.MultiplayerWaitingScreen;
 
-import org.apache.commons.io.FileUtils;
-
-import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 public class ClientClass extends Listener
@@ -22,6 +15,8 @@ public class ClientClass extends Listener
     static int tcpPort=54555;
     static int udpPort=54777;
     static boolean received=false;
+    boolean finished = false;
+    String score;
 
     public ClientClass()
     {
@@ -38,10 +33,9 @@ public class ClientClass extends Listener
         System.setProperty("java.net.preferIPv4Stack" , "true");
         new Thread(client).start();
         //client.start();
-
-
-
     }
+
+
     public void connect(InetAddress address)
     {
         try
@@ -73,8 +67,6 @@ public class ClientClass extends Listener
 
     }
 
-
-
     public Client getClient()
     {
         return client;
@@ -92,6 +84,72 @@ public class ClientClass extends Listener
         //addresses= (ArrayList<InetAddress>) client.discoverHosts(udpPort,2000);
         addresses= (ArrayList<InetAddress>) client.discoverHosts(udpPort,500);
         return  addresses;
+    }
+
+    public void addScoreListener()
+    {
+        this.getClient().addListener(new Listener()
+        {
+            public void received (Connection connection, Object object)
+            {
+                if (object instanceof ClientClass.scoreObj)
+                {
+                    ClientClass.scoreObj request = (ClientClass.scoreObj)object;
+                    System.out.println("Host score: "+request.score);
+                    String Score2=request.score;
+                    getClient().removeListener(this);
+                }
+
+            }
+        });
+    }
+
+    public void addGameOverListener()
+    {
+        this.getClient().addListener(new Listener()
+        {
+            public void received (Connection connection, Object object)
+            {
+                if (object instanceof ClientClass.gameOver)
+                {
+                    System.out.println("Host lost");
+                    ClientClass.gameOver request = (ClientClass.gameOver)object;
+                    //GameState ="finished";
+                    finished=true;
+                }
+
+            }
+        });
+    }
+
+    public boolean getGameOver()
+    {
+        return finished;
+    }
+
+    public void receiveScore()
+    {
+        this.getClient().addListener(new Listener()//Wait for client to load
+        {
+
+            public void received (Connection connection, Object object)
+            {
+                if (object instanceof ServerClass.scoreObj)//When host receives the client's score
+                {
+                    System.out.println("Host received score");
+                    ClientClass.scoreObj request = (ClientClass.scoreObj)object;
+                    System.out.println(request.score);
+                    returnScore();
+                    //score2.setScore(Integer.parseInt(request.score));//Convert to int
+                }
+
+            }
+        });
+    }
+
+    public String returnScore()
+    {
+        return score;
     }
 
     public void sendLoadedMsg()//Notifies server that the client has loaded the game files
@@ -116,6 +174,12 @@ public class ClientClass extends Listener
         msg.score=score;
         System.out.println("Sending game over: "+score);
         client.sendTCP(msg);
+    }
+
+
+    public void closeClient()
+    {
+        this.getClient().close();
     }
 
     /*

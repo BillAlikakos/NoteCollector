@@ -46,18 +46,44 @@ public class IntroScreen implements Screen {
         noteCollector.getAssetsManager().assetManager.load(Constants.IntroImage, Texture.class);
         noteCollector.getAssetsManager().assetManager.finishLoading();
         noteCollector.getAssetsManager().createFonts();
+        prefs = Gdx.app.getPreferences("NoteCollectorPreferences");
+       // Constants.setBackgroundMenu(prefs.getString("menuBackground","data/ui/images/new1080.png"));
+        if(prefs.getString("menuBackground").isEmpty())
+        {
+            Constants.setBackgroundMenu(Constants.BackgroundMenuDef);
+            //prefs.putString("menuBackground","data/ui/images/new1080.png");
 
+            System.out.println("menuBackground "+prefs.getString("menuBackground"));
+        }
+        if(prefs.getString("gameBackground").isEmpty())
+        {
+            Constants.setBackgroundGame(Constants.BackgroundGameDef);
+            //prefs.putString("menuBackground","data/ui/images/new1080.png");
+            System.out.println("gameBackground "+prefs.getString("gameBackground"));
+        }
         setupCamera();
         createBackground();
         createFolders();
         // load preferences
-        prefs = Gdx.app.getPreferences("NoteCollectorPreferences");
+
+        /*if(prefs.getString("menuBackground").isEmpty())
+        {
+            System.out.println("Menu bg empty here es the defolt");
+            //prefs.putString("menuBackground","data/ui/images/new1080.png");
+            Constants.setBackgroundMenu("data/ui/images/new1080.png");
+            System.out.println("aaaa "+prefs.getString("menuBackground"));
+        }*/
         prefs.putBoolean("music", true);
         prefs.putBoolean("sound", true);
         if(!prefs.getBoolean("big") && !prefs.getBoolean("vbig"))
         prefs.putBoolean("normal", true);
         else
         prefs.putBoolean("normal", false);
+        //prefs.getString("menuBackground","data/ui/images/new1080.png");
+        //prefs.getString("menuBackground","data/ui/images/new1080.png");
+        System.out.println("Setting prefs");
+        //prefs.putString("menuBackground","data/ui/images/new1080.png");
+
         prefs.flush();
 
     }

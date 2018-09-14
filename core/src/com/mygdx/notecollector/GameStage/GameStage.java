@@ -26,7 +26,6 @@ import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
-import com.esotericsoftware.kryonet.Server;
 import com.mygdx.notecollector.Multiplayer.ClientClass;
 import com.mygdx.notecollector.Multiplayer.ServerClass;
 import com.mygdx.notecollector.NoteCollector;
@@ -51,7 +50,8 @@ import static com.badlogic.gdx.graphics.Color.RED;
 /**
  * Created by bill on 6/18/16.
  */
-public class GameStage extends Stage implements ContactListener {
+public class GameStage extends Stage implements ContactListener
+{
 
     private World world;
     private Vector3 touchPoint,PuttonPoint;
@@ -147,7 +147,7 @@ public class GameStage extends Stage implements ContactListener {
 
     }
 
-    public GameStage(NoteCollector noteCollector, float TickPerMsec, ArrayList<MidiNote> notes, int speed, long delay, ServerClass srv,boolean mode) throws IOException, InterruptedException {
+    public GameStage(NoteCollector noteCollector, float TickPerMsec, ArrayList<MidiNote> notes, int speed, long delay, ServerClass srv, boolean mode) throws IOException, InterruptedException {
         super(new ScalingViewport(Scaling.stretch, VIEWPORT_WIDTH, VIEWPORT_HEIGHT, new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)));
 
         squarewidth=32f;
@@ -180,7 +180,7 @@ public class GameStage extends Stage implements ContactListener {
        // addActorSPause();
 
     }
-    public GameStage(NoteCollector noteCollector, float TickPerMsec, ArrayList<MidiNote> notes, int speed, long delay, ClientClass c,boolean mode) throws IOException, InterruptedException {
+    public GameStage(NoteCollector noteCollector, float TickPerMsec, ArrayList<MidiNote> notes, int speed, long delay, ClientClass c, boolean mode) throws IOException, InterruptedException {
         super(new ScalingViewport(Scaling.stretch, VIEWPORT_WIDTH, VIEWPORT_HEIGHT, new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)));
 
         squarewidth=32f;
@@ -208,9 +208,6 @@ public class GameStage extends Stage implements ContactListener {
         setupCamera();
         setupActros(speed,delay);
         StartTimer();
-        //createPauseLabels();
-        //createBackgroundPause();
-       // addActorSPause();
 
     }
     private void setCollectorSize()
@@ -314,6 +311,7 @@ public class GameStage extends Stage implements ContactListener {
     {
         if(isHost)
         {
+
             srv.getServer().addListener(new Listener()//Wait for client to load
             {
 
@@ -333,7 +331,7 @@ public class GameStage extends Stage implements ContactListener {
         }
         else if(isGuest)
         {
-            c.getClient().addListener(new Listener()
+           c.getClient().addListener(new Listener()
             {
                 public void received (Connection connection, Object object)
                 {
@@ -406,8 +404,20 @@ public class GameStage extends Stage implements ContactListener {
         setUpText();
         createX();
     }
-    private void createBackground(){
-        Background = AssetsManager.assetManager.get(Constants.BackgroundGame);
+    private void createBackground()
+    {
+        if (prefs.getString("gameBackground").equals(Constants.BackgroundGameDef))
+        {
+            Background = AssetsManager.assetManager.get(Constants.getBackgroundGame());
+        }
+        else
+        {
+
+            Background=AssetsManager.externalAssets.get(Constants.getBackgroundGame());
+        }
+       //AssetsManager.assetManager.load(Constants.getBackgroundGame(),Texture.class);
+        //Background = AssetsManager.assetManager.get(Constants.BackgroundGame);
+        //Background = AssetsManager.assetManager.get(Constants.getBackgroundGame(),Texture.class);
         Image mazePreview = new Image(Background);
         mazePreview.setScaling(Scaling.fit );
         addActor(mazePreview);
@@ -653,7 +663,6 @@ produce the corresponding square*/
          score.setScore(squareNotes.getScore());
          if(getGameState().equals("running"))
          {
-
              if(isHost)//Send score to host/guest
              {
                  Integer s=score.getScore();

@@ -4,7 +4,6 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
-import com.mygdx.notecollector.screens.menu.Multiplayer.MultiplayerWaitingScreen;
 
 import java.io.IOException;
 
@@ -15,6 +14,7 @@ public class ServerClass
     static Server server;
     static boolean connected;
     static Connection c;
+    boolean finished=false;
 
     public ServerClass()
     {
@@ -62,7 +62,13 @@ public class ServerClass
         return server;
     }
 
-    public void sendGameObj(final byte[] file, final String difficulty,final boolean multiTrack,final boolean mode)
+
+    public boolean getGameOver()
+    {
+        return finished;
+    }
+
+    public void sendGameObj(final byte[] file, final String difficulty, final boolean multiTrack, final boolean mode)
     {
         /*GameParamObject response = new GameParamObject();
         response.file=file;
@@ -124,6 +130,11 @@ public class ServerClass
         msg.score=score;
         System.out.println("Sending game over");
         c.sendTCP(msg);
+    }
+
+    public void closeServer()
+    {
+        this.getServer().close();
     }
 
 /*

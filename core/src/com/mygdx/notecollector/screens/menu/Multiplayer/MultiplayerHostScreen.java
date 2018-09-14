@@ -1,7 +1,5 @@
 package com.mygdx.notecollector.screens.menu.Multiplayer;
 
-import android.annotation.TargetApi;
-import android.os.Build;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
@@ -75,7 +73,6 @@ public class MultiplayerHostScreen implements  Screen
         LoadAssets();
     }
 
-    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     @Override
     public void show()
     {
