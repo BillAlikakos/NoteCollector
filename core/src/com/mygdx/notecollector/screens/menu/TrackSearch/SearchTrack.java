@@ -1,8 +1,5 @@
 package com.mygdx.notecollector.screens.menu.TrackSearch;
 
-import android.content.Context;
-import android.net.wifi.WifiManager;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Net;
 import com.badlogic.gdx.Preferences;
@@ -40,6 +37,7 @@ import com.mygdx.notecollector.Utils.Assets;
 import com.mygdx.notecollector.Utils.Constants;
 import com.mygdx.notecollector.Utils.SongObj;
 import com.mygdx.notecollector.screens.menu.MainMenuScreen;
+
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -81,11 +79,13 @@ public class SearchTrack implements Screen {
     private ArrayList<SongObj> songs;
     private boolean networkAccess;
     private String query;
+    private boolean isResult;
 
     public SearchTrack(NoteCollector noteCollector) {
         this.noteCollector = noteCollector;
         touched = false;
         AssetsManager = noteCollector.getAssetsManager();
+        isResult=true;
         //searchByName=true;//Preset
         LoadAssets();
     }
@@ -93,7 +93,8 @@ public class SearchTrack implements Screen {
     @Override
     public void show()
     {
-        networkAccess=noteCollector.isNetworkConnected();
+        //networkAccess=noteCollector.isNetworkConnected();
+        networkAccess=noteCollector.getWifiCtx();
         setupCamera();
         createTable();
         createBackground();
@@ -424,6 +425,16 @@ public class SearchTrack implements Screen {
                         icon.addAction(Actions.fadeOut(0.4f));
                         table.addAction(Actions.fadeOut(0.4f));
                     }
+                    if(networkAccess && text.equals("Back"))
+                    {
+                        table.addAction(Actions.fadeOut(0.4f));
+                        search.addAction(Actions.fadeOut(0.4f));
+                        textField.addAction(Actions.fadeOut(0.4f));
+                        if(!isResult)
+                        {
+                            noRes.addAction(Actions.fadeOut(0.4f));
+                        }
+                    }
                     Timer.schedule(new Timer.Task() {
                         @Override
                         public void run() {
@@ -470,7 +481,7 @@ public class SearchTrack implements Screen {
                // Gdx.app.log("WebRequest", "HTTP Response code: " + httpResponse.getResultAsString());
                 Gdx.app.log("WebRequest", "Response time: " + ((System.nanoTime() - start) / 1000000) + "ms");
                 String response = httpResponse.getResultAsString();
-                System.out.println(response.toString());
+                //System.out.println(response.toString());//Prints out the html response tree
                 Document doc=Jsoup.parse(response);//Parse html response
                 Element content=doc.getElementById("content");//Get content div
                 Element page=content.getElementById("page");
@@ -487,12 +498,17 @@ public class SearchTrack implements Screen {
                     {
                         Yaxis=175;
                     }
+                    //noRes=createLabel("",Yaxis);
                     noRes=createLabel("No results for your query",Yaxis);
+                    //noRes.setText("No results for your query");
                     noRes.getColor().a=0;
                     noRes.addAction(Actions.fadeIn(0.1f));
+                    isResult=false;
+
                 }
                 else
                 {
+
                     Element songList=content.getElementsByTag("ul").first();//Get the first list that contains the search result
                     //System.out.println(songList.getAllElements());
                     Elements songItems=songList.getElementsByTag("li");//Get all list items
@@ -511,7 +527,11 @@ public class SearchTrack implements Screen {
                         table.addAction(Actions.fadeOut(0.4f));
                         search.addAction(Actions.fadeOut(0.4f));
                         textField.addAction(Actions.fadeOut(0.4f));
-                        noRes.addAction(Actions.fadeOut(0.4f));
+                        if(!isResult)
+                        {
+                            noRes.addAction(Actions.fadeOut(0.4f));
+                        }
+
                     }
 
 

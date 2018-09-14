@@ -1,8 +1,5 @@
 package com.mygdx.notecollector.screens.menu.Multiplayer;
 
-import android.annotation.TargetApi;
-import android.os.Build;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
@@ -82,7 +79,6 @@ public class MultiplayerClientScreen implements  Screen
         ListStyle();
     }
 
-    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     @Override
     public void show()
     {

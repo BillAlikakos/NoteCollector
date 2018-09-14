@@ -82,7 +82,7 @@ public class MultiplayerModeScreen implements Screen
         stage.addActor(btn);
         stage.addActor(verticalGroup);
         stage.addActor(table);
-        networkAccess=noteCollector.isNetworkConnected();
+        networkAccess=noteCollector.getWifiCtx();
         if(networkAccess)
         {
             createButton("Host Game");

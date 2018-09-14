@@ -2,6 +2,7 @@ package com.mygdx.notecollector.Utils;
 
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.math.Vector2;
 
 /**
@@ -32,12 +33,36 @@ public class Constants {
     public static  final String settingsImageP = "data/ui/buttons/settingsPressed.png";
     public static  final String exitImageP = "data/ui/buttons/exitPressed.png";
 
-    public static String getBackgroundGame() {
+    /*public static String getBackgroundGame() {
         return BackgroundGame;
-    }
+    }*/
 
     public static String getBackgroundMenu() {
-        return BackgroundMenu;
+        //return BackgroundMenu;
+        return prefs.getString("menuBackground");
+    }
+    public static void setBackgroundMenu(String file)
+    {
+        //BackgroundMenu=file;
+        prefs.putString("menuBackground",file);
+        prefs.flush();
+        System.out.println("New file "+file);
+        System.out.println("Prefs "+prefs.getString("menuBackground"));
+
+    }
+
+    public static String getBackgroundGame() {
+        //return BackgroundMenu;
+        return prefs.getString("gameBackground");
+    }
+    public static void setBackgroundGame(String file)
+    {
+        //BackgroundMenu=file;
+        prefs.putString("gameBackground",file);
+        prefs.flush();
+        System.out.println("New file "+file);
+        System.out.println("Prefs "+prefs.getString("gameBackground"));
+
     }
 
     public static  final String ButtonPressed = "data/ui/buttons/appButtonpressed.png";
@@ -61,8 +86,11 @@ public class Constants {
     public static final String root = Gdx.files.getExternalStoragePath();
 
 
-    public static final String BackgroundGame= "data/Game Images/backgrounGame.jpg";
-    public static final String BackgroundMenu="data/ui/images/new1080.png";
+    public static  String BackgroundGameDef= "data/Game Images/backgrounGame.jpg";
+    public static  String BackgroundMenuDef="data/ui/images/new1080.png";
+    public static Preferences prefs= Gdx.app.getPreferences("NoteCollectorPreferences");
+    public static  String BackgroundMenu=prefs.getString("menuBackground");
+    public static  String BackgroundGame=prefs.getString("gameBackground");
 
 
 

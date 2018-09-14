@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.AbsoluteFileHandleResolver;
+import com.badlogic.gdx.assets.loaders.resolvers.ExternalFileHandleResolver;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
@@ -28,6 +29,7 @@ public  class Assets {
     private  AbsoluteFileHandleResolver fileHandleResolver;
     public AssetManager assetManager;
     public AssetManager assetManagerFiles;
+    public AssetManager externalAssets;
     public String MusicName;
     private FreetypeFontLoader.FreeTypeFontLoaderParameter parameter;
     private Preferences prefs;
@@ -50,10 +52,27 @@ public  class Assets {
 
     public void LoadMenuAssets()
     {
+        if(!prefs.getString("menuBackground").equals("data/ui/images/new1080.png"))
+        {
+            System.out.println("External Asset");
+            AssetManager manager = new AssetManager(new ExternalFileHandleResolver());
+
+            File  bg = new File(prefs.getString("menuBackground"));
+            System.out.println(bg.getPath());
+            manager.load(bg.getPath(),Texture.class);
+            manager.finishLoading();
+        }
+        else
+        {
+            System.out.println("Internal Asset");
+            LoadTexture(prefs.getString("menuBackground"));
+           // LoadTexture(Constants.BackgroundMenu);
+
+        }
 
         LoadTexture(Constants.ButtonImage);
-        LoadTexture(Constants.BackgroundGame);
-        LoadTexture(Constants.BackgroundMenu);
+
+        //LoadTexture(Constants.BackgroundGame);
         LoadTexture(Constants.logo);
         LoadTexture(Constants.text);
         LoadTexture(Constants.ButtonPressed);
@@ -71,9 +90,26 @@ public  class Assets {
     public void LoadAssets()
     {
 
+        if(!prefs.getString("menuBackground").equals("data/ui/images/new1080.png"))
+        {
+            System.out.println("External Asset");
+            AssetManager manager = new AssetManager(new ExternalFileHandleResolver());
+
+            File  bg = new File(prefs.getString("menuBackground"));
+            System.out.println(bg.getPath());
+            manager.load(bg.getPath(),Texture.class);
+            manager.finishLoading();
+        }
+        else
+        {
+            System.out.println("Internal Asset");
+            LoadTexture(prefs.getString("menuBackground"));
+            // LoadTexture(Constants.BackgroundMenu);
+
+        }
         LoadTexture(Constants.ButtonImage);
-        LoadTexture(Constants.BackgroundGame);
-        LoadTexture(Constants.BackgroundMenu);
+        //LoadTexture(Constants.BackgroundGame);
+       // LoadTexture(Constants.BackgroundMenu);
         LoadTexture(Constants.logo);
         LoadTexture(Constants.text);
         LoadTexture(Constants.ButtonPressed);
@@ -83,9 +119,26 @@ public  class Assets {
     public void LoadWiFiAssets()
     {
 
+        if(!prefs.getString("menuBackground").equals("data/ui/images/new1080.png"))
+        {
+            System.out.println("External Asset");
+            AssetManager manager = new AssetManager(new ExternalFileHandleResolver());
+
+            File  bg = new File(prefs.getString("menuBackground"));
+            System.out.println(bg.getPath());
+            manager.load(bg.getPath(),Texture.class);
+            manager.finishLoading();
+        }
+        else
+        {
+            System.out.println("Internal Asset");
+            LoadTexture(prefs.getString("menuBackground"));
+            // LoadTexture(Constants.BackgroundMenu);
+
+        }
         LoadTexture(Constants.ButtonImage);
-        LoadTexture(Constants.BackgroundGame);
-        LoadTexture(Constants.BackgroundMenu);
+        //LoadTexture(Constants.BackgroundGame);
+        //LoadTexture(Constants.BackgroundMenu);
         LoadTexture(Constants.logo);
         LoadTexture(Constants.noConn);
         LoadTexture(Constants.text);
@@ -168,9 +221,27 @@ public  class Assets {
     }
 
 
-    private void LoadGameAssets(){
+    public void LoadGameAssets(){
         LoadTexture(Constants.ButtonImage);
-        LoadTexture(Constants.BackgroundGame);
+        //LoadTexture(Constants.BackgroundGame);
+        if(!prefs.getString("gameBackground").equals("data/Game Images/backgrounGame.jpg"))
+        {
+            System.out.println("External Asset");
+            externalAssets = new AssetManager(new ExternalFileHandleResolver());
+
+            File  bg = new File(prefs.getString("gameBackground"));
+            System.out.println(bg.getPath());
+            externalAssets.load(bg.getPath(),Texture.class);
+            System.out.println("BG Loaded");
+            System.out.println(bg.getAbsolutePath());
+            externalAssets.finishLoading();
+        }
+        else
+        {
+            System.out.println("Internal Asset");
+            LoadTexture(prefs.getString("gameBackground"));
+            System.out.println("BG Loaded");
+        }
         LoadTexture(Constants.square);
         if(prefs.getBoolean("normal")) {
             LoadTexture(Constants.Collector);
@@ -236,8 +307,17 @@ public  class Assets {
     public Image scaleBackground(FileHandle file)
     {
         //FileHandle file = new FileHandle(Constants.getBackgroundMenu());
-        Pixmap pixmap200 = new Pixmap(Gdx.files.internal(file.path()));
-        //Pixmap pixmap200 = new Pixmap(Gdx.files.internal("data/ui/images/new1080.png"));
+        Pixmap pixmap200;
+        if(!prefs.getString("menuBackground").equals("data/ui/images/new1080.png"))//If a custom image is defined use external file loader
+        {
+             pixmap200 = new Pixmap(Gdx.files.external(file.path()));
+            //Pixmap pixmap200 = new Pixmap(Gdx.files.internal("data/ui/images/new1080.png"));
+
+        }
+        else
+        {
+            pixmap200 = new Pixmap(Gdx.files.internal(file.path()));
+        }
         Pixmap pixmap100 = new Pixmap(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, pixmap200.getFormat());//Scale background image to the device's resolution
         pixmap100.drawPixmap(pixmap200,
                 0, 0, pixmap200.getWidth(), pixmap200.getHeight(),

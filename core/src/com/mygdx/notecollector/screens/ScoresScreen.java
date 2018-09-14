@@ -144,7 +144,7 @@ public class ScoresScreen implements Screen {
         //check if there are recorded scores. if exist get all scores with names and print it
         if (scores.size()==0 || scores ==null)
         {
-
+            table = new Table();
             if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)//Set appropriate sizes for title spacing according to resolution
             {
                 fontSize=28;

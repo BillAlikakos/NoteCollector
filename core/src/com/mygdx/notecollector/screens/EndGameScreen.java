@@ -12,7 +12,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
@@ -25,6 +24,7 @@ import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.mygdx.notecollector.Multiplayer.ClientClass;
@@ -34,8 +34,6 @@ import com.mygdx.notecollector.Utils.Assets;
 import com.mygdx.notecollector.Utils.Constants;
 import com.mygdx.notecollector.screens.menu.DialogScore;
 import com.mygdx.notecollector.screens.menu.MainMenuScreen;
-
-import java.io.IOException;
 
 /**
  * Created by bill on 7/22/16.
@@ -164,8 +162,7 @@ public class EndGameScreen implements Screen {
     {
         if(isHost)
         {
-
-            srv.getServer().addListener(new Listener()
+            srv.getServer().addListener(new Listener() //Moved to serverClass
             {
 
                 public void received (Connection connection, Object object)
@@ -372,11 +369,11 @@ public class EndGameScreen implements Screen {
                         public void run() {
                             if(isHost)
                             {
-                                srv.getServer().close();
+                                srv.closeServer();
                             }
                             else if(isGuest)
                             {
-                                c.getClient().close();
+                                c.closeClient();
                             }
                             if (text.equals("Submit"))
                             {

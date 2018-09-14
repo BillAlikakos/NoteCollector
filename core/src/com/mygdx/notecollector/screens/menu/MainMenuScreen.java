@@ -112,6 +112,7 @@ public class MainMenuScreen implements Screen {
         stage.getCamera().update();
     }
     private void LoadAssets(){
+
         assetsManager.LoadMenuAssets();
 
         font = assetsManager.createBitmapFont();
@@ -202,8 +203,8 @@ public class MainMenuScreen implements Screen {
                if(scoreButton.isPressed())
                {
                    playSound(prefs);
-                   table.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out table
-                   top.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out icon table
+                   table.addAction(Actions.sequence(Actions.fadeOut(0.35f)));//Fade out table
+                   top.addAction(Actions.sequence(Actions.fadeOut(0.35f)));//Fade out icon table
                    Timer.schedule(new Timer.Task()
                    {
                        @Override
@@ -228,8 +229,8 @@ public class MainMenuScreen implements Screen {
                 if(helpButton.isPressed())
                 {
                     playSound(prefs);
-                    table.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out table
-                    top.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out icon table
+                    table.addAction(Actions.sequence(Actions.fadeOut(0.35f)));//Fade out table
+                    top.addAction(Actions.sequence(Actions.fadeOut(0.35f)));//Fade out icon table
                     Timer.schedule(new Timer.Task()
                     {
                         @Override
@@ -252,8 +253,8 @@ public class MainMenuScreen implements Screen {
                 if(settingsButton.isPressed())
                 {
                     playSound(prefs);
-                    table.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out table
-                    top.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out icon table
+                    table.addAction(Actions.sequence(Actions.fadeOut(0.35f)));//Fade out table
+                    top.addAction(Actions.sequence(Actions.fadeOut(0.35f)));//Fade out icon table
                     Timer.schedule(new Timer.Task()
                     {
                         @Override
@@ -276,8 +277,8 @@ public class MainMenuScreen implements Screen {
                 if(exitButton.isPressed())
                 {
                     playSound(prefs);
-                    table.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out table
-                    top.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out icon table
+                    table.addAction(Actions.sequence(Actions.fadeOut(0.35f)));//Fade out table
+                    top.addAction(Actions.sequence(Actions.fadeOut(0.35f)));//Fade out icon table
                     Timer.schedule(new Timer.Task()
                     {
                         @Override
@@ -285,7 +286,7 @@ public class MainMenuScreen implements Screen {
                         {
                             Gdx.app.exit();
                         }
-                    }, 0.4f);
+                    }, 0.35f);
                 }
                 return true;
             }
@@ -336,8 +337,8 @@ public class MainMenuScreen implements Screen {
                          if (prefs.getBoolean("sound")) {
                           noteCollector.getClick().play();
                          }
-                        table.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out table
-                        top.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out icon table
+                        table.addAction(Actions.sequence(Actions.fadeOut(0.35f)));//Fade out table
+                        top.addAction(Actions.sequence(Actions.fadeOut(0.35f)));//Fade out icon table
                         Timer.schedule(new Timer.Task() {
                          @Override
                          public void run() {
