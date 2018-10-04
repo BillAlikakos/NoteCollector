@@ -74,10 +74,11 @@ public class Results implements Screen {
     private String root=Constants.root;
     private ArrayList<SongObj> songs;
 
-    public Results(NoteCollector noteCollector, ArrayList<SongObj> songList)
+    public Results(NoteCollector noteCollector, ArrayList<SongObj> songList,Stage stage)
     {
         this.noteCollector = noteCollector;
         this.songs=songList;
+        this.stage=stage;
         assetsManager = noteCollector.getAssetsManager();
 
         LoadAssets();
@@ -86,9 +87,9 @@ public class Results implements Screen {
 
     @Override
     public void show() {
-        setupCamera();
+        //setupCamera();
         Gdx.input.setInputProcessor(stage);
-        createBackground();
+        //createBackground();
         btn = new Table();
         //btn.padTop(880f);
         btn.setFillParent(true);
@@ -165,7 +166,10 @@ public class Results implements Screen {
     @Override
     public void dispose() {
         table.clear();
-        stage.dispose();
+        //stage.dispose();
+        stage.getRoot().removeActor(verticalGroup);
+        stage.getRoot().removeActor(table);
+        stage.getRoot().removeActor(btn);
         font.dispose();
         fontList.dispose();
         //img.dispose();
@@ -225,7 +229,7 @@ public class Results implements Screen {
                             if (text.equals("Back"))
                             {
                                 dispose();
-                                noteCollector.setScreen(new SearchTrack(noteCollector));
+                                noteCollector.setScreen(new SearchTrack(noteCollector,stage));
                             }
 
 
@@ -315,7 +319,7 @@ public class Results implements Screen {
                     public void run()
                     {
                         dispose();
-                        noteCollector.setScreen(new MainMenuScreen(noteCollector));
+                        noteCollector.setScreen(new MainMenuScreen(noteCollector,stage));
                     }
                 }, 0.4f);
             }
@@ -378,7 +382,7 @@ public class Results implements Screen {
     {
         Label.LabelStyle labelstyle = new Label.LabelStyle(fontH, Color.WHITE);
         Label fileLabel = new Label(text, labelstyle);
-        fileLabel.setPosition((viewport.getScreenWidth()/2)-fileLabel.getWidth()/2,viewport.getScreenHeight()/2);
+        fileLabel.setPosition((stage.getCamera().viewportWidth/2)-fileLabel.getWidth()/2,stage.getCamera().viewportHeight/2);
         return fileLabel;
 
     }

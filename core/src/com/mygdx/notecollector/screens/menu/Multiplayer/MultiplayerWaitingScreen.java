@@ -59,9 +59,10 @@ public class MultiplayerWaitingScreen implements Screen
     private int speed;
     private long delay;
 
-    public MultiplayerWaitingScreen(NoteCollector noteCollector, ClientClass c)
+    public MultiplayerWaitingScreen(NoteCollector noteCollector, ClientClass c,Stage stage)
     {
         this.noteCollector = noteCollector;
+        this.stage=stage;
         AssetsManager = noteCollector.getAssetsManager();
         LoadAssets();
         this.c = c;
@@ -74,8 +75,8 @@ public class MultiplayerWaitingScreen implements Screen
         table.setFillParent(true);
         table.center();
         createVerticalGroup();
-        setupCamera();
-        createBackground();
+        //setupCamera();
+        //createBackground();
         createLogo();
         listen();
         createLabel("Waiting Host ....");
@@ -181,14 +182,14 @@ public class MultiplayerWaitingScreen implements Screen
                         public void run()
                         {
                             dispose();
-                            if (response.multiTrack == false)
+                           /* if (response.multiTrack == false)
                             {
-                                noteCollector.setScreen(new LoadingScreen(noteCollector, track.getAbsolutePath(), speed, delay, response.mode));//
-                            }
-                            if (response.multiTrack == true)
+                                noteCollector.setScreen(new LoadingScreen(noteCollector, track.getAbsolutePath(), speed, delay, response.mode,stage));//
+                            }*/
+                            //if (response.multiTrack == true)
                             {
                                 //dispose();
-                                noteCollector.setScreen(new TrackSelect(noteCollector, speed, delay, track, c, response.mode));//
+                                noteCollector.setScreen(new TrackSelect(noteCollector, speed, delay, track, c, response.mode,stage));//
                             }
                         }
                     }, 0.4f);
@@ -235,6 +236,8 @@ public class MultiplayerWaitingScreen implements Screen
     public void dispose()
     {
         font.dispose();
+        stage.getRoot().removeActor(table);
+        stage.getRoot().removeActor(verticalGroup);
 //        stage.dispose();
     }
 

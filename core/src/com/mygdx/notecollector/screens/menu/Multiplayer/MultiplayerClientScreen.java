@@ -47,8 +47,8 @@ public class MultiplayerClientScreen implements  Screen
     private BitmapFont font, fontList, fontH;
 
 
-    private static final int VIEWPORT_WIDTH = Constants.APP_WIDTH;
-    private static final int VIEWPORT_HEIGHT = Constants.APP_HEIGHT;
+    private static  int VIEWPORT_WIDTH = Constants.APP_WIDTH;
+    private static  int VIEWPORT_HEIGHT = Constants.APP_HEIGHT;
     private NoteCollector noteCollector;
     private Assets assetsManager;
     private Texture img;
@@ -71,9 +71,10 @@ public class MultiplayerClientScreen implements  Screen
     private boolean mode;
 
 
-    public MultiplayerClientScreen(NoteCollector noteCollector)
+    public MultiplayerClientScreen(NoteCollector noteCollector,Stage stage)
     {
         this.noteCollector = noteCollector;
+        this.stage=stage;
         assetsManager = noteCollector.getAssetsManager();
         LoadAssets();
         ListStyle();
@@ -82,9 +83,10 @@ public class MultiplayerClientScreen implements  Screen
     @Override
     public void show()
     {
-        setupCamera();
+        //setupCamera();
+        //c=client.getClient();
         Gdx.input.setInputProcessor(stage);
-        createBackground();
+        //createBackground();
         btn = new Table();
         btn.setFillParent(true);
         createTable();
@@ -162,7 +164,10 @@ public class MultiplayerClientScreen implements  Screen
     public void dispose()
     {
        // img.dispose();
-        stage.dispose();
+        //stage.dispose();
+        stage.getRoot().removeActor(table);
+        stage.getRoot().removeActor(btn);
+        stage.getRoot().removeActor(verticalGroup);
         font.dispose();
         fontList.dispose();
 
@@ -173,6 +178,7 @@ public class MultiplayerClientScreen implements  Screen
         table.center();
         table.setFillParent(true);
         table.pad(60f,10f,30f,10f);
+
         if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)//old dimensions
         {
             table.pad(60f,10f,30f,10f);
@@ -220,9 +226,9 @@ public class MultiplayerClientScreen implements  Screen
                             if (text.equals("Back"))
                             {
                                 System.out.println("Finishing connection...");
-                                //c.close();
+                                c.close();
                                 dispose();
-                                noteCollector.setScreen(new MultiplayerModeScreen(noteCollector));
+                                noteCollector.setScreen(new MultiplayerModeScreen(noteCollector,stage));
                             }
                         }
                     }, 0.4f);//prev 0.15f
@@ -300,7 +306,7 @@ public class MultiplayerClientScreen implements  Screen
                     public void run()
                     {
                         dispose();
-                        noteCollector.setScreen(new MultiplayerWaitingScreen(noteCollector,client));
+                        noteCollector.setScreen(new MultiplayerWaitingScreen(noteCollector,client,stage));
                     }
                 }, 0.4f);//prev 0.2f
 

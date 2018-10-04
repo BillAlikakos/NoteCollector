@@ -73,7 +73,8 @@ public class Collector extends GameActor {
         sprite.draw(batch);
     }
 
-    public void changeposition(float Xaxis, float Yaxis){
+    public void changeposition(float Xaxis, float Yaxis)
+    {
         //if game not paused
         if(paused==false) {
             //change position
@@ -82,5 +83,46 @@ public class Collector extends GameActor {
         }
 
     }
+    public void moveUp()
+    {
+        if(paused==false)
+        {
+            //System.out.println("move up");
+            //System.out.println("Y axis:"+this.Yaxis);
+            this.Yaxis += 200 * Gdx.graphics.getDeltaTime();
+            //System.out.println("Y axis:"+this.Yaxis);
+        }
+    }
+    public void moveDown()
+    {
+        if(paused==false)
+        {
+            System.out.println("move down");
+            this.Yaxis -= 200 * Gdx.graphics.getDeltaTime();
+        }
+    }
+    public void moveRight()
+    {
+        if(paused==false)
+        {
+            this.Xaxis += 200 * Gdx.graphics.getDeltaTime();
+        }
+    }
+    public void moveLeft()
+    {
+        if(paused==false)
+        {
+            this.Xaxis -= 200 * Gdx.graphics.getDeltaTime();
+        }
+    }
 
+    public float getXaxis()
+    {
+        return Xaxis;
+    }
+
+    public float getYaxis()
+    {
+        return Yaxis;
+    }
 }

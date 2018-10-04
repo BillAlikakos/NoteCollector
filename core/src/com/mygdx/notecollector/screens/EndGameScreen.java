@@ -66,17 +66,19 @@ public class EndGameScreen implements Screen {
     private ClientClass c;
     private Thread t;
 
-    public EndGameScreen(NoteCollector notecollector,String Score,String Difficulty) {
+    public EndGameScreen(NoteCollector notecollector,String Score,String Difficulty,Stage stage) {
         this.notecollector = notecollector;
+        this.stage=stage;
         this.Score = Score;
         this.Difficulty=Difficulty;
         AssetsManager = notecollector.getAssetsManager();
         LoadAssets();
     }
 
-    public EndGameScreen(NoteCollector notecollector, String Score, String Difficulty, ServerClass srv)
+    public EndGameScreen(NoteCollector notecollector, String Score, String Difficulty, ServerClass srv,Stage stage)
     {
         this.notecollector = notecollector;
+        this.stage=stage;
         this.Score = Score;
         this.Difficulty=Difficulty;
         this.srv=srv;
@@ -86,9 +88,10 @@ public class EndGameScreen implements Screen {
         LoadAssets();
     }
 
-    public EndGameScreen(NoteCollector notecollector, String Score, String Difficulty, ClientClass c)
+    public EndGameScreen(NoteCollector notecollector, String Score, String Difficulty, ClientClass c,Stage stage)
     {
         this.notecollector = notecollector;
+        this.stage=stage;
         this.Score = Score;
         this.Difficulty=Difficulty;
         this.c=c;
@@ -109,9 +112,9 @@ public class EndGameScreen implements Screen {
             sendMessage();
             addScoreListener();
         }
-        setupCamera();
+        //setupCamera();
         createTable();
-        createBackground();
+        //createBackground();
         createLogo();
         createLabels();
         createButtons();
@@ -135,6 +138,10 @@ public class EndGameScreen implements Screen {
                         //System.out.println("Sending score");
                         srv.sendScore(Score);
                     }
+                    if(Score2!=null)
+                    {
+                        interrupt();
+                    }
                 }
             };
             t.start();
@@ -150,6 +157,10 @@ public class EndGameScreen implements Screen {
                     {
                         //System.out.println("Sending score");
                         c.sendScore(Score);
+                        if(Score2!=null)
+                        {
+                            interrupt();
+                        }
                     }
 
                 }
@@ -175,6 +186,10 @@ public class EndGameScreen implements Screen {
                         Score2=request.score;
                         System.out.println("Score2: "+Score2);
                         srv.getServer().removeListener(this);
+                        if(isGuest || isHost)
+                        {
+                            createLabel("Opponent's Score:"+Score2,stage.getCamera().viewportHeight/2);
+                        }
                         //t.interrupt();
                     }
 
@@ -194,7 +209,11 @@ public class EndGameScreen implements Screen {
                     System.out.println("Host score: "+request.score);
                     Score2=request.score;
                     c.getClient().removeListener(this);
-                   // t.interrupt();
+                     if(isGuest || isHost)
+                     {
+                         createLabel("Opponent's Score:"+Score2,stage.getCamera().viewportHeight/2);
+                     }
+                    //t.interrupt();
                  }
 
             }
@@ -231,10 +250,10 @@ public class EndGameScreen implements Screen {
         //createLabel("Game finished!",stage.getCamera().viewportHeight/2+100);
         createLabel("Game finished!",stage.getCamera().viewportHeight/2+75);
         createLabel("Your Score:"+Score,stage.getCamera().viewportHeight/2+30);
-        if(isGuest || isHost)
+        /*if(isGuest || isHost)
         {
             createLabel("Opponent's Score:"+Score2,stage.getCamera().viewportHeight/2);
-        }
+        }*/
 
     }
     @Override
@@ -282,7 +301,9 @@ public class EndGameScreen implements Screen {
                 t.interrupt();
             }
         }
-        stage.dispose();
+        stage.getRoot().removeActor(table);
+        stage.getRoot().removeActor(verticalGroup);
+       // stage.dispose();
         font.dispose();
     }
 
@@ -378,12 +399,13 @@ public class EndGameScreen implements Screen {
                             if (text.equals("Submit"))
                             {
                                 dispose();
-                                notecollector.setScreen(new DialogScore(Score, notecollector,AssetsManager.MusicName,Difficulty));
+                                notecollector.setScreen(new DialogScore(Score, notecollector,AssetsManager.MusicName,Difficulty,stage));
                             }
                             else
                             {
                                dispose();
-                               notecollector.setScreen(new MainMenuScreen(notecollector));
+                               System.out.println("Exiting to main menu?");
+                               notecollector.setScreen(new MainMenuScreen(notecollector,stage));
                             }
 
                         }

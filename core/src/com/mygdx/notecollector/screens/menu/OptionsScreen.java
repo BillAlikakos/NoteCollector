@@ -62,6 +62,7 @@ public class OptionsScreen implements Screen{
     private ImageTextButton SoundOn,SoundOff;
     private ImageTextButton menuBg,gameBg;
     private ImageTextButton NormalSize,BigSize,VBigSize;
+    private ImageTextButton touch,pad;
     private  boolean flag =false;
     private int sizeX;
     private int sizeY;
@@ -72,6 +73,20 @@ public class OptionsScreen implements Screen{
 
     public OptionsScreen(NoteCollector noteCollector) {
         this.noteCollector = noteCollector;
+        assetsManager = noteCollector.getAssetsManager();
+        font = assetsManager.createBimapFont(15);
+        table = new Table();
+        exitBtnTable=new Table();
+        LoadAssets();
+        prefs = Gdx.app.getPreferences("NoteCollectorPreferences");
+        size=assetsManager.setButtonDimensions(sizeX,sizeY);
+        sizeX=size[0];
+        sizeY=size[1];
+
+    }
+    public OptionsScreen(NoteCollector noteCollector,Stage stage) {
+        this.noteCollector = noteCollector;
+        this.stage=stage;
         assetsManager = noteCollector.getAssetsManager();
         font = assetsManager.createBimapFont(15);
         table = new Table();
@@ -95,14 +110,15 @@ public class OptionsScreen implements Screen{
 
     @Override
     public void show() {
-        setupCamera();
+        //setupCamera();
         Gdx.input.setInputProcessor(stage);
         createTable();
-        createBackground();
+        //createBackground();
         createLogo();
         createButtonMusic();
         createButtonSound();
         createButtonSize();
+        createControlTypes();
         createCustomBg();
         stage.addActor(table);
         stage.addActor(exitBtnTable);
@@ -352,7 +368,76 @@ public class OptionsScreen implements Screen{
         table.add(VBigSize).size(sizeX,sizeY);
     }
 
-    private void createCustomBg()
+    private void createControlTypes()//Creates the buttons for controller option (Touch/Dpad)
+    {
+        Label title = createLabel("Control Type:");
+        table.row().padTop(20f);
+        table.add(title).padRight(5f);
+
+
+        ImageTextButton.ImageTextButtonStyle TouchStyle;
+        ImageTextButton.ImageTextButtonStyle PadStyle;
+
+
+        if (!prefs.getBoolean("touch")){
+            TouchStyle = createButtonStyle(selectionColor);
+        }
+        else
+         {
+            TouchStyle = createButtonStyle(selectionColorPressed);
+
+        }
+        if (!prefs.getBoolean("dpad")) {
+            PadStyle = createButtonStyle(selectionColor);
+        }else {
+            PadStyle = createButtonStyle(selectionColorPressed);
+        }
+        touch = createButton("Touch",TouchStyle);
+        pad = createButton("Dpad", PadStyle);
+
+        touch.addListener(new ClickListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button)
+            {
+                if(touch.isPressed() && !prefs.getBoolean("touch")){
+                    if (prefs.getBoolean("sound")) {
+                        noteCollector.getClick().play();
+                    }
+                    touch.setStyle(createButtonStyle(selectionColorPressed));
+                    pad.setStyle(createButtonStyle(selectionColor));
+
+
+                    prefs.putBoolean("touch", true);
+                    prefs.putBoolean("pad", false);
+                }
+                prefs.flush();
+                return true;
+            }
+        });
+
+        pad.addListener(new ClickListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button)
+            {
+                if(pad.isPressed() && !prefs.getBoolean("pad")){
+                    if (prefs.getBoolean("sound")) {
+                        noteCollector.getClick().play();
+                    }
+                    pad.setStyle(createButtonStyle(selectionColorPressed));
+                    touch.setStyle(createButtonStyle(selectionColor));
+
+
+                    prefs.putBoolean("touch", false);
+                    prefs.putBoolean("pad", true);
+                }
+                prefs.flush();
+                return true;
+            }
+        });
+        table.add(touch).padRight(0.5f).size(sizeX,sizeY);
+        table.add(pad).padRight(0.7f).size(sizeX,sizeY);
+    }
+    private void createCustomBg()//Creates the buttons for the custom backgrounds
     {
         Label title = createLabel("Custom Backgrounds:");
         table.row().padTop(20f);
@@ -517,7 +602,7 @@ public class OptionsScreen implements Screen{
 
                         @Override
                         public void run() {
-                            noteCollector.setScreen(new MainMenuScreen(noteCollector));
+                            noteCollector.setScreen(new MainMenuScreen(noteCollector,stage));
 
                         }
 
@@ -641,7 +726,10 @@ public class OptionsScreen implements Screen{
     @Override
     public void dispose() {
         font.dispose();
-        stage.dispose();
+        //stage.dispose();
+        stage.getRoot().removeActor(table);
+        stage.getRoot().removeActor(verticalGroup);
+        stage.getRoot().removeActor(exitBtnTable);
         table.clear();
     }
 }

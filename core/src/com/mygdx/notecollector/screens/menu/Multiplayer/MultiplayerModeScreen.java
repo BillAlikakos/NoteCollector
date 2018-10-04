@@ -62,12 +62,22 @@ public class MultiplayerModeScreen implements Screen
 
         LoadAssets();
     }
+    public MultiplayerModeScreen(NoteCollector noteCollector,Stage stage)
+    {
+        this.noteCollector = noteCollector;
+        this.stage=stage;
+        assetsManager = noteCollector.getAssetsManager();
+        this.table=new Table();
+        table.setFillParent(true);
+
+        LoadAssets();
+    }
 
 
     @Override
     public void show()
     {
-        setupCamera();
+        //setupCamera();
         Gdx.input.setInputProcessor(stage);
         createVerticalGroup();
         createLogo();
@@ -75,7 +85,7 @@ public class MultiplayerModeScreen implements Screen
         sizeX = size[0];
         sizeY = size[1];
         ImageTextButton back = createBackButton("Back");
-        createBackground();
+        //createBackground();
         btn=new Table();
         btn.left();
         btn.add(back).bottom().left().expand().size(sizeX, sizeY);
@@ -264,11 +274,11 @@ public class MultiplayerModeScreen implements Screen
                             dispose();
                             switch (text)
                             {
-                                case "Host Game": noteCollector.setScreen(new MultiplayerHostScreen(noteCollector));
+                                case "Host Game": noteCollector.setScreen(new MultiplayerHostScreen(noteCollector,stage));
                                 break;
-                                case "Join Game": noteCollector.setScreen(new MultiplayerClientScreen(noteCollector));
+                                case "Join Game": noteCollector.setScreen(new MultiplayerClientScreen(noteCollector,stage));
                                 break;
-                                case "Back": noteCollector.setScreen(new MainMenuScreen(noteCollector));
+                                case "Back": noteCollector.setScreen(new MainMenuScreen(noteCollector,stage));
                                 break;
 
                                 }
@@ -334,7 +344,9 @@ public class MultiplayerModeScreen implements Screen
     {
         //img.dispose();
         font.dispose();
-        stage.dispose();
+        stage.getRoot().removeActor(table);
+        stage.getRoot().removeActor(btn);
+        stage.getRoot().removeActor(verticalGroup);
     }
 }
 

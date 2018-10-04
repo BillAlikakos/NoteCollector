@@ -53,17 +53,20 @@ public class ModeSelect implements Screen
     private boolean multiplayer;
     private ServerClass srv;
 
-    public ModeSelect(NoteCollector noteCollector)
+
+    public ModeSelect(NoteCollector noteCollector,Stage stage)
     {
         this.noteCollector = noteCollector;
+        this.stage=stage;
         assetsManager = noteCollector.getAssetsManager();
         LoadAssets();
         this.multiplayer = false;
     }
 
-    public ModeSelect(NoteCollector noteCollector, ServerClass srv)//Constructor for multiplayer
+    public ModeSelect(NoteCollector noteCollector, ServerClass srv,Stage stage)//Constructor for multiplayer (new)
     {
         this.noteCollector = noteCollector;
+        this.stage=stage;
         assetsManager = noteCollector.getAssetsManager();
         LoadAssets();
         this.multiplayer = true;
@@ -73,7 +76,9 @@ public class ModeSelect implements Screen
     @Override
     public void show()
     {
-        setupCamera();
+        System.out.println("WIDTH: "+VIEWPORT_WIDTH);
+        System.out.println("HEIGHT: "+VIEWPORT_HEIGHT);
+        //setupCamera();//Already set
         table = new Table();
         table.center().padBottom(10f);
         exitBtnTable = new Table();
@@ -82,9 +87,9 @@ public class ModeSelect implements Screen
         table.setFillParent(true);
 
         Gdx.input.setInputProcessor(stage);
-        createBackground();
+        //createBackground();//Background is already set for menu stage
         createLogo();
-        createVerticalGroup();
+        //createVerticalGroup();
         size = assetsManager.setButtonDimensions(sizeX, sizeY);
         sizeX = size[0];
         sizeY = size[1];
@@ -111,16 +116,14 @@ public class ModeSelect implements Screen
         AddButtonListener(MenuButton, "Back");
         exitBtnTable.add(MenuButton).bottom().left().padRight(5f).size(sizeX, sizeY);
         //MenuButton.setPosition(5f,10f);
+       // stage.addActor(verticalGroup);
         stage.addActor(table);
         stage.addActor(exitBtnTable);
-        stage.addActor(verticalGroup);
         table.getColor().a=0;//Set actor's alpha value to 0(Transparent) to enable fading
         exitBtnTable.getColor().a=0;
         table.addAction(Actions.sequence(Actions.fadeIn(0.2f)));//Fade button table in
         exitBtnTable.addAction(Actions.sequence(Actions.fadeIn(0.2f)));
         //stage.addActor(MenuButton);
-        //stage.getRoot().getColor().a = 0;
-        //stage.getRoot().addAction(fadeIn(0.01f));
 
     }
 
@@ -181,19 +184,6 @@ public class ModeSelect implements Screen
 
     }
 
-    private void createVerticalGroup()
-    {
-        verticalGroup = new VerticalGroup();
-        verticalGroup.setFillParent(true);
-        verticalGroup.center().padTop(150f).space(10f);
-
-    }
-
-    private void addVerticalGroup(Actor actor)
-    {
-        verticalGroup.addActor(actor);
-
-    }
 
     private void createButton(String text)
     {
@@ -229,23 +219,23 @@ public class ModeSelect implements Screen
                                 if (multiplayer == false) {
                                     switch (text) {
                                         case "Practice":
-                                            noteCollector.setScreen(new DifficultyScreen(noteCollector,false));
+                                            noteCollector.setScreen(new DifficultyScreen(noteCollector,false,stage));
                                             break;
                                         case "Competitive":
-                                            noteCollector.setScreen(new DifficultyScreen(noteCollector,true));
+                                            noteCollector.setScreen(new DifficultyScreen(noteCollector,true,stage));
                                             break;
                                         case "Back":
-                                            noteCollector.setScreen(new MainMenuScreen(noteCollector));
+                                            noteCollector.setScreen(new MainMenuScreen(noteCollector,stage));
                                             break;
                                     }
                                 } else {
                                     switch (text)//Multiplayer host parameters
                                     {
                                         case "Practice":
-                                            noteCollector.setScreen(new DifficultyScreen(noteCollector,srv,false));
+                                            noteCollector.setScreen(new DifficultyScreen(noteCollector,srv,false,stage));
                                             break;
                                         case "Competitive":
-                                            noteCollector.setScreen(new DifficultyScreen(noteCollector,srv,true));
+                                            noteCollector.setScreen(new DifficultyScreen(noteCollector,srv,true,stage));
                                             break;
                                         case "Back":
                                             noteCollector.setScreen(new MainMenuScreen(noteCollector));
@@ -309,11 +299,13 @@ public class ModeSelect implements Screen
     }
 
     @Override
-    public void dispose() {
+    public void dispose()
+    {
         font.dispose();
-        stage.dispose();
-
-
+        verticalGroup.clear();
+        stage.getRoot().removeActor(verticalGroup);
+        stage.getRoot().removeActor(table);
+        stage.getRoot().removeActor(exitBtnTable);
     }
 
 }

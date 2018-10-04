@@ -73,12 +73,19 @@ public class MultiplayerHostScreen implements  Screen
         LoadAssets();
     }
 
+    public MultiplayerHostScreen(NoteCollector noteCollector,Stage stage)
+    {
+        this.stage=stage;
+        this.noteCollector = noteCollector;
+        assetsManager = noteCollector.getAssetsManager();
+        LoadAssets();
+    }
     @Override
     public void show()
     {
-        setupCamera();
+        //setupCamera();
         Gdx.input.setInputProcessor(stage);
-        createBackground();
+        //createBackground();
         btn = new Table();
         btn.setFillParent(true);
         createTable();
@@ -150,7 +157,9 @@ public class MultiplayerHostScreen implements  Screen
         @Override
         public void dispose()
         {
-            stage.dispose();
+            stage.getRoot().removeActor(table);
+            stage.getRoot().removeActor(btn);
+            stage.getRoot().removeActor(verticalGroup);
             font.dispose();
             fontH.dispose();
             //img.dispose();
@@ -210,7 +219,7 @@ public class MultiplayerHostScreen implements  Screen
                                     System.out.println("Finishing connection...");
                                     dispose();
                                     srv.getServer().close();
-                                    noteCollector.setScreen(new MultiplayerModeScreen(noteCollector));
+                                    noteCollector.setScreen(new MultiplayerModeScreen(noteCollector,stage));
                                 }
 
 
@@ -281,7 +290,7 @@ public class MultiplayerHostScreen implements  Screen
                             {
                                     dispose();
                                     //noteCollector.setScreen(new DifficultyScreen(noteCollector,srv));
-                                    noteCollector.setScreen(new ModeSelect(noteCollector,srv));
+                                    noteCollector.setScreen(new ModeSelect(noteCollector,srv,stage));
                             }
                         }, 0.2f);
                     }

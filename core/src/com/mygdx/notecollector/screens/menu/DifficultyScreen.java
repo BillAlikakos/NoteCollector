@@ -55,14 +55,16 @@ public class DifficultyScreen implements Screen
     private ServerClass srv;
     private boolean mode=false;//Flag for game mode (True= Competitive , False= Practice )
 
-    public DifficultyScreen(NoteCollector noteCollector,boolean mode)
+    public DifficultyScreen(NoteCollector noteCollector,boolean mode,Stage stage)
     {
         this.noteCollector = noteCollector;
+        this.stage=stage;
         assetsManager = noteCollector.getAssetsManager();
         LoadAssets();
         this.multiplayer=false;
         this.mode=mode;
     }
+
     public DifficultyScreen(NoteCollector noteCollector, ServerClass srv, boolean mode)//Constructor for multiplayer
     {
         this.noteCollector = noteCollector;
@@ -72,10 +74,20 @@ public class DifficultyScreen implements Screen
         this.srv=srv;
         this.mode=mode;
     }
+    public DifficultyScreen(NoteCollector noteCollector, ServerClass srv, boolean mode,Stage stage)//Constructor for multiplayer
+    {
+        this.noteCollector = noteCollector;
+        this.stage=stage;
+        assetsManager = noteCollector.getAssetsManager();
+        LoadAssets();
+        this.multiplayer=true;
+        this.srv=srv;
+        this.mode=mode;
+    }
     @Override
     public void show()
     {
-        setupCamera();
+        //setupCamera();
         table =new Table();
         table.center().padBottom(10f);
         exitBtnTable=new Table();
@@ -84,9 +96,8 @@ public class DifficultyScreen implements Screen
         table.setFillParent(true);
 
         Gdx.input.setInputProcessor(stage);
-        createBackground();
+        //createBackground();
         createLogo();
-        createVerticalGroup();
         size=assetsManager.setButtonDimensions(sizeX,sizeY);
         sizeX=size[0];
         sizeY=size[1];
@@ -120,7 +131,6 @@ public class DifficultyScreen implements Screen
 
         stage.addActor(table);
         stage.addActor(exitBtnTable);
-        stage.addActor(verticalGroup);
         table.getColor().a=0;//Set actor's alpha value to 0(Transparent) to enable fading
         exitBtnTable.getColor().a=0;
         table.addAction(Actions.sequence(Actions.fadeIn(0.2f)));//Fade button table in
@@ -184,12 +194,6 @@ public class DifficultyScreen implements Screen
         stage.addActor(background);
 
     }
-    private void createVerticalGroup(){
-        verticalGroup  = new VerticalGroup();
-        verticalGroup.setFillParent(true);
-        verticalGroup.center().padTop(150f).space(10f);
-
-    }
 
     private  void addVerticalGroup(Actor actor){
         verticalGroup.addActor(actor);
@@ -223,27 +227,27 @@ public class DifficultyScreen implements Screen
                     Timer.schedule(new Timer.Task() {
                         @Override
                         public void run() {
+                            dispose();
                             if (VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)//Different speeds and delay for each resolution
                             {
-                                dispose();
                                 if(multiplayer==false)
                                 {
                                     switch (text)
                                     {
                                         case "Easy":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 130, 200,mode));
+                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 130, 200,mode,stage));
                                             break;
                                         case "Normal":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 150, 160,mode));
+                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 150, 160,mode,stage));
                                             break;
                                         case "Hard":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 170, 120,mode));
+                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 170, 120,mode,stage));
                                             break;
                                         case "Very Hard":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 180, 100,mode));
+                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 180, 100,mode,stage));
                                             break;
                                         case "Back":
-                                            noteCollector.setScreen(new ModeSelect(noteCollector));
+                                            noteCollector.setScreen(new ModeSelect(noteCollector,stage));
                                             break;
                                     }
                                 }
@@ -252,21 +256,21 @@ public class DifficultyScreen implements Screen
                                     switch (text)//Multiplayer host parameters
                                     {
                                         case "Easy":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 130, 200,srv,mode,"Easy"));
+                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 130, 200,srv,mode,"Easy",stage));
                                             break;
                                         case "Normal":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 150, 160,srv,mode,"Normal"));
+                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 150, 160,srv,mode,"Normal",stage));
                                             break;
                                         case "Hard":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 170, 120,srv,mode,"Hard"));
+                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 170, 120,srv,mode,"Hard",stage));
                                             break;
                                         case "Very Hard":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 180, 100,srv,mode,"Very Hard"));
+                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 180, 100,srv,mode,"Very Hard",stage));
                                             break;
                                         case "Back":
                                             System.out.println("Closing server");
-                                            srv.getServer().close();
-                                            noteCollector.setScreen(new ModeSelect(noteCollector));
+                                            //srv.getServer().close();
+                                            noteCollector.setScreen(new ModeSelect(noteCollector,srv,stage));
                                             break;
                                     }
                                 }
@@ -278,19 +282,19 @@ public class DifficultyScreen implements Screen
                                     switch (text)//Original speeds * 1,5
                                     {
                                         case "Easy":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 195, 300,mode));
+                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 195, 300,mode,stage));
                                             break;
                                         case "Normal":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 225, 240,mode));
+                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 225, 240,mode,stage));
                                             break;
                                         case "Hard":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 255, 180,mode));
+                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 255, 180,mode,stage));
                                             break;
                                         case "Very Hard":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 270, 150,mode));
+                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 270, 150,mode,stage));
                                             break;
                                         case "Back":
-                                            noteCollector.setScreen(new ModeSelect(noteCollector));
+                                            noteCollector.setScreen(new ModeSelect(noteCollector,stage));
                                             break;
                                     }
                                 }
@@ -299,21 +303,21 @@ public class DifficultyScreen implements Screen
                                     switch (text)//Listeners for multiplayer difficulty screen
                                     {
                                         case "Easy":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 195, 300,srv,mode,"Easy"));
+                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 195, 300,srv,mode,"Easy",stage));
                                             break;
                                         case "Normal":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 225, 240,srv,mode,"Normal"));
+                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 225, 240,srv,mode,"Normal",stage));
                                             break;
                                         case "Hard":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 255, 180,srv,mode,"Hard"));
+                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 255, 180,srv,mode,"Hard",stage));
                                             break;
                                         case "Very Hard":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 270, 150,srv,mode,"Very Hard"));
+                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 270, 150,srv,mode,"Very Hard",stage));
                                             break;
                                         case "Back":
                                             System.out.println("Closing server");
-                                            srv.getServer().close();
-                                            noteCollector.setScreen(new ModeSelect(noteCollector));
+                                            //srv.getServer().close();
+                                            noteCollector.setScreen(new ModeSelect(noteCollector,srv,stage));
                                             break;
                                     }
                                 }
@@ -325,19 +329,19 @@ public class DifficultyScreen implements Screen
                                     switch (text)//Original speed * 2
                                     {
                                         case "Easy":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 260, 400,mode));
+                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 260, 400,mode,stage));
                                             break;
                                         case "Normal":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 300, 320,mode));
+                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 300, 320,mode,stage));
                                             break;
                                         case "Hard":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 340, 240,mode));
+                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 340, 240,mode,stage));
                                             break;
                                         case "Very Hard":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 360, 200,mode));
+                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 360, 200,mode,stage));
                                             break;
                                         case "Back":
-                                            noteCollector.setScreen(new ModeSelect(noteCollector));
+                                            noteCollector.setScreen(new ModeSelect(noteCollector,stage));
                                             break;
                                     }
                                 }
@@ -346,21 +350,21 @@ public class DifficultyScreen implements Screen
                                     switch (text)//Listeners for multiplayer difficulty screen
                                     {
                                         case "Easy":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 260, 400,srv,mode,"Easy"));
+                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 260, 400,srv,mode,"Easy",stage));
                                             break;
                                         case "Normal":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 300, 320,srv,mode,"Normal"));
+                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 300, 320,srv,mode,"Normal",stage));
                                             break;
                                         case "Hard":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 340, 240,srv,mode,"Hard"));
+                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 340, 240,srv,mode,"Hard",stage));
                                             break;
                                         case "Very Hard":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 360, 200,srv,mode,"Very Hard"));
+                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 360, 200,srv,mode,"Very Hard",stage));
                                             break;
                                         case "Back":
                                             System.out.println("Closing server");
-                                            srv.getServer().close();
-                                            noteCollector.setScreen(new ModeSelect(noteCollector));
+                                            //srv.getServer().close();
+                                            noteCollector.setScreen(new ModeSelect(noteCollector,srv,stage));
                                             break;
                                     }
                                 }
@@ -423,8 +427,10 @@ public class DifficultyScreen implements Screen
     @Override
     public void dispose() {
         font.dispose();
-        stage.dispose();
-
+        stage.getRoot().removeActor(table);
+        stage.getRoot().removeActor(exitBtnTable);
+        stage.getRoot().removeActor(verticalGroup);
+        //stage.dispose();
 
     }
 }

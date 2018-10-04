@@ -12,6 +12,7 @@ import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.view.WindowManager;
 
@@ -49,10 +50,14 @@ public class AndroidLauncher extends AndroidApplication
 			gallery = new Gallery(this);
 			initialize(new NoteCollector(wifi,gallery), config);
 		}
+		else
+		{
+			initialize(new NoteCollector(wifi,gallery), config);
+		}
 	}
 
 	@Override
-	public void onRequestPermissionsResult ( int requestCode, String permissions[], int[] grantResults)
+	public void onRequestPermissionsResult (int requestCode, @NonNull String permissions[], @NonNull int[] grantResults)
 	{
 		switch (requestCode)
 		{
@@ -71,7 +76,6 @@ public class AndroidLauncher extends AndroidApplication
 				{
 					// permission denied
 				}
-				return;
 			}
 
 		}

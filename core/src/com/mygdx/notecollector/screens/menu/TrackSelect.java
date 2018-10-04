@@ -101,9 +101,25 @@ public class TrackSelect implements Screen
         LoadAssets();
         ListStyle();
     }
-
-    public TrackSelect(NoteCollector noteCollector,int speed,long delay,File file,ServerClass srv,boolean mode,String difficulty)//Constructor for multiplayer host
+    public TrackSelect(NoteCollector noteCollector,int speed,long delay,File file,boolean mode,Stage stage)
     {
+        this.stage=stage;
+        this.file=file;
+        this.noteCollector = noteCollector;
+        assetsManager = noteCollector.getAssetsManager();
+        this.delay = delay;
+        this.speed = speed;
+        this.isGuest=false;
+        this.isHost=false;
+        this.mode=mode;
+        filepath="";
+        LoadAssets();
+        ListStyle();
+    }
+
+    public TrackSelect(NoteCollector noteCollector,int speed,long delay,File file,ServerClass srv,boolean mode,String difficulty,Stage stage)//Constructor for multiplayer host
+    {
+        this.stage=stage;
         this.file=file;
         this.noteCollector = noteCollector;
         assetsManager = noteCollector.getAssetsManager();
@@ -119,8 +135,9 @@ public class TrackSelect implements Screen
         ListStyle();
     }
 
-    public TrackSelect(NoteCollector noteCollector,int speed,long delay,File file, ClientClass c,boolean mode)//Constructor for multiplayer guest
+    public TrackSelect(NoteCollector noteCollector,int speed,long delay,File file, ClientClass c,boolean mode,Stage stage)//Constructor for multiplayer guest
     {
+        this.stage=stage;
         this.file=file;
         this.noteCollector = noteCollector;
         assetsManager = noteCollector.getAssetsManager();
@@ -138,9 +155,9 @@ public class TrackSelect implements Screen
     @Override
     public void show()
     {
-        setupCamera();
+        //setupCamera();
         Gdx.input.setInputProcessor(stage);
-        createBackground();
+        //createBackground();
         btn=new Table();
         btn.setFillParent(true);
         createTable();
@@ -216,9 +233,15 @@ public class TrackSelect implements Screen
     public void dispose()
     {
         table.clear();
-        stage.dispose();
+        stage.getRoot().removeActor(table);
+        stage.getRoot().removeActor(verticalGroup);
+        //stage.dispose();
         font.dispose();
         fontList.dispose();
+        if(!isGuest)
+        {
+            stage.getRoot().removeActor(btn);
+        }
         //img.dispose();
 
 
@@ -277,11 +300,11 @@ public class TrackSelect implements Screen
                             {
                                 if(isHost)
                                 {
-                                    noteCollector.setScreen(new DifficultyScreen(noteCollector,srv,mode));
+                                    noteCollector.setScreen(new DifficultyScreen(noteCollector,srv,mode,stage));
                                 }
                                 else
                                 {
-                                    noteCollector.setScreen(new DifficultyScreen(noteCollector,mode));
+                                    noteCollector.setScreen(new DifficultyScreen(noteCollector,mode,stage));
                                 }
 
                             }
@@ -367,7 +390,7 @@ public class TrackSelect implements Screen
                     {
                         if(isHost)
                         {
-                            System.out.println("Readying file");
+                            /*System.out.println("Readying file");
 
                             System.out.println("Readying Filepath");
                             filepath = file.getAbsolutePath();
@@ -381,20 +404,20 @@ public class TrackSelect implements Screen
                             {
                                 e.printStackTrace();
                             }
-                            srv.sendGameObj(arr,difficulty,true,mode);//Send file to client
+                            srv.sendGameObj(arr,difficulty,true,mode);//Send file to client*/
                             dispose();
-                            noteCollector.setScreen((new LoadingScreen(noteCollector,filepath,speed,delay,t,srv,mode)));
+                            noteCollector.setScreen((new LoadingScreen(noteCollector,filepath,speed,delay,t,srv,mode,stage,difficulty)));
                         }
                         else if(isGuest)
                         {
                             System.out.println("Guest");
                             dispose();
-                            noteCollector.setScreen((new LoadingScreen(noteCollector,filepath,speed,delay,t,c,mode)));
+                            noteCollector.setScreen((new LoadingScreen(noteCollector,filepath,speed,delay,t,c,mode,stage)));
                         }
                         else
                         {
                             dispose();
-                            noteCollector.setScreen(new LoadingScreen(noteCollector,filepath,speed,delay,t,mode));
+                            noteCollector.setScreen(new LoadingScreen(noteCollector,filepath,speed,delay,t,mode,stage));
                         }
                     }
                 }, 0.4f);

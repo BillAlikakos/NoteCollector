@@ -74,9 +74,24 @@ public class LoadingScreen implements Screen {
     private boolean isGuest;
     private boolean mode;
     boolean flag ;
+    private String difficulty;
+    private boolean done=false;
 
     public LoadingScreen(NoteCollector noteCollector,String filepath,int speed,long delay,boolean mode)
     {
+        this.noteCollector = noteCollector;
+        this.filepath = filepath;
+        AssetsManager = noteCollector.getAssetsManager();
+        f = new File(filepath);
+        AssetsManager.LoadLoadingAssets(filepath);
+        LoadAssets();
+        this.delay = delay;
+        this.speed = speed;
+        this.mode=mode;
+    }
+    public LoadingScreen(NoteCollector noteCollector,String filepath,int speed,long delay,boolean mode,Stage stage)
+    {
+        this.stage=stage;
         this.noteCollector = noteCollector;
         this.filepath = filepath;
         AssetsManager = noteCollector.getAssetsManager();
@@ -100,9 +115,24 @@ public class LoadingScreen implements Screen {
         this.speed = speed;
         this.mode=mode;
     }
-
-    public LoadingScreen(NoteCollector noteCollector,String filepath,int speed,long delay,MidiTrack track,ClientClass c,boolean mode)//Constructor for multiplayer
+    public LoadingScreen(NoteCollector noteCollector,String filepath,int speed,long delay,MidiTrack track,boolean mode,Stage stage)//Constructor for split track midi file
     {
+        this.stage=stage;
+        this.track=track;
+        this.noteCollector = noteCollector;
+        this.filepath = filepath;
+        AssetsManager = noteCollector.getAssetsManager();
+        f = new File(filepath);
+        AssetsManager.LoadLoadingAssets(filepath);
+        LoadAssets();
+        this.delay = delay;
+        this.speed = speed;
+        this.mode=mode;
+    }
+
+    public LoadingScreen(NoteCollector noteCollector,String filepath,int speed,long delay,MidiTrack track,ClientClass c,boolean mode,Stage stage)//Constructor for multiplayer
+    {
+        this.stage=stage;
         this.track=track;
         this.noteCollector = noteCollector;
         this.c=c;
@@ -117,8 +147,10 @@ public class LoadingScreen implements Screen {
         this.speed = speed;
         this.mode=mode;
     }
-    public LoadingScreen(NoteCollector noteCollector,String filepath,int speed,long delay,MidiTrack track ,ServerClass srv,boolean mode)//Constructor for multiplayer
+    public LoadingScreen(NoteCollector noteCollector,String filepath,int speed,long delay,MidiTrack track ,ServerClass srv,boolean mode,Stage stage,String difficulty)//Constructor for multiplayer
     {
+        this.stage=stage;
+        this.difficulty=difficulty;
         this.flag=false;
         this.track=track;
         this.noteCollector = noteCollector;
@@ -141,8 +173,8 @@ public class LoadingScreen implements Screen {
         table.setFillParent(true);
         table.center();
         createVerticalGroup();
-        setupCamera();
-        createBackground();
+        //setupCamera();
+        //createBackground();
         createLogo();
         createLabel("Please Wait ....");
         createSpinner();
@@ -221,7 +253,6 @@ public class LoadingScreen implements Screen {
     @Override
     public void render(float delta) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
         try {
             showLoadProgress();
         } catch (IOException e) {
@@ -258,7 +289,10 @@ public class LoadingScreen implements Screen {
     public void dispose()
     {
         font.dispose();
-        AssetsManager.assetManager.unload(Constants.spinner);
+        stage.getRoot().removeActor(table);
+        stage.getRoot().removeActor(verticalGroup);
+        stage.getRoot().removeActor(spinnerImage);
+        //AssetsManager.assetManager.unload(Constants.spinner);
        // t.interrupt();
     }
 
@@ -268,6 +302,7 @@ public class LoadingScreen implements Screen {
     {
         if ( !t.isAlive() && AssetsManager.assetManager.update() && AssetsManager.assetManagerFiles.update())
         {
+
             table.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out table
             spinnerImage.addAction(Actions.sequence(Actions.fadeOut(0.4f)));
             Timer.schedule(new Timer.Task()
@@ -279,20 +314,25 @@ public class LoadingScreen implements Screen {
                     if(isHost)
                     {
                         //dispose();
-                        noteCollector.setScreen(new MultiplayerPreMatchLobby(noteCollector,TickPerMsec,notes,filepath,speed,delay,srv,mode));
+                        if(!done)
+                        {
+                            System.out.println("Host entering lobby");
+                            noteCollector.setScreen(new MultiplayerPreMatchLobby(noteCollector,TickPerMsec,notes,filepath,speed,delay,srv,mode,stage,f,difficulty));
+                            done=true;//TODO : Sync multiplayer
+                        }
 
                     }
                     else if(isGuest)
                     {
                        // dispose();
-                        noteCollector.setScreen(new MultiplayerPreMatchLobby(noteCollector,TickPerMsec,notes,filepath,speed,delay,c,mode));
+                        noteCollector.setScreen(new MultiplayerPreMatchLobby(noteCollector,TickPerMsec,notes,filepath,speed,delay,c,mode,stage));
                     }
                     else//Single player
                     {
                         //dispose();
                         try
                         {
-                            noteCollector.setScreen(new GameScreen(noteCollector,TickPerMsec,notes,filepath,speed,delay,mode));
+                            noteCollector.setScreen(new GameScreen(noteCollector,TickPerMsec,notes,filepath,speed,delay,mode,stage));
                         }
                         catch (IOException e)
                         {

@@ -90,10 +90,24 @@ public class SamplesTrack implements Screen {
         this.multiplayer=false;
         this.mode=mode;
     }
-
-    public SamplesTrack(NoteCollector noteCollector, int speed, long delay, ServerClass srv,boolean mode,String difficulty)
+    public SamplesTrack(NoteCollector noteCollector,int speed,long delay,boolean mode,Stage stage)
     {
         this.noteCollector = noteCollector;
+        this.stage=stage;
+        assetsManager = noteCollector.getAssetsManager();
+        this.delay = delay;
+        this.speed = speed;
+        filepath="";
+        LoadAssets();
+        ListStyle();
+        this.multiplayer=false;
+        this.mode=mode;
+    }
+
+    public SamplesTrack(NoteCollector noteCollector, int speed, long delay, ServerClass srv,boolean mode,String difficulty,Stage stage)
+    {
+        this.noteCollector = noteCollector;
+        this.stage=stage;
         assetsManager = noteCollector.getAssetsManager();
         this.delay = delay;
         this.speed = speed;
@@ -108,9 +122,9 @@ public class SamplesTrack implements Screen {
 
     @Override
     public void show() {
-        setupCamera();
+        //setupCamera();
         Gdx.input.setInputProcessor(stage);
-        createBackground();
+        //createBackground();
         btn=new Table();
         btn.setFillParent(true);
         createTable();
@@ -130,7 +144,6 @@ public class SamplesTrack implements Screen {
         btn.add(back).bottom().left().expand().size(sizeX,sizeY);
         btn.add(browse).bottom().right().expand().size(sizeX,sizeY);
         //btn.setDebug(true);
-        stage.addActor(verticalGroup);
         stage.addActor(table);
         stage.addActor(btn);
         table.getColor().a=0;//Set actor's alpha value to 0(Transparent) to enable fading
@@ -183,10 +196,12 @@ public class SamplesTrack implements Screen {
     public void dispose()
     {
         table.clear();
-        stage.dispose();
+        stage.getRoot().removeActor(table);
+        stage.getRoot().removeActor(verticalGroup);
+        stage.getRoot().removeActor(btn);
+        //stage.dispose();
         font.dispose();
         fontList.dispose();
-
 
     }
     //create a table for organize buttons and list of tracks
@@ -244,12 +259,12 @@ public class SamplesTrack implements Screen {
                                 if (text.equals("Back"))
                                 {
                                     dispose();
-                                    noteCollector.setScreen(new DifficultyScreen(noteCollector,mode));
+                                    noteCollector.setScreen(new DifficultyScreen(noteCollector,mode,stage));
                                 }
                                 else
                                 {
                                     dispose();
-                                    noteCollector.setScreen(new Browse(noteCollector, speed, delay,mode));
+                                    noteCollector.setScreen(new Browse(noteCollector, speed, delay,mode,stage));
                                 }
 
                             }
@@ -258,13 +273,13 @@ public class SamplesTrack implements Screen {
                                 if (text.equals("Back"))
                                 {
                                     dispose();
-                                    noteCollector.setScreen(new DifficultyScreen(noteCollector,srv,mode));
+                                    noteCollector.setScreen(new DifficultyScreen(noteCollector,srv,mode,stage));
                                 }
 
                                 else
                                 {
                                     dispose();
-                                    noteCollector.setScreen(new Browse(noteCollector, speed, delay,srv,mode,difficulty));
+                                    noteCollector.setScreen(new Browse(noteCollector, speed, delay,srv,mode,difficulty,stage));
                                 }
 
                             }
@@ -342,11 +357,12 @@ public class SamplesTrack implements Screen {
                             File file = new File(path.get(list.getSelectedIndex()));
                             filepath = file.getAbsolutePath();
                             //noteCollector.setScreen(new LoadingScreen(noteCollector,filepath,speed,delay));//OG
-                            noteCollector.setScreen(new TrackSelect(noteCollector, speed, delay, file, mode));//OG
-                        } else
+                            noteCollector.setScreen(new TrackSelect(noteCollector, speed, delay, file, mode,stage));//OG
+                        }
+                        else
                         {
                             File file = new File(path.get(list.getSelectedIndex()));
-                            filepath = file.getAbsolutePath();
+                            /*filepath = file.getAbsolutePath();
                             byte[] arr = new byte[1250000];//1,25Mb buffer
                             try
                             {
@@ -357,9 +373,9 @@ public class SamplesTrack implements Screen {
                             }
                             //srv.sendGameObj(arr,speed,delay,false,mode);//Old
                             srv.sendGameObj(arr, difficulty, false, mode);
-                            System.out.println("Sent game obj to client");
+                            System.out.println("Sent game obj to client");*/
                             //noteCollector.setScreen(new LoadingScreen(noteCollector,filepath,speed,delay));//OG
-                            noteCollector.setScreen(new TrackSelect(noteCollector, speed, delay, file, srv, mode, difficulty));
+                            noteCollector.setScreen(new TrackSelect(noteCollector, speed, delay, file, srv, mode, difficulty,stage));
                         }
                     }
                 },0.4f);

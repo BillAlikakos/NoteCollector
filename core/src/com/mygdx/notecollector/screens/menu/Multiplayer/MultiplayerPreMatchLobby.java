@@ -39,6 +39,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import static org.apache.commons.io.FileUtils.readFileToByteArray;
+
 public class MultiplayerPreMatchLobby implements Screen
 {
     private NoteCollector noteCollector;
@@ -59,63 +61,77 @@ public class MultiplayerPreMatchLobby implements Screen
     private float TickPerMsec;
     private int speed;
     private long delay;
-    private File f;
+    private String difficulty;
+    private File file;
     private String filepath;
     private ArrayList<MidiNote> notes;
 
-    public MultiplayerPreMatchLobby(NoteCollector noteCollector, float tickPerMsec, ArrayList<MidiNote> notes, String filepath, int speed, long delay, ClientClass c,boolean mode)
+    public MultiplayerPreMatchLobby(NoteCollector noteCollector, float tickPerMsec, ArrayList<MidiNote> notes, String filepath, int speed, long delay, ClientClass c, boolean mode, Stage stage)
     {
         this.noteCollector = noteCollector;
-        this.TickPerMsec=tickPerMsec;
-        this.notes=notes;
-        this.filepath=filepath;
-        this.speed=speed;
-        this.delay=delay;
+        this.stage = stage;
+        this.TickPerMsec = tickPerMsec;
+        this.notes = notes;
+        this.filepath = filepath;
+        this.speed = speed;
+        this.delay = delay;
         AssetsManager = noteCollector.getAssetsManager();
         LoadAssets();
-        isGuest=true;
-        isHost=false;
-        this.mode=mode;
-        this.c=c;
+        isGuest = true;
+        isHost = false;
+        this.mode = mode;
+        this.c = c;
     }
 
-    public MultiplayerPreMatchLobby(NoteCollector noteCollector, float tickPerMsec, ArrayList<MidiNote> notes, String filepath, int speed, long delay, ServerClass srv,boolean mode)
+    public MultiplayerPreMatchLobby(NoteCollector noteCollector, float tickPerMsec, ArrayList<MidiNote> notes, String filepath, int speed, long delay, ServerClass srv, boolean mode, Stage stage, File file, String difficulty)
     {
         this.noteCollector = noteCollector;
-        this.TickPerMsec=tickPerMsec;
-        this.notes=notes;
-        this.filepath=filepath;
-        this.speed=speed;
-        this.delay=delay;
+        this.file = file;
+        this.difficulty = difficulty;
+        this.stage = stage;
+        this.TickPerMsec = tickPerMsec;
+        this.notes = notes;
+        this.filepath = filepath;
+        this.speed = speed;
+        this.delay = delay;
         AssetsManager = noteCollector.getAssetsManager();
         LoadAssets();
-        isHost=true;
-        isGuest=false;
-        this.mode=mode;
-        this.srv=srv;
+        isHost = true;
+        isGuest = false;
+        this.mode = mode;
+        this.srv = srv;
     }
 
     @Override
     public void show()
     {
-        table=new Table();
+        table = new Table();
         table.setFillParent(true);
         table.center();
         createVerticalGroup();
-        setupCamera();
-        createBackground();
+        //setupCamera();
+        //createBackground();
         createLogo();
-        listen();
         createLabel("Initializing ....");
-        send();
+        if(isHost)
+        {
+            listen();
+        }
+        else
+        {
+         send();
+        }
+
+        //send();
         stage.addActor(table);
-        table.getColor().a=0;//Set actor's alpha value to 0(Transparent) to enable fading
+        table.getColor().a = 0;//Set actor's alpha value to 0(Transparent) to enable fading
         table.addAction(Actions.sequence(Actions.fadeIn(0.2f)));
 
     }
+
     private void send()
     {
-        if(isHost)
+        /*if(isHost)
         {
              t=new Thread(){
                 @Override
@@ -130,10 +146,10 @@ public class MultiplayerPreMatchLobby implements Screen
                 }
             };
             t.start();
-        }
-        else if (isGuest)
+        }*/
+        if (isGuest)
         {
-             t=new Thread(){
+            /* t=new Thread(){
                 @Override
                 public void run()
                 {
@@ -144,11 +160,48 @@ public class MultiplayerPreMatchLobby implements Screen
 
                 }
             };
-            t.start();
+            t.start();*/
+            c.sendLoadedMsg();
+            Timer.schedule(new Timer.Task()
+            {
+                @Override
+                public void run()
+                {
+                    try
+                    {
+                        dispose();
+                        noteCollector.setScreen(new GameScreen(noteCollector, TickPerMsec, notes, filepath, speed, delay, c, mode, stage));
+                    } catch (IOException e)
+                    {
+                        e.printStackTrace();
+                    } catch (InterruptedException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+            }, 0.4f);//Prev 0.2f
+
+
         }
     }
+
         private void listen()//Add listeners for messages
         {
+            System.out.println("Readying file");
+
+            //System.out.println("Readying Filepath");
+            //filepath = file.getAbsolutePath();
+            System.out.println("Setting obj params");
+            byte[] arr=new byte[1250000];//1,25Mb buffer
+            try
+            {
+                arr = readFileToByteArray(file);
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+            srv.sendGameObj(arr,difficulty,true,mode);
             if(isHost)
             {
                 srv.getServer().addListener(new Listener()//Wait for client to load
@@ -170,9 +223,9 @@ public class MultiplayerPreMatchLobby implements Screen
                                 {
                                     try
                                     {
-                                        t.interrupt();
+                                       // t.interrupt();
                                         dispose();
-                                        noteCollector.setScreen(new GameScreen(noteCollector,TickPerMsec,notes,filepath,speed,delay,srv,mode));
+                                        noteCollector.setScreen(new GameScreen(noteCollector,TickPerMsec,notes,filepath,speed,delay,srv,mode,stage));//TODO : Sync better between slow and fast phones (Pause state until second player joins ? Fix label ordering in game end screen)
                                         //t.interrupt();
                                         //this.wait(1000);
 
@@ -192,7 +245,7 @@ public class MultiplayerPreMatchLobby implements Screen
                     }
                 });
             }
-            else if(isGuest)
+            /*else if(isGuest)
             {
                 c.getClient().addListener(new Listener()//Wait for client to load
                 {
@@ -214,7 +267,7 @@ public class MultiplayerPreMatchLobby implements Screen
                                     {
                                         t.interrupt();
                                         dispose();
-                                        noteCollector.setScreen(new GameScreen(noteCollector,TickPerMsec,notes,filepath,speed,delay,c,mode));
+                                        noteCollector.setScreen(new GameScreen(noteCollector,TickPerMsec,notes,filepath,speed,delay,c,mode,stage));
                                        // t.interrupt();
 
                                     }
@@ -232,7 +285,7 @@ public class MultiplayerPreMatchLobby implements Screen
 
                     }
                 });
-            }
+            }*/
         }
 
 
@@ -267,7 +320,9 @@ public class MultiplayerPreMatchLobby implements Screen
         @Override
         public void dispose()
         {
-            stage.dispose();
+            //stage.dispose();
+            stage.getRoot().removeActor(table);
+            stage.getRoot().removeActor(verticalGroup);
             font.dispose();
             //AssetsManager.assetManager.unload(Constants.spinner);
         }

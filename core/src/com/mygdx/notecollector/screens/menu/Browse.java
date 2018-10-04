@@ -90,9 +90,23 @@ public class Browse implements Screen {
         LoadAssets();
         ListStyle();
     }
-
-    public Browse(NoteCollector noteCollector, int speed, long delay, ServerClass srv,boolean mode,String difficulty)
+    public Browse(NoteCollector noteCollector,int speed,long delay,boolean mode,Stage stage)
     {
+        this.stage=stage;
+        this.delay = delay;
+        this.speed = speed;
+        this.noteCollector = noteCollector;
+        filepath="";
+        assetsManager = noteCollector.getAssetsManager();
+        this.multiplayer=false;
+        this.mode=mode;
+        LoadAssets();
+        ListStyle();
+    }
+
+    public Browse(NoteCollector noteCollector, int speed, long delay, ServerClass srv,boolean mode,String difficulty,Stage stage)
+    {
+        this.stage=stage;
         this.delay = delay;
         this.speed = speed;
         this.noteCollector = noteCollector;
@@ -109,14 +123,14 @@ public class Browse implements Screen {
     @Override
     public void show()
     {
-        setupCamera();
+        //setupCamera();
         verticalGroupLogo=new VerticalGroup();
         Gdx.input.setInputProcessor(stage);
         exitBtnTable=new Table();
         size=assetsManager.setButtonDimensions(sizeX,sizeY);//Get the dimensions for the button
         sizeX=size[0];
         sizeY=size[1];
-        createBackground();
+        //createBackground();
         createTable();
         createList();
         getDir(root);
@@ -243,13 +257,13 @@ public class Browse implements Screen {
                                 if (text.equals("Back"))
                                 {
                                     dispose();
-                                    noteCollector.setScreen(new DifficultyScreen(noteCollector,mode));
+                                    noteCollector.setScreen(new DifficultyScreen(noteCollector,mode,stage));
                                 }
 
                                 else
                                 {
                                     dispose();
-                                    noteCollector.setScreen(new Browse(noteCollector, speed, delay,mode));//Useless ??
+                                    noteCollector.setScreen(new Browse(noteCollector, speed, delay,mode,stage));//Useless ??
                                 }
 
                             }
@@ -258,12 +272,12 @@ public class Browse implements Screen {
                                 if (text.equals("Back"))
                                 {
                                     dispose();
-                                    noteCollector.setScreen(new DifficultyScreen(noteCollector,srv,mode));
+                                    noteCollector.setScreen(new DifficultyScreen(noteCollector,srv,mode,stage));
                                 }
                                 else
                                 {
                                     dispose();
-                                    noteCollector.setScreen(new Browse(noteCollector, speed, delay,mode));
+                                    noteCollector.setScreen(new Browse(noteCollector, speed, delay,mode,stage));
                                 }
 
                             }
@@ -379,12 +393,12 @@ public class Browse implements Screen {
                     if(multiplayer==false)
                     {
                         dispose();
-                        noteCollector.setScreen(new TrackSelect(noteCollector,speed,delay,file,mode));
+                        noteCollector.setScreen(new TrackSelect(noteCollector,speed,delay,file,mode,stage));
                     }
                     else
                     {
                         dispose();
-                        noteCollector.setScreen(new TrackSelect(noteCollector,speed,delay,file,srv,mode,difficulty));
+                        noteCollector.setScreen(new TrackSelect(noteCollector,speed,delay,file,srv,mode,difficulty,stage));
                     }
                 }
             },0.4f);
@@ -452,7 +466,10 @@ public class Browse implements Screen {
     public void dispose()
     {
         table.clear();
-        stage.dispose();
+       // stage.dispose();
+        stage.getRoot().removeActor(table);
+        stage.getRoot().removeActor(exitBtnTable);
+        stage.getRoot().removeActor(verticalGroupLogo);
         font.dispose();
         fontList.dispose();
 

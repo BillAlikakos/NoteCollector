@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.Timer;
@@ -46,6 +47,11 @@ public class IntroScreen implements Screen {
         noteCollector.getAssetsManager().assetManager.load(Constants.IntroImage, Texture.class);
         noteCollector.getAssetsManager().assetManager.finishLoading();
         noteCollector.getAssetsManager().createFonts();
+        setupCamera();
+        createBackground();
+        stage.addAction(Actions.sequence(Actions.alpha(0), Actions.fadeIn(2f)));
+        background.getColor().a=0;
+        background.addAction(Actions.fadeIn(0.2f));
         prefs = Gdx.app.getPreferences("NoteCollectorPreferences");
        // Constants.setBackgroundMenu(prefs.getString("menuBackground","data/ui/images/new1080.png"));
         if(prefs.getString("menuBackground").isEmpty())
@@ -61,24 +67,28 @@ public class IntroScreen implements Screen {
             //prefs.putString("menuBackground","data/ui/images/new1080.png");
             System.out.println("gameBackground "+prefs.getString("gameBackground"));
         }
-        setupCamera();
-        createBackground();
+        //setupCamera();
+        //createBackground();
         createFolders();
         // load preferences
-
-        /*if(prefs.getString("menuBackground").isEmpty())
-        {
-            System.out.println("Menu bg empty here es the defolt");
-            //prefs.putString("menuBackground","data/ui/images/new1080.png");
-            Constants.setBackgroundMenu("data/ui/images/new1080.png");
-            System.out.println("aaaa "+prefs.getString("menuBackground"));
-        }*/
         prefs.putBoolean("music", true);
         prefs.putBoolean("sound", true);
         if(!prefs.getBoolean("big") && !prefs.getBoolean("vbig"))
         prefs.putBoolean("normal", true);
         else
         prefs.putBoolean("normal", false);
+        if(!prefs.getBoolean("touch") && !prefs.getBoolean("pad"))
+        {
+            prefs.putBoolean("touch",true);
+        }
+        else if(prefs.getBoolean("pad"))
+        {
+            prefs.putBoolean("pad",true);
+        }
+        else
+        {
+            prefs.putBoolean("touch",true);
+        }
         //prefs.getString("menuBackground","data/ui/images/new1080.png");
         //prefs.getString("menuBackground","data/ui/images/new1080.png");
         System.out.println("Setting prefs");
@@ -103,14 +113,26 @@ public class IntroScreen implements Screen {
         background.setPosition((stage.getCamera().viewportWidth - img.getWidth())/2,(stage.getCamera().viewportHeight - img.getHeight())/2);
         stage.addActor(background);
     }
+    private void fadeBackground()
+    {
+        FileHandle file = Gdx.files.internal(Constants.getBackgroundMenu().toString());
+        Image background=noteCollector.getAssetsManager().scaleBackground(file);
+        stage.addActor(background);
+        stage.addAction(Actions.sequence(Actions.alpha(0), Actions.fadeIn(2f)));
+        background.getColor().a=0;
+        background.addAction(Actions.fadeIn(0.2f));
+    }
+
     @Override
     public void show() {
-        stage.getRoot().getColor().a = 0;
-        stage.getRoot().addAction(fadeIn(0.4f));
+        fadeBackground();
         Timer.schedule(new Timer.Task() {
             @Override
             public void run() {
-                noteCollector.setScreen(new MainMenuScreen(noteCollector));
+                //stage.addAction(Actions.sequence(Actions.alpha(1), Actions.fadeOut(2f)));
+               // background.addAction(Actions.sequence(Actions.fadeOut(0.2f)));
+                dispose();
+                noteCollector.setScreen(new MainMenuScreen(noteCollector,stage));
             }
         },2f );
     }
@@ -151,14 +173,15 @@ public class IntroScreen implements Screen {
         noteCollector.getAssetsManager().assetManager.unload(Constants.IntroImage);
     }
     private void setupCamera(){
-        viewport = new ScalingViewport(Scaling.fit, Constants.APP_HEIGHT, Constants.APP_HEIGHT, new OrthographicCamera(Constants.APP_WIDTH, Constants.APP_HEIGHT));
+        //viewport = new ScalingViewport(Scaling.fit, Constants.APP_HEIGHT, Constants.APP_HEIGHT, new OrthographicCamera(Constants.APP_WIDTH, Constants.APP_HEIGHT));
+        viewport = new ScalingViewport(Scaling.stretch, Constants.APP_WIDTH, Constants.APP_HEIGHT, new OrthographicCamera(Constants.APP_WIDTH,Constants.APP_HEIGHT));
         stage = new Stage(viewport);
         stage.getCamera().update();
     }
 
 
 
-    //create folder if not exist on device
+    //create game folder if it doesn't exist on device
     private void getAssetAppFolder(String dir) throws Exception{
 
         {

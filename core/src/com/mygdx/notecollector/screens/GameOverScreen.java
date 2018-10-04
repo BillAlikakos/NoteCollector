@@ -70,8 +70,9 @@ public class GameOverScreen implements Screen {
     private boolean isGuest;
     private boolean mode;
 
-    public GameOverScreen(NoteCollector notecollector,String Score,String filepath,int speed,long delay,boolean mode) {
+    public GameOverScreen(NoteCollector notecollector,String Score,String filepath,int speed,long delay,boolean mode,Stage stage) {
         this.notecollector = notecollector;
+        this.stage=stage;
         this.Score = Score;
         this.filepath = filepath;
         this.speed = speed;
@@ -79,11 +80,13 @@ public class GameOverScreen implements Screen {
         this.mode=mode;
         AssetsManager = notecollector.getAssetsManager();
         LoadAssets();
-    
+
     }
 
-    public GameOverScreen(NoteCollector notecollector,String Score,String filepath,int speed,long delay,ServerClass srv,boolean mode)
+
+    public GameOverScreen(NoteCollector notecollector,String Score,String filepath,int speed,long delay,ServerClass srv,boolean mode,Stage stage)
     {
+        this.stage=stage;
         this.isHost=true;
         this.isGuest=false;
         this.srv=srv;
@@ -98,8 +101,9 @@ public class GameOverScreen implements Screen {
 
     }
 
-    public GameOverScreen(NoteCollector notecollector,String Score,String filepath,int speed,long delay,ClientClass c,boolean mode)
+    public GameOverScreen(NoteCollector notecollector,String Score,String filepath,int speed,long delay,ClientClass c,boolean mode,Stage stage)
     {
+        this.stage=stage;
         this.isHost=false;
         this.isGuest=true;
         this.c=c;
@@ -121,9 +125,9 @@ public class GameOverScreen implements Screen {
         sizeX=size[0];
         sizeY=size[1];
         sendGameOverMsg();
-        setupCamera();
+       // setupCamera();
         createTable();
-        createBackground();
+        //createBackground();
         createLogo();
         createButtons();
         createLabel("Your Score:"+Score);
@@ -231,7 +235,9 @@ public class GameOverScreen implements Screen {
 
     @Override
     public void dispose() {
-
+        stage.getRoot().removeActor(table);
+        stage.getRoot().removeActor(verticalGroup);
+        font.dispose();
     }
 
     private void createLabel(String text){
@@ -339,9 +345,9 @@ public class GameOverScreen implements Screen {
                                 c.getClient().close();
                             }
                             if (text.equals("Menu"))
-                                notecollector.setScreen(new MainMenuScreen(notecollector));
+                                notecollector.setScreen(new MainMenuScreen(notecollector,stage));
                             else
-                                notecollector.setScreen(new LoadingScreen(notecollector, filepath, speed, delay,mode));
+                                notecollector.setScreen(new LoadingScreen(notecollector, filepath, speed, delay,mode,stage));
 
 
                         }
