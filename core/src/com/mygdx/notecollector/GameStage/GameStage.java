@@ -16,10 +16,14 @@ import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.Timer;
@@ -31,6 +35,7 @@ import com.mygdx.notecollector.Multiplayer.ServerClass;
 import com.mygdx.notecollector.NoteCollector;
 import com.mygdx.notecollector.Utils.Assets;
 import com.mygdx.notecollector.Utils.Constants;
+import com.mygdx.notecollector.Utils.Dpad;
 import com.mygdx.notecollector.Utils.WorldUtils;
 import com.mygdx.notecollector.actors.Collector;
 import com.mygdx.notecollector.actors.Piano;
@@ -74,6 +79,7 @@ public class GameStage extends Stage implements ContactListener
     //actor objects
     private SquareNotes squareNotes;
     private Collector collector;
+
     private Score score;
     private Score score2;
     private Piano piano;
@@ -102,7 +108,7 @@ public class GameStage extends Stage implements ContactListener
     private Label resume,quit;
     private Image BackgroundPause;
     public long pausetime;
-
+    private Stage stage;
     private ClientClass c;
     private ServerClass srv;
     private boolean isHost;
@@ -114,10 +120,11 @@ public class GameStage extends Stage implements ContactListener
     private Image x3;
     private Image x4;
     private Image x5;
+    private Dpad dpad;
 
-    public GameStage(NoteCollector noteCollector, float TickPerMsec, ArrayList<MidiNote> notes, int speed, long delay,boolean mode) throws IOException, InterruptedException {
+    public GameStage(NoteCollector noteCollector, float TickPerMsec, ArrayList<MidiNote> notes, int speed, long delay,boolean mode,Stage stage) throws IOException, InterruptedException {
         super(new ScalingViewport(Scaling.stretch, VIEWPORT_WIDTH, VIEWPORT_HEIGHT, new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)));
-
+        this.stage=stage;
         squarewidth=32f;
         squareheight=32f;
         this.AssetsManager =noteCollector.getAssetsManager();
@@ -128,7 +135,6 @@ public class GameStage extends Stage implements ContactListener
         this.isHost=false;
         this.mode=mode;
         prefs= Gdx.app.getPreferences("NoteCollectorPreferences");
-
         //set the size of square which controlled by player
         setCollectorSize();
         message ="";
@@ -147,9 +153,9 @@ public class GameStage extends Stage implements ContactListener
 
     }
 
-    public GameStage(NoteCollector noteCollector, float TickPerMsec, ArrayList<MidiNote> notes, int speed, long delay, ServerClass srv, boolean mode) throws IOException, InterruptedException {
+    public GameStage(NoteCollector noteCollector, float TickPerMsec, ArrayList<MidiNote> notes, int speed, long delay, ServerClass srv, boolean mode,Stage stage) throws IOException, InterruptedException {
         super(new ScalingViewport(Scaling.stretch, VIEWPORT_WIDTH, VIEWPORT_HEIGHT, new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)));
-
+        this.stage=stage;
         squarewidth=32f;
         squareheight=32f;
         this.AssetsManager =noteCollector.getAssetsManager();
@@ -180,9 +186,9 @@ public class GameStage extends Stage implements ContactListener
        // addActorSPause();
 
     }
-    public GameStage(NoteCollector noteCollector, float TickPerMsec, ArrayList<MidiNote> notes, int speed, long delay, ClientClass c, boolean mode) throws IOException, InterruptedException {
+    public GameStage(NoteCollector noteCollector, float TickPerMsec, ArrayList<MidiNote> notes, int speed, long delay, ClientClass c, boolean mode,Stage stage) throws IOException, InterruptedException {
         super(new ScalingViewport(Scaling.stretch, VIEWPORT_WIDTH, VIEWPORT_HEIGHT, new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)));
-
+        this.stage=stage;
         squarewidth=32f;
         squareheight=32f;
         this.AssetsManager =noteCollector.getAssetsManager();
@@ -319,9 +325,9 @@ public class GameStage extends Stage implements ContactListener
                 {
                     if (object instanceof ServerClass.scoreObj)//When host receives the client's score
                     {
-                        System.out.println("Host received score");
+                        //System.out.println("Host received score");
                         ServerClass.scoreObj request = (ServerClass.scoreObj)object;
-                        System.out.println(request.score);
+                        //System.out.println(request.score);
                         score2.setScore(Integer.parseInt(request.score));//Convert to int
                     }
 
@@ -337,9 +343,9 @@ public class GameStage extends Stage implements ContactListener
                 {
                     if (object instanceof ClientClass.scoreObj)//When client receives the Host's score
                     {
-                        System.out.println("Client received score");
+                        //System.out.println("Client received score");
                         ClientClass.scoreObj request = (ClientClass.scoreObj)object;
-                        System.out.println(request.score);
+                        //System.out.println(request.score);
                         score2.setScore(Integer.parseInt(request.score));
                         //scoreV= request.score;
                         // srv.getServer().removeListener(this);
@@ -355,26 +361,31 @@ public class GameStage extends Stage implements ContactListener
         touchPoint = new Vector3();
         PuttonPoint= new Vector3();
         timer = new Timer();
-        collectorPosition = new Rectangle(touchPoint.x, touchPoint.y, 36f, 36f);
+        System.out.println(touchPoint.x);
+        System.out.println(touchPoint.y);
+        collectorPosition = new Rectangle(touchPoint.x, touchPoint.y, 36f, 36f);//Touch
+
+        //collectorPosition = new Rectangle(VIEWPORT_WIDTH/2, VIEWPORT_HEIGHT/2, 36f, 36f);//Gamepad
     }
     private void createPauseLabels()
     {
         fontbutton = AssetsManager.createBimapFont(45);
 
-        resume = createLabel("Resume");
-        resume.setPosition((getCamera().viewportWidth-resume.getWidth())/2,(getCamera().viewportHeight)/2 +50f);
-        resume.setVisible(false);
+        //resume = createLabel("Resume");
+        //resume.setPosition((getCamera().viewportWidth-resume.getWidth())/2,(getCamera().viewportHeight)/2 +50f);
+        //resume.setVisible(false);
 
-        quit = createLabel("Quit");
-        quit.setPosition((getCamera().viewportWidth-quit.getWidth())/2,(getCamera().viewportHeight-quit.getHeight())/3 +50f);
-        quit.setVisible(false);
+        //quit = createLabel("Quit");
+        //quit.setPosition((getCamera().viewportWidth-quit.getWidth())/2,(getCamera().viewportHeight-quit.getHeight())/3 +50f);
+        //quit.setVisible(false);
     }
     private void addActorSPause(){
         addActor(BackgroundPause);
-        addActor(resume);
-        addActor(quit);
+        /*addActor(resume);
+        addActor(quit);*/
     }
-    private void createBackgroundPause(){
+    private void createBackgroundPause()
+    {
         selectionColor =new TextureRegionDrawable(new TextureRegion(AssetsManager.assetManager.get(Constants.ButtonImage,Texture.class))) ;
         selectionColor.setRightWidth(5f);
         selectionColor.setBottomHeight(2f);
@@ -389,15 +400,97 @@ public class GameStage extends Stage implements ContactListener
         }
         if(VIEWPORT_WIDTH>1080 && VIEWPORT_HEIGHT>720)
         {
-            BackgroundPause.setSize(300,350);
+            BackgroundPause.setSize(400,350);
         }
         BackgroundPause.setPosition((getCamera().viewportWidth- BackgroundPause.getWidth())/2,(getCamera().viewportHeight  -BackgroundPause.getHeight())/2 );
+        //Button pause=new Button();
+        font = noteCollector.getAssetsManager().createBitmapFont();
+        final ImageTextButton.ImageTextButtonStyle textButtonStyle = new ImageTextButton.ImageTextButtonStyle();
+        textButtonStyle.up = selectionColor;
+        textButtonStyle.down = selectionColor;
+        textButtonStyle.over = selectionColor;
+        textButtonStyle.font = font;
+        ImageTextButton pause = new ImageTextButton("PAUSE", textButtonStyle);
+        //pause.setDebug(true);
+        if(isGuest || isHost) //disable pause for multiplayer
+        {
 
+        }
+        else
+        {
+            if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)//Change dimensions of pause button for different resolutions
+            {
+                pause.setSize(800f,56f);
+            }
+            if(VIEWPORT_WIDTH==1080 && VIEWPORT_HEIGHT==720)
+            {
+                pause.setSize(920f,56f);
+            }
+            if(VIEWPORT_WIDTH>1080 && VIEWPORT_HEIGHT>720)
+            {
+                //pause.setSize(1520f,56f);
+                pause.setBounds(250f,0f,1500f,100f);
+            }
+            pause.addListener(new InputListener()
+            {
+                @Override
+                public boolean touchDown(InputEvent event, float x, float y, int pointer, int button)//TODO : Fix other resolutions sizes for gamepad/pause
+                {
+                    if(GameState!="paused")//If already paused resume
+                    {
+                        System.out.println(GameState);
+                        GameState = "paused";
+                        System.out.println(GameState);
+                        final ImageTextButton resume = new ImageTextButton("Resume", textButtonStyle);
+                        final ImageTextButton quit = new ImageTextButton("Quit", textButtonStyle);
+                        resume.setPosition((getCamera().viewportWidth-resume.getWidth())/2,(getCamera().viewportHeight)/2 +50f);
+                        quit.setPosition((getCamera().viewportWidth-quit.getWidth())/2,(getCamera().viewportHeight-quit.getHeight())/3 +50f);
+                        resume.addListener(new InputListener()
+                        {
+                            @Override
+                            public boolean touchDown(InputEvent event,float x,float y,int pointer,int button)
+                            {
+                                GameStage.super.getRoot().removeActor(resume);
+                                GameStage.super.getRoot().removeActor(quit);
+                                GameState ="resume";
+                                return true;
+                            }
+                        });
+                        quit.addListener(new InputListener()
+                        {
+                            @Override
+                            public boolean touchDown(InputEvent event,float x , float y,int pointer,int button)
+                            {
+                                dispose();
+                                noteCollector.setScreen(new MainMenuScreen(noteCollector,stage));
+                                return true;
+                            }
+                        });
+                        addActor(resume);
+                        addActor(quit);
+                        resume.setVisible(true);
+                        quit.setVisible(true);
+                        //return true;
+                    }
+                    return true;
+                }
+            });
+            pause.getColor().a=0;
+            addActor(pause);
+        }
 
         BackgroundPause.setVisible(false);
     }
     private void setupActros(int speed,long delay){
         setupCollector();
+        if(prefs.getBoolean("pad"))//If dpad is preferred input type
+        {
+            setupDpad();
+        }
+        else
+        {
+
+        }
         setupSquareNotes(speed,delay);
         setupPiano();
         setUpScore();
@@ -500,13 +593,43 @@ public class GameStage extends Stage implements ContactListener
         collector = new Collector(WorldUtils.CreateCollector(world), AssetsManager);
         addActor(collector);
     }
+
+
+    private void setupDpad()
+    {
+        this.dpad=new Dpad(this);
+        dpad.setupDpad();
+    }
+    private void handleInput()//Handle input in action thread
+    {
+        if(dpad.isUpPressed())
+        {
+            collector.moveUp();
+            collectorPosition.set(collector.getXaxis(),collector.getYaxis(),squarewidth,squareheight);
+        }
+        if(dpad.isDownPressed())
+        {
+            collector.moveDown();
+            collectorPosition.set(collector.getXaxis(),collector.getYaxis(),squarewidth,squareheight);
+        }
+        if(dpad.isLeftPressed())
+        {
+            collector.moveLeft();
+            collectorPosition.set(collector.getXaxis(),collector.getYaxis(),squarewidth,squareheight);
+        }
+        if(dpad.isRightPressed())
+        {
+            collector.moveRight();
+            collectorPosition.set(collector.getXaxis(),collector.getYaxis(),squarewidth,squareheight);
+        }
+    }
+
     private void setupPiano()
     {
         piano = new Piano(WorldUtils.CreatePianoKeyboard(world), AssetsManager);
         piano.setNotes(notes);
         piano.setSquareNotes(squareNotes);
         addActor(piano);
-
     }
 
     private void setUpScore() {
@@ -625,8 +748,8 @@ produce the corresponding square*/
 
     private void fadeInPause(boolean visible){
         BackgroundPause.setVisible(visible);
-        resume.setVisible(visible);
-        quit.setVisible(visible);
+        //resume.setVisible(visible);
+        //quit.setVisible(visible);
     }
      public void pauseGame(long paused){
          pauseTimer(paused);
@@ -637,7 +760,10 @@ produce the corresponding square*/
     @Override
      public void act(float delta) {
          super.act(delta);
-
+         if(prefs.getBoolean("pad"))
+         {
+             handleInput();
+         }
          squareNotes.setCollector(collectorPosition);
          redcounts = squareNotes.getRedcounts();
          if(redcounts==1)//Change color of X's depending on the number of redcounts
@@ -750,7 +876,7 @@ produce the corresponding square*/
          this.getBatch().setProjectionMatrix(camera.combined);
      }
 
-    @Override
+   /* @Override
     public boolean touchDown(int x, int y, int pointer, int button) {
     if(isGuest || isHost) //disable pause for multiplayer
     {
@@ -764,9 +890,10 @@ produce the corresponding square*/
         if ( GameState=="paused" && checkPositionButtons(PuttonPoint.y) ) {
             GameState ="resume";
             return false;
-        }else if( GameState=="paused" && checkPositionButtons(PuttonPoint.y) == false){
+        }else if( GameState=="paused" && checkPositionButtons(PuttonPoint.y) == false)//Old pause menu
+        {
             dispose();
-            noteCollector.setScreen(new MainMenuScreen(noteCollector));
+            noteCollector.setScreen(new MainMenuScreen(noteCollector,stage));
             return  false;
         }
         if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)//Change dimensions of pause button for different resolutions
@@ -785,40 +912,47 @@ produce the corresponding square*/
         }
         if(VIEWPORT_WIDTH>1080 && VIEWPORT_HEIGHT>720)
         {
-            if (PuttonPoint.y <56f && PuttonPoint.x<800f+550 && GameState !="paused")
+            if (PuttonPoint.y <56f && PuttonPoint.x>250 && PuttonPoint.x <1770 && GameState !="paused")
             {
                 GameState = "paused";
             }
         }
-
-
-
-        }
-        return true;
     }
+    return true;
+}*/
 
 
-    @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+   /* @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button)
+    {
         translateScreenToWorldCoordinates(screenX,screenY);
         return true;
-    }
+    }*/
 
    @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-       translateScreenToWorldCoordinates(screenX,screenY);
+       if(prefs.getBoolean("touch"))
+       {
+           translateScreenToWorldCoordinates(screenX,screenY);
 
 
-       //set bound on collector and change position when drag the square 
-       if (touchPoint.x+ 32f  >getCamera().viewportWidth || touchPoint.y +32f >getCamera().viewportHeight || touchPoint.y+32f < 56f ) {
+           //set bound on collector and change position when drag the square
+           if (touchPoint.x+ 32f  >getCamera().viewportWidth || touchPoint.y +32f >getCamera().viewportHeight || touchPoint.y+32f < 56f ) {
+               return false;
+           }
+           else {
+               System.out.println("Collector X:"+collector.getX()+" Collector Y:"+collector.getY());
+               System.out.println("Position X:"+collectorPosition.getX()+" Position Y:"+collectorPosition.getY());
+               collectorPosition.set(touchPoint.x,touchPoint.y,squarewidth,squareheight);//TODO (Collector movement for referance) Also add toggle for touch/gamepad
+               collector.changeposition(touchPoint.x, touchPoint.y);
+
+           }
+           return true;
+       }
+       else
+       {
            return false;
        }
-       else {
-          collectorPosition.set(touchPoint.x,touchPoint.y,squarewidth,squareheight);
-           collector.changeposition(touchPoint.x, touchPoint.y);
-
-       }
-       return true;
     }
 
     private boolean checkPositionButtons(float y){

@@ -73,11 +73,23 @@ public class DialogScore implements Screen {
         AssetsManager = noteCollector.getAssetsManager();
         LoadAssets();
     }
+    public DialogScore(String ScoreNumber, NoteCollector noteCollector, String trackName,String Difficulty,Stage stage)
+    {
+        this.stage=stage;
+        this.ScoreNumber = ScoreNumber;
+        this.noteCollector = noteCollector;
+        this.trackName=trackName;
+        this.Difficulty=Difficulty;
+        score = new Score();
+        touched=false;
+        AssetsManager = noteCollector.getAssetsManager();
+        LoadAssets();
+    }
     @Override
     public void show() {
-        setupCamera();
+        //setupCamera();
         createTable();
-        createBackground();
+        //createBackground();
         createLogo();
         createLabel("Submit Score",stage.getCamera().viewportHeight/2+100);
         createTextField();
@@ -176,8 +188,11 @@ public class DialogScore implements Screen {
     }
 
     @Override
-    public void dispose() {
+    public void dispose()
+    {
         font.dispose();
+        stage.getRoot().removeActor(table);
+        stage.getRoot().removeActor(verticalGroup);
     }
 
     private void createLabel(String text,float Yaxis){
@@ -272,10 +287,10 @@ public class DialogScore implements Screen {
                                 String name = textField.getText();
                                 score.WriteScore(name, Integer.parseInt(ScoreNumber),trackName,Difficulty);
                                 //noteCollector.setScreen(new ScoresScreen(noteCollector));
-                                noteCollector.setScreen(new MainMenuScreen(noteCollector));
+                                noteCollector.setScreen(new MainMenuScreen(noteCollector,stage));
 
                             } else
-                                noteCollector.setScreen(new EndGameScreen(noteCollector, ScoreNumber,Difficulty));
+                                noteCollector.setScreen(new EndGameScreen(noteCollector, ScoreNumber,Difficulty,stage));
 
                         }
 

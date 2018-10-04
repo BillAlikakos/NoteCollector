@@ -72,12 +72,21 @@ public class ScoresScreen implements Screen {
 
     }
 
+    public ScoresScreen(NoteCollector notecollector,Stage stage) {
+        this.notecollector = notecollector;
+        this.stage=stage;
+        score = new Score();
+        scores = score.getScore();
+        AssetsManager = notecollector.getAssetsManager();
+        LoadAssets();
+
+    }
     @Override
     public void show()
     {
-        setupCamera();
+        //setupCamera();
         createVerticalGroup();
-        createBackground();
+        //createBackground();
         createLogo();
 
         exitBtnTable=new Table();
@@ -130,8 +139,11 @@ public class ScoresScreen implements Screen {
     @Override
     public void dispose()
     {
-        stage.dispose();
+        //stage.dispose();
         font.dispose();
+        stage.getRoot().removeActor(table);
+        stage.getRoot().removeActor(verticalGroup);
+        stage.getRoot().removeActor(exitBtnTable);
 
 
     }
@@ -263,7 +275,7 @@ public class ScoresScreen implements Screen {
         verticalGroupLogo  = new VerticalGroup();
         verticalGroupLogo.setFillParent(true);
         verticalGroupLogo.addActor(background);
-       AssetsManager.setLogoPosition(verticalGroupLogo);
+        AssetsManager.setLogoPosition(verticalGroupLogo);
 
         stage.addActor(verticalGroupLogo);
         //stage.addActor(background);
@@ -308,7 +320,7 @@ public class ScoresScreen implements Screen {
                         @Override
                         public void run() {
                             dispose();
-                            notecollector.setScreen(new MainMenuScreen(notecollector));
+                            notecollector.setScreen(new MainMenuScreen(notecollector,stage));
 
                         }
 
@@ -335,7 +347,7 @@ public class ScoresScreen implements Screen {
 
     private void setupCamera(){
         viewport = new ScalingViewport(Scaling.stretch, VIEWPORT_WIDTH, VIEWPORT_HEIGHT, new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT));
-        stage = new Stage(viewport);
+        //stage = new Stage(viewport);
         stage.getCamera().update();
     }
 }

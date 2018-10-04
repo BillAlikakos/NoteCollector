@@ -15,8 +15,8 @@ public class NoteCollector extends Game {
 
 	private Assets AssetsManager;
 	private Sound click;
-	IWiFi wifiCtx;
-	IGallery andoridGallery;
+	private IWiFi wifiCtx;
+	private IGallery andoridGallery;
 	public NoteCollector(){}
 	public NoteCollector(IWiFi wiFi, IGallery gallery)
 	{
@@ -64,6 +64,7 @@ public class NoteCollector extends Game {
 	public void create()
     {
 		//initialize asset manager and audio for click
+		Constants.viewportDimensions();
 		AssetsManager = new Assets();
 
         Preferences prefs = Gdx.app.getPreferences("NoteCollectorPreferences");

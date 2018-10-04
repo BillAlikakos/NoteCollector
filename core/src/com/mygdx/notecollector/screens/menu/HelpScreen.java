@@ -49,6 +49,8 @@ public class HelpScreen implements Screen {
     private int[] size;
     private int sizeX;
     private int sizeY;
+    private Image background;
+    private Texture img;
 
     public HelpScreen(NoteCollector noteCollector) {
 
@@ -59,16 +61,25 @@ public class HelpScreen implements Screen {
 
     }
 
+    public HelpScreen(NoteCollector noteCollector,Stage stage)
+    {
+        this.noteCollector = noteCollector;
+        this.stage=stage;
+        assetsManager = noteCollector.getAssetsManager();
+        font = assetsManager.createBimapFont(25);
+
+
+    }
     @Override
     public void show()
     {
         exitBtnTable=new Table();
         createVerticalGroup();
-        setupCamera();
-        createBackground();
+        //setupCamera();
+        //createBackground();
         createLogo();
-        Texture img = assetsManager.assetManager.get(Constants.text);
-        Image background = new Image(img);
+        img = assetsManager.assetManager.get(Constants.text);
+        background = new Image(img);
         //background.setPosition(((stage.getCamera().viewportWidth-background.getWidth())/2)-30f,(stage.getCamera().viewportHeight-background.getHeight())-100f);
         size=assetsManager.setButtonDimensions(sizeX,sizeY);//Get the dimensions for the button
         sizeX=size[0];
@@ -113,7 +124,13 @@ public class HelpScreen implements Screen {
 
     @Override
     public void dispose() {
-
+        //img.dispose();
+       // background.getColor().a=0;
+        stage.getRoot().removeActor(background);
+        //background.clear();
+        stage.getRoot().removeActor(verticalGroup);
+        stage.getRoot().removeActor(exitBtnTable);
+        exitBtnTable.clear();
     }
     private void createButton(String text)
     {
@@ -144,7 +161,8 @@ public class HelpScreen implements Screen {
 
                         @Override
                         public void run() {
-                            noteCollector.setScreen(new MainMenuScreen(noteCollector));
+                            dispose();
+                            noteCollector.setScreen(new MainMenuScreen(noteCollector,stage));
 
                         }
 
@@ -173,8 +191,8 @@ public class HelpScreen implements Screen {
         Image background = new Image(img);
         background.setPosition((stage.getCamera().viewportWidth-background.getWidth())/2,(stage.getCamera().viewportHeight-background.getHeight()));
         stage.addActor(background);*/
-        Texture img = assetsManager.assetManager.get(Constants.logo);
-        Image background = new Image(img);
+        img = assetsManager.assetManager.get(Constants.logo);
+        background = new Image(img);
         addVerticalGroup(background);
     }
     private  void addVerticalGroup(Actor actor)

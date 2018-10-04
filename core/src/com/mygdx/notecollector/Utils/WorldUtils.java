@@ -1,10 +1,16 @@
 package com.mygdx.notecollector.Utils;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
 /**
  * Created by bill on 15/12/2015.
@@ -12,6 +18,10 @@ import com.badlogic.gdx.physics.box2d.World;
 public class WorldUtils {
     private static final int VIEWPORT_WIDTH = Constants.APP_WIDTH;
     private static final int VIEWPORT_HEIGHT = Constants.APP_HEIGHT;
+    private static Touchpad.TouchpadStyle style;
+    private static Skin skin;
+    private static Drawable background;
+    private static Drawable knob;
 
     public static World CreateWorld(){
         return new World(Constants.WORLD_GRAVITY,true);

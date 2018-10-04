@@ -12,15 +12,20 @@ public class Constants {
 
     public static final Vector2 WORLD_GRAVITY = new Vector2(0, -10f);
 
-    public static final  int APP_WIDTH =Gdx.graphics.getWidth();//800
-    public static final int APP_HEIGHT =Gdx.graphics.getHeight();//480
+    public static int APP_WIDTH =Gdx.graphics.getWidth();//800
+    public static int APP_HEIGHT =Gdx.graphics.getHeight();//480
 
     public static final String WhiteKey = "data/Game Images/white_key.png";
     public static final String WhitePressedKey = "data/Game Images/white_pressed_key.png";
     public static final String BlackKey = "data/Game Images/black_key.png";
     public static final String BlackPressedKey = "data/Game Images/black_pressed_key.png";
     public static final String X="data/Game Images/x.png";
-
+    //public static final String dpadBg="data/Game Images/white_bg.png";
+    public static final String DpadUp="data/Game Images/dpad_arrow.png";
+    public static final String DpadDown="data/Game Images/dpad_arrow_down.png";
+    public static final String DpadLeft="data/Game Images/dpad_arrow_left.png";
+    public static final String DpadRight="data/Game Images/dpad_arrow_right.png";
+    public static final String dpadKnob="data/Game Images/dpad.png";
 
 
     public static  final String ButtonImage = "data/ui/buttons/appButton.png";
@@ -36,7 +41,24 @@ public class Constants {
     /*public static String getBackgroundGame() {
         return BackgroundGame;
     }*/
-
+    public static void viewportDimensions()
+    {
+        if(Gdx.graphics.getWidth()<1080)
+        {
+            APP_WIDTH=800;
+            APP_HEIGHT=480;
+        }
+        else if(Gdx.graphics.getWidth()<1920)
+        {
+            APP_WIDTH=1080;
+            APP_HEIGHT=720;
+        }
+        else
+        {
+            APP_WIDTH=1920;
+            APP_HEIGHT=1080;
+        }
+    }
     public static String getBackgroundMenu() {
         //return BackgroundMenu;
         return prefs.getString("menuBackground");

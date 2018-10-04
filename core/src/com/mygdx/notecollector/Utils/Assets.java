@@ -366,8 +366,9 @@ public  class Assets {
         }*/
         if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)
         {
+            System.out.println("480P");
             sizeX=200;
-             sizeY=50;
+            sizeY=50;
 
         }
         if(VIEWPORT_WIDTH==1080 && VIEWPORT_HEIGHT==720)
@@ -379,6 +380,13 @@ public  class Assets {
         {
             sizeX=300;
             sizeY=150;
+        }
+        else
+        {
+            System.out.println("WIDTH: "+VIEWPORT_WIDTH);
+            System.out.println("HEIGHT: "+VIEWPORT_HEIGHT);
+            System.out.println("APP WIDTH: "+Constants.APP_WIDTH);
+            System.out.println("APP HEIGHT: "+Constants.APP_HEIGHT);
         }
         System.out.println("sizeX:"+sizeX+" sizeY:"+sizeY);
         return new int[] {sizeX, sizeY};

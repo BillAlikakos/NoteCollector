@@ -81,7 +81,9 @@ public class SearchTrack implements Screen {
     private String query;
     private boolean isResult;
 
-    public SearchTrack(NoteCollector noteCollector) {
+    public SearchTrack(NoteCollector noteCollector,Stage stage)
+    {
+        this.stage=stage;
         this.noteCollector = noteCollector;
         touched = false;
         AssetsManager = noteCollector.getAssetsManager();
@@ -95,9 +97,9 @@ public class SearchTrack implements Screen {
     {
         //networkAccess=noteCollector.isNetworkConnected();
         networkAccess=noteCollector.getWifiCtx();
-        setupCamera();
+        //setupCamera();
         createTable();
-        createBackground();
+        //createBackground();
         createLogo();
         size = AssetsManager.setButtonDimensions(sizeX, sizeY);//Get the dimensions for the button
         sizeX = size[0];
@@ -125,7 +127,7 @@ public class SearchTrack implements Screen {
                 search=createLabel("Search For Track", stage.getCamera().viewportHeight / 2 + 100);
                 //createButton("Submit", 820f, 420f, sizeX, sizeY);
                 //createButton("Submit", (viewport.getScreenWidth() / 2) - sizeX / 2, 200f, sizeX, sizeY);//Dimensions if the search modes are rendered
-                createButton("Submit", (viewport.getScreenWidth() / 2) - sizeX / 2, 420f, sizeX, sizeY);
+                createButton("Submit", (stage.getCamera().viewportWidth / 2) - sizeX / 2, 420f, sizeX, sizeY);
             }
             //createSearchModes(); //Not needed as the site searches both.
 
@@ -286,7 +288,7 @@ public class SearchTrack implements Screen {
 
         stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
-        // if touch screen not textfield hide keyboard
+        // if  textfield is not touched hide keyboard
         if (Gdx.input.isTouched() && touched == true) {
             Gdx.input.setOnscreenKeyboardVisible(false);
             stage.unfocus(textField);
@@ -318,7 +320,9 @@ public class SearchTrack implements Screen {
     @Override
     public void dispose()
     {
-        stage.dispose();
+        //stage.dispose();
+        stage.getRoot().removeActor(table);
+        stage.getRoot().removeActor(verticalGroup);
         font.dispose();
         table.clear();
     }
@@ -445,7 +449,7 @@ public class SearchTrack implements Screen {
                             }
                             else if(text.equals("Back"))
                             {
-                                noteCollector.setScreen(new MainMenuScreen(noteCollector));
+                                noteCollector.setScreen(new MainMenuScreen(noteCollector,stage));
                             }
 
                         }
@@ -542,7 +546,7 @@ public class SearchTrack implements Screen {
                             dispose();
                             if(songs.size()!=0)
                             {
-                                noteCollector.setScreen(new Results(noteCollector,songs));
+                                noteCollector.setScreen(new Results(noteCollector,songs,stage));
                             }
 
                         }

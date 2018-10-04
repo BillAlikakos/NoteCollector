@@ -2,13 +2,27 @@ package com.mygdx.notecollector.screens;
 
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 import com.mygdx.notecollector.GameStage.GameStage;
 import com.mygdx.notecollector.Multiplayer.ClientClass;
 import com.mygdx.notecollector.Multiplayer.ServerClass;
 import com.mygdx.notecollector.NoteCollector;
+import com.mygdx.notecollector.Utils.Constants;
+import com.mygdx.notecollector.Utils.WorldUtils;
 import com.mygdx.notecollector.midilib.MidiNote;
 
 import java.io.IOException;
@@ -20,7 +34,7 @@ import java.util.ArrayList;
 public class GameScreen implements  Screen {
 
 //class of the main screen of game
-    public GameStage stage;
+    public GameStage gameStage;
     private NoteCollector game;
     private String filepath;
     private int speed;
@@ -32,23 +46,27 @@ public class GameScreen implements  Screen {
     private boolean isHost;
     private boolean isGuest;
     private boolean mode;
+    private Touchpad dpad;
+    private Stage stage;
+    private boolean upPressed, downPressed, leftPressed, rightPressed;
 
-    public GameScreen(NoteCollector game, float TickPerMsec, ArrayList<MidiNote> notes, String filepath,int speed,long delay,boolean mode) throws IOException, InterruptedException {
+    public GameScreen(NoteCollector game, float TickPerMsec, ArrayList<MidiNote> notes, String filepath,int speed,long delay,boolean mode,Stage stage) throws IOException, InterruptedException {
 
-        stage = new GameStage(game,TickPerMsec,notes,speed,delay,mode);
+        gameStage = new GameStage(game,TickPerMsec,notes,speed,delay,mode,stage);
+        this.stage=stage;
         this.game = game;
         this.filepath = filepath;
         this.delay = delay;
         this.speed = speed;
         paused =false;
         this.mode=mode;
-        stage.setGameState("running");
-        Gdx.input.setInputProcessor(stage);
-
+        gameStage.setGameState("running");
+        Gdx.input.setInputProcessor(gameStage);
     }
 
-    public GameScreen(NoteCollector game, float TickPerMsec, ArrayList<MidiNote> notes, String filepath, int speed, long delay, ClientClass c,boolean mode) throws IOException, InterruptedException {
-        stage = new GameStage(game,TickPerMsec,notes,speed,delay,c,mode);
+    public GameScreen(NoteCollector game, float TickPerMsec, ArrayList<MidiNote> notes, String filepath, int speed, long delay, ClientClass c,boolean mode,Stage stage) throws IOException, InterruptedException {
+        gameStage = new GameStage(game,TickPerMsec,notes,speed,delay,c,mode,stage);
+        this.stage=stage;
         this.game = game;
         this.filepath = filepath;
         this.delay = delay;
@@ -58,14 +76,15 @@ public class GameScreen implements  Screen {
         //paused =false;
         isHost=false;
         isGuest=true;
-        stage.setGameState("running");
-        Gdx.input.setInputProcessor(stage);
+        gameStage.setGameState("running");
+        Gdx.input.setInputProcessor(gameStage);
 
     }
 
-    public GameScreen(NoteCollector game, float TickPerMsec, ArrayList<MidiNote> notes, String filepath, int speed, long delay, ServerClass srv,boolean mode) throws IOException, InterruptedException {
+    public GameScreen(NoteCollector game, float TickPerMsec, ArrayList<MidiNote> notes, String filepath, int speed, long delay, ServerClass srv,boolean mode,Stage stage) throws IOException, InterruptedException {
 
-        stage = new GameStage(game,TickPerMsec,notes,speed,delay,srv,mode);
+        gameStage = new GameStage(game,TickPerMsec,notes,speed,delay,srv,mode,stage);
+        this.stage=stage;
         this.game = game;
         this.filepath = filepath;
         this.delay = delay;
@@ -75,16 +94,21 @@ public class GameScreen implements  Screen {
         //paused =false;
         isHost=true;
         isGuest=false;
-        stage.setGameState("running");
-        Gdx.input.setInputProcessor(stage);
+        gameStage.setGameState("running");
+        Gdx.input.setInputProcessor(gameStage);
 
     }
 
     @Override
-    public void show() {
+    public void show()
+    {
 
     }
+    public void setupListeners()
+    {
 
+        gameStage.setGameState("running");
+    }
     @Override
     public void render(float delta) {
         //Clear the screen
@@ -92,10 +116,10 @@ public class GameScreen implements  Screen {
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         //Update the stage
-        stage.act(Gdx.graphics.getDeltaTime());
-        stage.draw();
+        gameStage.act(Gdx.graphics.getDeltaTime());
+        gameStage.draw();
 
-        if (stage.getGameState() == "finished")
+        if (gameStage.getGameState().equals("finished"))
         {
             String difficulty;//Pass difficulty setting (For scoreboard)
             if(this.delay==200 && this.speed==130)
@@ -117,17 +141,17 @@ public class GameScreen implements  Screen {
             if(isHost)
             {
                 dispose();
-                game.setScreen(new EndGameScreen(game,stage.getScore(),difficulty,srv));
+                game.setScreen(new EndGameScreen(game,gameStage.getScore(),difficulty,srv,stage));
             }
             else if(isGuest)
             {
                 dispose();
-                game.setScreen(new EndGameScreen(game,stage.getScore(),difficulty,c));//TODO possibly display a message on opponents score if he collected more than 5 red
+                game.setScreen(new EndGameScreen(game,gameStage.getScore(),difficulty,c,stage));//TODO possibly display a message on opponents score if he collected more than 5 red
             }
             else
             {
                 dispose();
-                game.setScreen(new EndGameScreen(game,stage.getScore(),difficulty));
+                game.setScreen(new EndGameScreen(game,gameStage.getScore(),difficulty,stage));
             }
 
         }
@@ -136,55 +160,55 @@ public class GameScreen implements  Screen {
         {
             if(!c.checkConn())
             {
-                stage.setGameState("finished");
+                gameStage.setGameState("finished");
             }
         }
         else if(isHost)
         {
             if(!srv.getConnection().isConnected())
             {
-                stage.setGameState("finished");
+                gameStage.setGameState("finished");
             }
         }
 
 
-        if (stage.getGameState() == "paused")
+        if (gameStage.getGameState().equals("paused"))
             pause();
 
-        if (stage.getGameState() == "resume")
-            stage.resumeGame();
+        if (gameStage.getGameState().equals("resume"))
+            gameStage.resumeGame();
 
         if (isGameOver())
         {
             if(isHost)
             {
-                srv.sendGameOver(stage.getScore());//Notify the other player that the game is over
+                srv.sendGameOver(gameStage.getScore());//Notify the other player that the game is over
                 dispose();
-                game.setScreen(new GameOverScreen(game,stage.getScore(),filepath,speed,delay,srv,mode));
+                game.setScreen(new GameOverScreen(game,gameStage.getScore(),filepath,speed,delay,srv,mode,stage));
             }
             else if(isGuest)
             {
-                c.sendGameOver(stage.getScore());
+                c.sendGameOver(gameStage.getScore());
                 dispose();
-                game.setScreen(new GameOverScreen(game,stage.getScore(),filepath,speed,delay,c,mode));
+                game.setScreen(new GameOverScreen(game,gameStage.getScore(),filepath,speed,delay,c,mode,stage));
             }
             else
             {
                 dispose();
-                game.setScreen(new GameOverScreen(game,stage.getScore(),filepath,speed,delay,mode));
+                game.setScreen(new GameOverScreen(game,gameStage.getScore(),filepath,speed,delay,mode,stage));
             }
         }
     }
     @Override
     public void resize(int width, int height) {
 
-        stage.getViewport().update(width,height,true);
+        gameStage.getViewport().update(width,height,true);
     }
 
     @Override
     public void resume() {
-        stage.setGameState("paused");
-        stage.pausetime = pausetime;
+        gameStage.setGameState("paused");
+        gameStage.pausetime = pausetime;
     }
 
     @Override
@@ -195,8 +219,7 @@ public class GameScreen implements  Screen {
 
     @Override
     public void dispose() {
-        stage.dispose();
-
+        gameStage.dispose();
     }
 
     @Override
@@ -204,12 +227,12 @@ public class GameScreen implements  Screen {
     {
         //Pause must be disabled in multiplayer
         pausetime  =  System.currentTimeMillis();
-        stage.pauseGame(pausetime);
+        gameStage.pauseGame(pausetime);
 
     }
 
     private boolean isGameOver(){
-        if (stage.getRedcounts() == 5)
+        if (gameStage.getRedcounts() == 5)
         {
             //Send message to server to terminate game
             return true;
