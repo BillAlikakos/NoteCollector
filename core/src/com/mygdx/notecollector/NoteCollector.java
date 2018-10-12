@@ -39,28 +39,6 @@ public class NoteCollector extends Game {
 		return AssetsManager;
 	}
 
-	/*public Context getContext()
-	{
-		return mContext;
-	}
-
-    public boolean isNetworkConnected()
-    {
-
-        WifiManager wifi = (WifiManager) this.getContext().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        if (wifi.isWifiEnabled())
-        {
-
-            return true;
-            //wifi is enabled
-        }
-        else
-        {
-           return false;
-        }
-
-    }*/
-
 	public void create()
     {
 		//initialize asset manager and audio for click

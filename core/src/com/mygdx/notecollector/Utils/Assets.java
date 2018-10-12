@@ -270,19 +270,9 @@ public  class Assets {
     }
     public BitmapFont createBitmapFont()
     {
-        int fontSize=15;
-        if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)//Set appropriate sizes for title spacing according to resolution
-        {
-            fontSize=25;
-        }
-        if(VIEWPORT_WIDTH==1080 && VIEWPORT_HEIGHT==720)
-        {
-            fontSize=30;
-        }
-        if(VIEWPORT_WIDTH>1080 && VIEWPORT_HEIGHT>720)
-        {
-            fontSize=40;
-        }
+        int fontSize=VIEWPORT_WIDTH*48/1920;//Set font size to the resolution (1920 is used as divider as it is considered the development resolution)
+        //int fontSize=VIEWPORT_WIDTH/40;
+        System.out.println(fontSize);
         font = this.createBimapFont(fontSize);
         return font;
     }
@@ -329,9 +319,26 @@ public  class Assets {
         Image background = new Image(texture);
         return background;
     }
+    public Image scaleLogo(FileHandle file)//Use pixmap to scale logo for all resolutions
+    {
+        //Pixmap pixmap200= new Pixmap(Gdx.files.internal(Constants.logo));
+        Pixmap pixmap200= new Pixmap(file);
+        Pixmap pixmap100 = new Pixmap(1000*VIEWPORT_WIDTH/1080, 192*VIEWPORT_HEIGHT/720, Pixmap.Format.RGBA8888);//Scale background image to the device's resolution
+        pixmap100.drawPixmap(pixmap200,
+                0, 0, pixmap200.getWidth(), pixmap200.getHeight(),
+                0, 0, pixmap100.getWidth(), pixmap100.getHeight()
+        );
+        //pixmap200.setBlending(Pixmap.Blending.SourceOver);
+        Texture texture = new Texture(pixmap100);
+        pixmap200.dispose();
+        pixmap100.dispose();
+        Image background = new Image(texture);
+        return background;
+    }
+
     public void setLogoPosition(VerticalGroup verticalGroup)
     {
-        if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)//Set appropriate sizes for logo spacing according to resolution
+        /*if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)//Set appropriate sizes for logo spacing according to resolution
         {
             verticalGroup.center().padTop(20f).space(10f);
         }
@@ -342,7 +349,8 @@ public  class Assets {
         if(VIEWPORT_WIDTH>1080 && VIEWPORT_HEIGHT>720)
         {
             verticalGroup.center().padTop(150f).space(10f);
-        }
+        }*/
+        verticalGroup.center().padTop(VIEWPORT_HEIGHT*0.05f).space(10f);
     }
     public int[] setButtonDimensions(int sizeX,int sizeY)//Create different buttons for each resolution
     {
@@ -364,6 +372,7 @@ public  class Assets {
             //sizeX=200;
             //sizeY=150;
         }*/
+
         if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)
         {
             System.out.println("480P");
@@ -391,6 +400,14 @@ public  class Assets {
         System.out.println("sizeX:"+sizeX+" sizeY:"+sizeY);
         return new int[] {sizeX, sizeY};
     }
+    public float[] setButtonSize(float sizeX,float sizeY)//Create different buttons for each resolution
+    {
+        sizeX=VIEWPORT_WIDTH*(0.185f);
+        sizeY=VIEWPORT_HEIGHT*(0.17f);
+        //System.out.println("sizeX2:"+sizeX+" sizeY2:"+sizeY);
+        return new float[] {sizeX, sizeY};
+    }
+
 
     private void setSize(int size) {
 

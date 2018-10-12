@@ -69,9 +69,9 @@ public class Browse implements Screen {
     private int speed;
     private long delay;
     private VerticalGroup verticalGroupLogo;
-    private int sizeX;
-    private int sizeY;
-    private int[] size;
+    private float sizeX;
+    private float sizeY;
+    private float[] size;
     private Table exitBtnTable;
     private ServerClass srv;
     private boolean multiplayer;
@@ -123,31 +123,17 @@ public class Browse implements Screen {
     @Override
     public void show()
     {
-        //setupCamera();
         verticalGroupLogo=new VerticalGroup();
         Gdx.input.setInputProcessor(stage);
         exitBtnTable=new Table();
-        size=assetsManager.setButtonDimensions(sizeX,sizeY);//Get the dimensions for the button
+        size=assetsManager.setButtonSize(sizeX,sizeY);//Get the dimensions for the button
         sizeX=size[0];
         sizeY=size[1];
-        //createBackground();
         createTable();
         createList();
         getDir(root);
-        if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)//Set appropriate sizes for title spacing according to resolution
-        {
-
-        }
-        if(VIEWPORT_WIDTH==1080 && VIEWPORT_HEIGHT==720)
-        {
-            createLogo();
-        }
-        if(VIEWPORT_WIDTH>1080 && VIEWPORT_HEIGHT>720)
-        {
-            createLogo();
-        }
-
-        table.add(createLabel("Select a track:")).padTop(70f);
+        createLogo();
+        table.add(createLabel("Select a track:")).padTop(VIEWPORT_HEIGHT*0.14f);
         table.row();
         exitBtnTable.toFront();
         createButton("Back",sizeX,sizeY);
@@ -159,7 +145,6 @@ public class Browse implements Screen {
         exitBtnTable.getColor().a=0;
         table.addAction(Actions.sequence(Actions.fadeIn(0.2f)));//Fade button table in
         exitBtnTable.addAction(Actions.sequence(Actions.fadeIn(0.2f)));
-        //stage.addActor(verticalGroupLogo);
     }
     @Override
     public void render(float delta) {
@@ -194,13 +179,12 @@ public class Browse implements Screen {
 
     private void createLogo()
     {
-        Texture img = assetsManager.assetManager.get(Constants.logo);
-        Image background = new Image(img);
+        Image logo=assetsManager.scaleLogo(Gdx.files.internal(Constants.logo));
         verticalGroupLogo  = new VerticalGroup();
         verticalGroupLogo.setFillParent(true);
-        verticalGroupLogo.addActor(background);
+        verticalGroupLogo.center();
+        verticalGroupLogo.addActor(logo);
         assetsManager.setLogoPosition(verticalGroupLogo);
-        verticalGroupLogo.toBack();
         stage.addActor(verticalGroupLogo);
 
     }
@@ -208,23 +192,9 @@ public class Browse implements Screen {
         table = new Table();
         table.center();
         table.setFillParent(true);
-        //table.setDebug(true);
-        if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)//Set appropriate sizes for title spacing according to resolution
-        {
-            table.pad(10f,10f,50f,10f);
-        }
-        if(VIEWPORT_WIDTH==1080 && VIEWPORT_HEIGHT==720)
-        {
-            table.pad(10f,10f,50f,10f);
-        }
-        if(VIEWPORT_WIDTH>1080 && VIEWPORT_HEIGHT>720)
-        {
-            table.pad(10f,50f,100f,10f);
-        }
-
-        //table.setTouchable(Touchable.enabled);
+        table.pad(VIEWPORT_HEIGHT*0.05f,VIEWPORT_WIDTH*0.05f,VIEWPORT_HEIGHT*0.1f,VIEWPORT_WIDTH*0.05f);
     }
-    private void createButton(String text,int sizeX,int sizeY)
+    private void createButton(String text,float sizeX,float sizeY)
     {
         selectionColor =new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.ButtonImage,Texture.class))) ;
         selectionColorPressed = new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.ButtonPressed,Texture.class)));
@@ -252,7 +222,7 @@ public class Browse implements Screen {
                     Timer.schedule(new Timer.Task() {
                         @Override
                         public void run() {
-                            if(multiplayer==false)
+                            if(!multiplayer)
                             {
                                 if (text.equals("Back"))
                                 {
@@ -304,7 +274,7 @@ public class Browse implements Screen {
 
 
     private void LoadAssets(){
-        fontH = assetsManager.createBimapFont(45);
+        fontH = assetsManager.createBimapFont(VIEWPORT_WIDTH/30);
         font = assetsManager.createBitmapFont();
         selectionColor =new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.ButtonImage,Texture.class))) ;
         selectionColor.setRightWidth(5f);
@@ -356,21 +326,7 @@ public class Browse implements Screen {
 
     }
 
-    private void createBackground()
-    {
-        System.out.println("Width:"+VIEWPORT_WIDTH+" Height:"+VIEWPORT_HEIGHT);
-        FileHandle file = Gdx.files.internal(Constants.getBackgroundMenu().toString());
-        Image background=assetsManager.scaleBackground(file);
-        stage.addActor(background);
-
-    }
-
-    private void setupCamera(){
-        viewport = new ScalingViewport(Scaling.stretch, VIEWPORT_WIDTH, VIEWPORT_HEIGHT, new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT));
-        stage = new Stage(viewport);
-        stage.getCamera().update();
-    }
-    // with this method change directory
+    // Method to change directory in the file system
     private void changeDirectory(int position)  {
         final File file = new File(path.get(position));
         if (file.isDirectory())
@@ -390,7 +346,7 @@ public class Browse implements Screen {
                 @Override
                 public void run()
                 {
-                    if(multiplayer==false)
+                    if(!multiplayer)
                     {
                         dispose();
                         noteCollector.setScreen(new TrackSelect(noteCollector,speed,delay,file,mode,stage));
@@ -413,7 +369,7 @@ public class Browse implements Screen {
         }
         return str;
     }
-    //set the list of dirs in a list 
+    //set the list content
     private void getDir(String dirPath) {
 
         path = new ArrayList<String>();
@@ -466,7 +422,6 @@ public class Browse implements Screen {
     public void dispose()
     {
         table.clear();
-       // stage.dispose();
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(exitBtnTable);
         stage.getRoot().removeActor(verticalGroupLogo);

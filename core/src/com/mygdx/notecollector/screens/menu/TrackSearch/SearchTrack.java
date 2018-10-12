@@ -70,9 +70,9 @@ public class SearchTrack implements Screen {
     private TextureRegionDrawable selectionColorList;
     private boolean touched;
     private VerticalGroup verticalGroup;
-    private int[] size;
-    private int sizeX;
-    private int sizeY;
+    private float[] size;
+    private float sizeX;
+    private float sizeY;
     private ImageTextButton ByName;
     private ImageTextButton ByArtist;
     private boolean searchByName;
@@ -95,56 +95,32 @@ public class SearchTrack implements Screen {
     @Override
     public void show()
     {
-        //networkAccess=noteCollector.isNetworkConnected();
         networkAccess=noteCollector.getWifiCtx();
-        //setupCamera();
         createTable();
-        //createBackground();
         createLogo();
-        size = AssetsManager.setButtonDimensions(sizeX, sizeY);//Get the dimensions for the button
+        size = AssetsManager.setButtonSize(sizeX, sizeY);//Get the dimensions for the button
         sizeX = size[0];
         sizeY = size[1];
-        createButton("Back", 5f, 10f, sizeX, sizeY);
+        createButton("Back", 0f*VIEWPORT_WIDTH/1920, 0f*VIEWPORT_HEIGHT/1080, sizeX, sizeY);
         if(networkAccess)
         {
-            //createLabel("Search For Track", stage.getCamera().viewportHeight / 2 + 100);
             createTextField();
-
-            if (VIEWPORT_WIDTH == 800 && VIEWPORT_HEIGHT == 480)//old dimensions
-            {
-                search=createLabel("Search For Track", stage.getCamera().viewportHeight / 2 + 50);
-                createButton("Submit", 305, 140f, sizeX, sizeY);
-                //createButton("Submit", 350, 130f, 75, 100);//For search modes
-            }
-            if (VIEWPORT_WIDTH == 1080 && VIEWPORT_HEIGHT == 720)
-            {
-                search=createLabel("Search For Track", stage.getCamera().viewportHeight / 2 + 100);
-                createButton("Submit", 410f, 300f, sizeX, sizeY);
-                //createButton("Submit", 410f, 200f, sizeX, sizeY);//For search modes
-            }
-            if (VIEWPORT_WIDTH > 1080 && VIEWPORT_HEIGHT > 720)
-            {
-                search=createLabel("Search For Track", stage.getCamera().viewportHeight / 2 + 100);
-                //createButton("Submit", 820f, 420f, sizeX, sizeY);
-                //createButton("Submit", (viewport.getScreenWidth() / 2) - sizeX / 2, 200f, sizeX, sizeY);//Dimensions if the search modes are rendered
-                createButton("Submit", (stage.getCamera().viewportWidth / 2) - sizeX / 2, 420f, sizeX, sizeY);
-            }
-            //createSearchModes(); //Not needed as the site searches both.
-
+            search=createLabel("Search For Track", stage.getCamera().viewportHeight / 2 + 135*VIEWPORT_HEIGHT/1080);
+            createButton("Submit", ((stage.getCamera().viewportWidth / 2) - sizeX / 2), 410f*VIEWPORT_HEIGHT/1080, sizeX, sizeY);
+            stage.addActor(table);
+            table.getColor().a=0;
+            search.getColor().a=0;
+            textField.getColor().a=0;
+            table.addAction(Actions.fadeIn(0.2f));
+            search.addAction(Actions.fadeIn(0.2f));
+            textField.addAction(Actions.fadeIn(0.2f));
         }
         else
         {
+            stage.addActor(table);
             createImg();
-            if(VIEWPORT_HEIGHT==480 && VIEWPORT_WIDTH==800)
-            {
-                err1=createLabel("Network Connection Unavailable", stage.getCamera().viewportHeight / 2 + 60);
-                err2=createLabel("Please Connect to a Network", stage.getCamera().viewportHeight / 2 + 30);
-            }
-            else
-            {
-                err1=createLabel("Network Connection Unavailable", stage.getCamera().viewportHeight / 2 + 100);
-                err2=createLabel("Please Connect to a Network", stage.getCamera().viewportHeight / 2 + 65);
-            }
+            err1=createLabel("Network Connection Unavailable", (stage.getCamera().viewportHeight / 2 + 100*VIEWPORT_HEIGHT/1080));
+            err2=createLabel("Please Connect to a Network", (stage.getCamera().viewportHeight / 2 + 65*VIEWPORT_HEIGHT/1080));
             err1.getColor().a=0;
             err2.getColor().a=0;
             table.getColor().a=0;
@@ -153,90 +129,24 @@ public class SearchTrack implements Screen {
             err2.addAction(Actions.fadeIn(0.2f));
         }
         Gdx.input.setInputProcessor(stage);
-        stage.addActor(table);
-        table.getColor().a=0;
-        search.getColor().a=0;
-        textField.getColor().a=0;
-        table.addAction(Actions.fadeIn(0.2f));
-        search.addAction(Actions.fadeIn(0.2f));
-        textField.addAction(Actions.fadeIn(0.2f));
-
     }
 
     private void createImg()
     {
         Texture img = AssetsManager.assetManager.get(Constants.noConn);
         icon = new Image(img);
-
-        if(VIEWPORT_WIDTH == 800 && VIEWPORT_HEIGHT == 480)
-        {
-            icon.setScale(.25f,.25f);
-            icon.setPosition((stage.getCamera().viewportWidth -175)/2,stage.getCamera().viewportHeight/2-125);
-        }
-        else if(VIEWPORT_HEIGHT==720 && VIEWPORT_WIDTH==1080)
-        {
-            icon.setScale(.35f,.35f);
-            icon.setPosition((stage.getCamera().viewportWidth -250)/2,stage.getCamera().viewportHeight/2-175);
-        }
-        else if(VIEWPORT_HEIGHT>720 && VIEWPORT_WIDTH>1080)
-        {
-            icon.setScale(.5f,.5f);
-            icon.setPosition((stage.getCamera().viewportWidth - 375)/2,stage.getCamera().viewportHeight/2-325);
-        }
+        float Xaxis=(stage.getCamera().viewportWidth - 375*VIEWPORT_WIDTH/1920)/2;
+        float Yaxis=stage.getCamera().viewportHeight/2-325*VIEWPORT_HEIGHT/1080;
+        icon.setScale(.5f*VIEWPORT_WIDTH/1920,.5f*VIEWPORT_HEIGHT/1080);
+        icon.setPosition(Xaxis,Yaxis);
         stage.addActor(icon);
         icon.getColor().a=0;
         icon.addAction(Actions.fadeIn(0.2f));
     }
 
-    private void createSearchModes()
-    {
-        int x1=0,x2=0,offset=0;
-        float y=0;
-        if (VIEWPORT_WIDTH == 800 && VIEWPORT_HEIGHT == 480)//old dimensions
-        {
-            //createButton("Search By Name", 350, 180f, 75, 100);
-            //createButton("Search By Artist", 550, 180f, 75, 100);
-            x1=(viewport.getScreenWidth()/2)-sizeX+10/4;//X axis coordinates for 1st button
-            x2=viewport.getScreenWidth()/2;//X axis coordinates for 2nd button
-        }
-        if (VIEWPORT_WIDTH == 1080 && VIEWPORT_HEIGHT == 720)
-        {
-            //createButton("Search By Name", 410f, 300f, sizeX, sizeY);
-            //createButton("Search By Artist", 650f, 300f, sizeX, sizeY);
-            x1=(viewport.getScreenWidth()/2)-sizeX+10/4;//X axis coordinates for 1st button
-            x2=viewport.getScreenWidth()/2;//X axis coordinates for 2nd button
-        }
-        if (VIEWPORT_WIDTH > 1080 && VIEWPORT_HEIGHT > 720)
-        {
-            x1=(viewport.getScreenWidth()/2)-sizeX+10/4;//X axis coordinates for 1st button
-            x2=viewport.getScreenWidth()/2;//X axis coordinates for 2nd button
-            y=420f;//Y axis coordinates for buttons
-            offset=10;//Offset to slightly increase button size
-        }
-        ImageTextButton.ImageTextButtonStyle textButtonStyle = createButtonStyle(selectionColor);
-        ByName = new ImageTextButton("Search By Name", textButtonStyle);
-        AddButtonListener(ByName, "Search By Name");
-        ByName.setPosition(x1, y);
-        ByName.setSize(sizeX + offset, sizeY);
-        table.add(ByName);
-        table.addActor(ByName);
-
-        ByArtist = new ImageTextButton("Search By Artist", textButtonStyle);
-        AddButtonListener(ByArtist, "Search By Artist");
-        ByArtist.setPosition(x2, y);
-        ByArtist.setSize(sizeX + offset, sizeY);
-        table.add(ByArtist);
-        table.addActor(ByArtist);
-        ByName.setStyle(createButtonStyle(selectionColorPressed));//Preset
-        ByArtist.setStyle(createButtonStyle(selectionColor));
-        //createButton("Search By Name", (viewport.getScreenWidth()/2)-sizeX+10/4, 420f, sizeX+10, sizeY);//TODO Fix buttons for the other resolutions
-        // createButton("Search By Artist", (viewport.getScreenWidth()/2), 420f, sizeX+10, sizeY);
-
-    }
-
 
     private void addListener() {
-        //if click show keyboard for writting score
+        //if textbox is clicked, show the keyboard
         textField.addListener(new ClickListener() {
             public void clicked(InputEvent e, float x, float y) {
                 if (touched == false)
@@ -250,18 +160,11 @@ public class SearchTrack implements Screen {
 
     private void createTextField() {
         textField = new TextField("", createTextFieldStyle());
-        //textField.setMessageText("Song Name");
-        //textField.setMessageText("Song Name");
-        textField.setWidth(360);
-        if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)
-        {
-            textField.setWidth(180);
-            textField.setPosition((stage.getCamera().viewportWidth - 180) / 2, (stage.getCamera().viewportHeight) / 2 -15);
-        }
-        else
-        {
-            textField.setPosition((stage.getCamera().viewportWidth - 360) / 2, (stage.getCamera().viewportHeight) / 2 + 50);
-        }
+        textField.setHeight(100*VIEWPORT_HEIGHT/1080);
+        textField.setWidth(360*VIEWPORT_WIDTH/1920);
+        float Xaxis=(stage.getCamera().viewportWidth - 360*VIEWPORT_WIDTH/1920) / 2;
+        float Yaxis=(stage.getCamera().viewportHeight)/2+ 50*VIEWPORT_HEIGHT/1080;
+        textField.setPosition(Xaxis, Yaxis);
 
         addListener();
         table.addActor(textField);
@@ -321,27 +224,22 @@ public class SearchTrack implements Screen {
     public void dispose()
     {
         //stage.dispose();
+        table.clear();
+        if(!networkAccess)
+        {
+            stage.getRoot().removeActor(icon);
+        }
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(verticalGroup);
         font.dispose();
-        table.clear();
+
     }
 
     private Label createLabel(String text, float Yaxis) //Method for label creation
     {
         Label.LabelStyle labelstyle = new Label.LabelStyle(font, Color.WHITE);
         Label label = new Label(text, labelstyle);
-        if (VIEWPORT_WIDTH == 800 && VIEWPORT_HEIGHT == 480)//old dimensions
-        {
-            label.setPosition((stage.getCamera().viewportWidth - label.getWidth()) / 2, Yaxis + 20);
-        }
-        if (VIEWPORT_WIDTH == 1080 && VIEWPORT_HEIGHT == 720) {
-
-            label.setPosition((stage.getCamera().viewportWidth - label.getWidth()) / 2, Yaxis + 32);
-        }
-        if (VIEWPORT_WIDTH > 1080 && VIEWPORT_HEIGHT > 720) {
-            label.setPosition((stage.getCamera().viewportWidth - label.getWidth()) / 2, Yaxis + 50);
-        }
+        label.setPosition(((stage.getCamera().viewportWidth - label.getWidth()) / 2), (Yaxis + 50*VIEWPORT_HEIGHT/1080));
         stage.addActor(label);
         return label;
     }
@@ -350,7 +248,7 @@ public class SearchTrack implements Screen {
         table = new Table();
         table.center();
         table.setFillParent(true);
-        table.pad(10f, 10f, 30f, 10f);
+        table.pad(10f*VIEWPORT_HEIGHT/1080, 10f*VIEWPORT_WIDTH/1920, 10f*VIEWPORT_HEIGHT/1080, 10f*VIEWPORT_WIDTH/1920);
         //table.setTouchable(Touchable.enabled);
     }
 
@@ -369,25 +267,17 @@ public class SearchTrack implements Screen {
     }
 
     private void createLogo() {
-        Texture img = AssetsManager.assetManager.get(Constants.logo);
-        Image logo = new Image(img);
-        verticalGroup = new VerticalGroup();
+        Image logo=noteCollector.getAssetsManager().scaleLogo(Gdx.files.internal(Constants.logo));
+        verticalGroup  = new VerticalGroup();
         verticalGroup.setFillParent(true);
         verticalGroup.center();
         verticalGroup.addActor(logo);
-        AssetsManager.setLogoPosition(verticalGroup);
+        noteCollector.getAssetsManager().setLogoPosition(verticalGroup);
         stage.addActor(verticalGroup);
         // addVerticalGroup(background);
     }
 
-    private void createBackground() {
-        System.out.println("Width:" + VIEWPORT_WIDTH + " Height:" + VIEWPORT_HEIGHT);
-        FileHandle file = Gdx.files.internal(Constants.getBackgroundMenu().toString());
-        Image background = AssetsManager.scaleBackground(file);
-        stage.addActor(background);
-    }
-
-    private void createButton(String text, float Xaxis, float y, int sizeX, int sizeY) {
+    private void createButton(String text, float Xaxis, float y, float sizeX, float sizeY) {
         ImageTextButton.ImageTextButtonStyle textButtonStyle = createButtonStyle(selectionColor);
         ImageTextButton MenuButton = new ImageTextButton(text, textButtonStyle);
         AddButtonListener(MenuButton, text);
@@ -493,18 +383,8 @@ public class SearchTrack implements Screen {
                 String result=page.text();
                 if(result.equalsIgnoreCase("Search result: found nothing!"))
                 {
-                    int Yaxis=300;
-                    if(VIEWPORT_HEIGHT==720 && VIEWPORT_WIDTH==1080)
-                    {
-                        Yaxis=200;
-                    }
-                    else if(VIEWPORT_HEIGHT==480 && VIEWPORT_WIDTH==800)
-                    {
-                        Yaxis=175;
-                    }
-                    //noRes=createLabel("",Yaxis);
+                    float Yaxis=300*VIEWPORT_HEIGHT/1080;
                     noRes=createLabel("No results for your query",Yaxis);
-                    //noRes.setText("No results for your query");
                     noRes.getColor().a=0;
                     noRes.addAction(Actions.fadeIn(0.1f));
                     isResult=false;
@@ -579,9 +459,4 @@ public class SearchTrack implements Screen {
         return textButtonStyle;
     }
 
-    private void setupCamera() {
-        viewport = new ScalingViewport(Scaling.stretch, VIEWPORT_WIDTH, VIEWPORT_HEIGHT, new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT));
-        stage = new Stage(viewport);
-        stage.getCamera().update();
-    }
 }

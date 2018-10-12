@@ -61,9 +61,9 @@ public class MultiplayerHostScreen implements  Screen
     private Table table;
     private ScrollPane scrollPane;
     private Table btn;
-    private int[] size;
-    private int sizeX;
-    private int sizeY;
+    private float[] size;
+    private float sizeX;
+    private float sizeY;
     private VerticalGroup verticalGroup;
     private ServerClass srv;
 
@@ -83,19 +83,17 @@ public class MultiplayerHostScreen implements  Screen
     @Override
     public void show()
     {
-        //setupCamera();
         Gdx.input.setInputProcessor(stage);
-        //createBackground();
         btn = new Table();
         btn.setFillParent(true);
         createTable();
 
         createLogo();
-        size = assetsManager.setButtonDimensions(sizeX, sizeY);
+        size = assetsManager.setButtonSize(sizeX, sizeY);
         sizeX = size[0];
         sizeY = size[1];
         table.row();
-        table.bottom().padBottom(50f);
+        table.bottom().padBottom(50f*VIEWPORT_HEIGHT/1080);
         ImageTextButton back = createButton("Back");
         btn.left();
         btn.add(back).bottom().left().expand().size(sizeX, sizeY);
@@ -114,15 +112,14 @@ public class MultiplayerHostScreen implements  Screen
 
     private void createLogo()
     {
-        img = assetsManager.assetManager.get(Constants.logo);
-        logo = new Image(img);
+        Image logo=noteCollector.getAssetsManager().scaleLogo(Gdx.files.internal(Constants.logo));
         verticalGroup  = new VerticalGroup();
         verticalGroup.setFillParent(true);
         verticalGroup.center();
         verticalGroup.addActor(logo);
-        assetsManager.setLogoPosition(verticalGroup);
+        noteCollector.getAssetsManager().setLogoPosition(verticalGroup);
         stage.addActor(verticalGroup);
-        }
+    }
 
         @Override
         public void render(float delta)
@@ -162,29 +159,13 @@ public class MultiplayerHostScreen implements  Screen
             stage.getRoot().removeActor(verticalGroup);
             font.dispose();
             fontH.dispose();
-            //img.dispose();
         }
-        //create a table for organize buttons and list of tracks
+        //create a table to organize the buttons and the list of tracks
         private void createTable(){
             table = new Table();
             table.center();
             table.setFillParent(true);
-            table.pad(60f,10f,30f,10f);
-            if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)//old dimensions
-            {
-                table.pad(60f,10f,30f,10f);
-
-            }
-            if(VIEWPORT_WIDTH==1080 && VIEWPORT_HEIGHT==720)
-            {
-
-                table.pad(120f,10f,30f,10f);
-            }
-            if(VIEWPORT_WIDTH>1080 && VIEWPORT_HEIGHT>720)
-            {
-                table.pad(200f,10f,30f,10f);
-            }
-
+            table.pad(200f*VIEWPORT_HEIGHT/1080,10f*VIEWPORT_WIDTH/1920,30f*VIEWPORT_HEIGHT/1080,10f*VIEWPORT_WIDTH/1920);
             table.setTouchable(Touchable.enabled);
             //table.setDebug(true);
         }
@@ -246,7 +227,7 @@ public class MultiplayerHostScreen implements  Screen
 
 
         private void LoadAssets(){
-            fontH = assetsManager.createBimapFont(45);
+            fontH = assetsManager.createBimapFont(45*VIEWPORT_WIDTH/1920);
             font = assetsManager.createBitmapFont();
             selectionColor =new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.ButtonImage,Texture.class))) ;
             selectionColor.setRightWidth(5f);
@@ -269,7 +250,7 @@ public class MultiplayerHostScreen implements  Screen
     
     private void getRequest()
     {
-            table.add(createLabel("Awaiting for connection...")).padTop(70f);
+            table.add(createLabel("Awaiting for connection...")).padTop(70f*VIEWPORT_HEIGHT/1080);
             srv = new ServerClass();
             srv.getServer().addListener(new Listener() {
                 public void received (Connection connection, Object object)
@@ -289,7 +270,6 @@ public class MultiplayerHostScreen implements  Screen
                             public void run()
                             {
                                     dispose();
-                                    //noteCollector.setScreen(new DifficultyScreen(noteCollector,srv));
                                     noteCollector.setScreen(new ModeSelect(noteCollector,srv,stage));
                             }
                         }, 0.2f);

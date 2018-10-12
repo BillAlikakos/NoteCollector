@@ -64,7 +64,9 @@ public class MainMenuScreen implements Screen {
     private TextureRegionDrawable exitBtnP;
     private Table table;//Table for the play button (For format purposes)
     private Table top;//Table for the icon menu
-
+    private float sizeX;
+    private float sizeY;
+    private float[] size;
 
 
     public MainMenuScreen(NoteCollector noteCollector)
@@ -101,12 +103,16 @@ public class MainMenuScreen implements Screen {
         //setupCamera();
         Gdx.input.setInputProcessor(stage);
         createVerticalGroup();
+        size=assetsManager.setButtonSize(sizeX,sizeY);
+        sizeX=size[0];
+        sizeY=size[1];
         createLogo();
         createButton("Play");
         createButton("Multiplayer");
         createButton("Search Tracks");
         createIcons();
         //createBackground();
+        table.padTop(VIEWPORT_HEIGHT*0.1f);
         stage.addActor(verticalGroup);
         stage.addActor(table);
         stage.addActor(top);
@@ -147,19 +153,8 @@ public class MainMenuScreen implements Screen {
 
     private void createLogo()
     {
-        Texture img = assetsManager.assetManager.get(Constants.logo);
-        Image background = new Image(img);
-        addVerticalGroup(background);
-    }
-    private void createBackground()
-    {
-        System.out.println("Width:"+VIEWPORT_WIDTH+" Height:"+VIEWPORT_HEIGHT);
-        FileHandle file = Gdx.files.internal(Constants.getBackgroundMenu().toString());
-        Image background=assetsManager.scaleBackground(file);
-        stage.addActor(background);
-        //stage.addAction(Actions.sequence(Actions.alpha(0), Actions.fadeIn(2f)));
-        //background.getColor().a=0;
-        //background.addAction(Actions.fadeIn(0.2f));
+        Image logo=assetsManager.scaleLogo(Gdx.files.internal(Constants.logo));
+        addVerticalGroup(logo);
     }
     private void createVerticalGroup()
     {
@@ -180,19 +175,7 @@ public class MainMenuScreen implements Screen {
         ImageTextButton MenuButton = new ImageTextButton(text, textButtonStyle);
         MenuButton.setColor(Color.WHITE);
         AddButtonListener(MenuButton,text);
-
-        if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)
-        {
-            table.add(MenuButton).size(200,100);
-        }
-        else if(VIEWPORT_WIDTH==1080 && VIEWPORT_HEIGHT==720)
-        {
-            table.add(MenuButton).size(250,150);
-        }
-        else if(VIEWPORT_WIDTH>1080 && VIEWPORT_HEIGHT>720)
-        {
-            table.add(MenuButton).size(300,200);
-        }
+        table.add(MenuButton).size(sizeX,sizeY);
         table.row();
         return MenuButton;
 
@@ -218,7 +201,6 @@ public class MainMenuScreen implements Screen {
                if(scoreButton.isPressed())
                {
                    playSound(prefs);
-                  // scoreButton.addAction(Actions.scaleTo(2, 2, 0.2f));
                    table.addAction(Actions.sequence(Actions.fadeOut(0.35f)));//Fade out table
                    top.addAction(Actions.sequence(Actions.fadeOut(0.35f)));//Fade out icon table
                    Timer.schedule(new Timer.Task()
@@ -230,7 +212,6 @@ public class MainMenuScreen implements Screen {
                            noteCollector.setScreen(new ScoresScreen(noteCollector,stage));
                        }
                    }, 0.4f);
-                   //Handle the input event.
                }
 
                return true;
@@ -308,28 +289,10 @@ public class MainMenuScreen implements Screen {
             }
         }));
         top.right().top();
-        if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)
-        {
-            top.add(scoreButton).expand().top().right().size(50,50);
-            top.add(settingsButton).top().right().size(50,50);
-            top.add(helpButton).top().right().size(50,50);
-            top.add(exitButton).top().right().size(50,50);
-        }
-        if(VIEWPORT_WIDTH==1080 && VIEWPORT_HEIGHT==720)
-        {
-            top.add(scoreButton).expand().top().right().size(75,75);
-            top.add(settingsButton).top().right().size(75,75);
-            top.add(helpButton).top().right().size(75,75);
-            top.add(exitButton).top().right().size(75,75);
-        }
-        if(VIEWPORT_WIDTH>1080 && VIEWPORT_HEIGHT>720)
-        {
-            top.add(scoreButton).expand().top().right().size(95,95);
-            top.add(settingsButton).top().right().size(95,95);
-            top.add(helpButton).top().right().size(95,95);
-            top.add(exitButton).top().right().size(95,95);
-        }
-
+        top.add(scoreButton).expand().top().right().size(VIEWPORT_WIDTH*0.06f,VIEWPORT_HEIGHT*0.10f);//TODO : Possibly tweak sizing
+        top.add(settingsButton).top().right().size(VIEWPORT_WIDTH*0.06f,VIEWPORT_HEIGHT*0.10f);
+        top.add(helpButton).top().right().size(VIEWPORT_WIDTH*0.06f,VIEWPORT_HEIGHT*0.10f);
+        top.add(exitButton).top().right().size(VIEWPORT_WIDTH*0.06f,VIEWPORT_HEIGHT*0.10f);
 
     }
     private void playSound( Preferences prefs)
@@ -348,9 +311,8 @@ public class MainMenuScreen implements Screen {
 
                     if (MenuButton.isPressed())
                     {
-
-
-                         if (prefs.getBoolean("sound")) {
+                         if (prefs.getBoolean("sound"))
+                         {
                           noteCollector.getClick().play();
                          }
                         table.addAction(Actions.sequence(Actions.fadeOut(0.35f)));//Fade out table
@@ -358,11 +320,9 @@ public class MainMenuScreen implements Screen {
                         Timer.schedule(new Timer.Task() {
                          @Override
                          public void run() {
-
                                 dispose();
                               switch (text) {
                                   case "Play":
-                                      //noteCollector.setScreen(new DifficultyScreen(noteCollector));//new Browse(noteCollector));//Original
                                       noteCollector.setScreen(new ModeSelect(noteCollector,stage));//new Browse(noteCollector));
                                       break;
                                   case "Multiplayer":
@@ -375,9 +335,7 @@ public class MainMenuScreen implements Screen {
                               }
                          }
                 }, 0.4f);
-
                  }
-
                 return true;
             }
 
@@ -414,7 +372,6 @@ public class MainMenuScreen implements Screen {
     @Override
     public void resize(int width, int height)
     {
-
         stage.getViewport().update(width,height);
     }
 
@@ -442,6 +399,5 @@ public class MainMenuScreen implements Screen {
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(top);
         stage.getRoot().removeActor(verticalGroup);
-        //stage.dispose();
     }
 }

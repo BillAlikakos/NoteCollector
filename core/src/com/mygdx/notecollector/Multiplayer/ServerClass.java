@@ -9,23 +9,22 @@ import java.io.IOException;
 
 public class ServerClass
 {
-    static int tcpPort=54555;
-    static int udpPort=54777;
-    static Server server;
-    static boolean connected;
-    static Connection c;
-    boolean finished=false;
+    private static int tcpPort=54555;
+    private static int udpPort=54777;
+    private static Server server;
+    private static boolean connected;
+    private static Connection c;
+    private boolean finished=false;
 
     public ServerClass()
     {
-        //server = new Server();//Init Kryo server
         server = new Server(1500000,150000);//Init Kryo server
         server.start();
         connected=false;
         try
         {
             server.bind(tcpPort, udpPort);//Bind TCP and UDP ports
-            Kryo kryo=server.getKryo();
+            Kryo kryo=server.getKryo();//Register objects for serialization
             kryo.register(SomeRequest.class);
             kryo.register(SomeResponse.class);
             kryo.register(GameParamObject.class);
@@ -70,14 +69,6 @@ public class ServerClass
 
     public void sendGameObj(final byte[] file, final String difficulty, final boolean multiTrack, final boolean mode)
     {
-        /*GameParamObject response = new GameParamObject();
-        response.file=file;
-        response.speed=speed;
-        response.delay=delay;
-        response.multiTrack=multiTrack;
-        response.mode=mode;
-        System.out.println(speed+" "+delay);
-        c.sendTCP(response);*/
         GameParamObject response = new GameParamObject();
         response.file=file;
         response.difficulty=difficulty;
@@ -173,11 +164,6 @@ Static classes for communication. All classes must contain zero argument constru
 
     public static class GameParamObject
     {
-        /*public byte[] file;
-        public int speed;
-        public long delay;
-        public boolean multiTrack;
-        public boolean mode;*/
         public byte[] file;
         public String difficulty;
         public boolean multiTrack;

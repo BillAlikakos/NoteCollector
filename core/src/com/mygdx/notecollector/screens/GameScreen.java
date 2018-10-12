@@ -46,7 +46,7 @@ public class GameScreen implements  Screen {
     private boolean isHost;
     private boolean isGuest;
     private boolean mode;
-    private Touchpad dpad;
+
     private Stage stage;
     private boolean upPressed, downPressed, leftPressed, rightPressed;
 
@@ -140,6 +140,7 @@ public class GameScreen implements  Screen {
             }
             if(isHost)
             {
+                //gameStage.fadeToMenu();//
                 dispose();
                 game.setScreen(new EndGameScreen(game,gameStage.getScore(),difficulty,srv,stage));
             }
@@ -150,6 +151,7 @@ public class GameScreen implements  Screen {
             }
             else
             {
+
                 dispose();
                 game.setScreen(new EndGameScreen(game,gameStage.getScore(),difficulty,stage));
             }

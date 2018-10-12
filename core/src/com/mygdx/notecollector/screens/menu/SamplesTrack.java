@@ -69,27 +69,15 @@ public class SamplesTrack implements Screen {
     private Table btn;
     private int speed;
     private long delay;
-    private int[] size;
-    private int sizeX;
-    private int sizeY;
+    private float[] size;
+    private float sizeX;
+    private float sizeY;
     private  VerticalGroup verticalGroup;
     private boolean multiplayer;
     private ServerClass srv;
     private boolean mode;
     private String difficulty;
 
-    public SamplesTrack(NoteCollector noteCollector,int speed,long delay,boolean mode)
-    {
-        this.noteCollector = noteCollector;
-        assetsManager = noteCollector.getAssetsManager();
-        this.delay = delay;
-        this.speed = speed;
-        filepath="";
-        LoadAssets();
-        ListStyle();
-        this.multiplayer=false;
-        this.mode=mode;
-    }
     public SamplesTrack(NoteCollector noteCollector,int speed,long delay,boolean mode,Stage stage)
     {
         this.noteCollector = noteCollector;
@@ -122,21 +110,18 @@ public class SamplesTrack implements Screen {
 
     @Override
     public void show() {
-        //setupCamera();
         Gdx.input.setInputProcessor(stage);
-        //createBackground();
+        size=assetsManager.setButtonSize(sizeX,sizeY);
+        sizeX=size[0];
+        sizeY=size[1];
         btn=new Table();
         btn.setFillParent(true);
         createTable();
         createList();
         getDir(root+"/Note Collector/Sample Tracks");
         createLogo();
-        size=assetsManager.setButtonDimensions(sizeX,sizeY);
-        sizeX=size[0];
-        sizeY=size[1];
-        table.add(createLabel("Select a track:")).padTop(70f);
+        table.add(createLabel("Select a track:")).padTop(VIEWPORT_HEIGHT*0.15f);
         table.row();
-        table.bottom().padBottom(50f);
         createScrollPane();
         ImageTextButton back= createButton("Back");
         ImageTextButton browse=createButton("Browse");
@@ -150,10 +135,12 @@ public class SamplesTrack implements Screen {
         btn.getColor().a=0;
         table.addAction(Actions.sequence(Actions.fadeIn(0.2f)));//Fade button table in
         btn.addAction(Actions.sequence(Actions.fadeIn(0.2f)));
+        System.out.println(0.11f*VIEWPORT_HEIGHT);
+
+
     }
     private void createLogo(){
-        Texture img = assetsManager.assetManager.get(Constants.logo);
-        Image logo = new Image(img);
+        Image logo=assetsManager.scaleLogo(Gdx.files.internal(Constants.logo));
         verticalGroup  = new VerticalGroup();
         verticalGroup.setFillParent(true);
         verticalGroup.center();
@@ -199,32 +186,16 @@ public class SamplesTrack implements Screen {
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(verticalGroup);
         stage.getRoot().removeActor(btn);
-        //stage.dispose();
         font.dispose();
         fontList.dispose();
 
     }
-    //create a table for organize buttons and list of tracks
+    //create a table to organize buttons and the list of tracks
     private void createTable(){
         table = new Table();
         table.center();
         table.setFillParent(true);
-        table.pad(60f,10f,30f,10f);
-        if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)//old dimensions
-        {
-            table.pad(60f,10f,30f,10f);
-
-        }
-        if(VIEWPORT_WIDTH==1080 && VIEWPORT_HEIGHT==720)
-        {
-
-            table.pad(120f,10f,30f,10f);
-        }
-        if(VIEWPORT_WIDTH>1080 && VIEWPORT_HEIGHT>720)
-        {
-            table.pad(200f,10f,50f,10f);
-        }
-
+        table.pad(VIEWPORT_HEIGHT*0.05f,VIEWPORT_WIDTH*0.05f,VIEWPORT_HEIGHT*0.1f,VIEWPORT_WIDTH*0.05f);
         table.setTouchable(Touchable.enabled);
         //table.setDebug(true);
     }
@@ -254,7 +225,7 @@ public class SamplesTrack implements Screen {
                     Timer.schedule(new Timer.Task() {
                         @Override
                         public void run() {
-                            if(multiplayer==false)
+                            if(!multiplayer)
                             {
                                 if (text.equals("Back"))
                                 {
@@ -306,7 +277,7 @@ public class SamplesTrack implements Screen {
 
 
     private void LoadAssets(){
-        fontH = assetsManager.createBimapFont(45);
+        fontH = assetsManager.createBimapFont(VIEWPORT_WIDTH*64/1920);
         font = assetsManager.createBitmapFont();
         selectionColor =new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.ButtonImage,Texture.class))) ;
         selectionColor.setRightWidth(5f);
@@ -320,7 +291,7 @@ public class SamplesTrack implements Screen {
 
     private void ListStyle(){
         assetsManager.LoadListAssets();
-        fontList = assetsManager.createBitmapFont();
+        fontList = assetsManager.createBimapFont(VIEWPORT_WIDTH*55/1920);
         selectionColorList = new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.SelectionColor,Texture.class)));
         skin = assetsManager.assetManager.get(Constants.Skin,Skin.class);
     }
@@ -352,12 +323,12 @@ public class SamplesTrack implements Screen {
                     @Override
                     public void run()
                     {
-                        if (multiplayer == false)
+                        dispose();
+                        if (!multiplayer)
                         {
                             File file = new File(path.get(list.getSelectedIndex()));
                             filepath = file.getAbsolutePath();
-                            //noteCollector.setScreen(new LoadingScreen(noteCollector,filepath,speed,delay));//OG
-                            noteCollector.setScreen(new TrackSelect(noteCollector, speed, delay, file, mode,stage));//OG
+                            noteCollector.setScreen(new TrackSelect(noteCollector, speed, delay, file, mode,stage));//
                         }
                         else
                         {
@@ -374,7 +345,7 @@ public class SamplesTrack implements Screen {
                             //srv.sendGameObj(arr,speed,delay,false,mode);//Old
                             srv.sendGameObj(arr, difficulty, false, mode);
                             System.out.println("Sent game obj to client");*/
-                            //noteCollector.setScreen(new LoadingScreen(noteCollector,filepath,speed,delay));//OG
+                            //noteCollector.setScreen(new LoadingScreen(noteCollector,filepath,speed,delay));
                             noteCollector.setScreen(new TrackSelect(noteCollector, speed, delay, file, srv, mode, difficulty,stage));
                         }
                     }
@@ -421,20 +392,6 @@ public class SamplesTrack implements Screen {
             return true;
         return false;
 
-    }
-
-    private void createBackground()
-    {
-        FileHandle file = Gdx.files.internal(Constants.getBackgroundMenu().toString());
-        Image background=assetsManager.scaleBackground(file);
-        stage.addActor(background);
-
-    }
-
-    private void setupCamera(){
-        viewport = new ScalingViewport(Scaling.stretch, VIEWPORT_WIDTH, VIEWPORT_HEIGHT, new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT));
-        stage = new Stage(viewport);
-        stage.getCamera().update();
     }
 
 }

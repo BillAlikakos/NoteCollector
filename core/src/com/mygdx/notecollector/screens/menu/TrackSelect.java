@@ -75,9 +75,9 @@ public class TrackSelect implements Screen
     private Table btn;
     private int speed;
     private long delay;
-    private int[] size;
-    private int sizeX;
-    private int sizeY;
+    private float[] size;
+    private float sizeX;
+    private float sizeY;
     private VerticalGroup verticalGroup;
     private File file;
     private ServerClass srv;
@@ -87,20 +87,6 @@ public class TrackSelect implements Screen
     private boolean mode;
     private String difficulty;
 
-    public TrackSelect(NoteCollector noteCollector,int speed,long delay,File file,boolean mode)
-    {
-        this.file=file;
-        this.noteCollector = noteCollector;
-        assetsManager = noteCollector.getAssetsManager();
-        this.delay = delay;
-        this.speed = speed;
-        this.isGuest=false;
-        this.isHost=false;
-        this.mode=mode;
-        filepath="";
-        LoadAssets();
-        ListStyle();
-    }
     public TrackSelect(NoteCollector noteCollector,int speed,long delay,File file,boolean mode,Stage stage)
     {
         this.stage=stage;
@@ -155,21 +141,18 @@ public class TrackSelect implements Screen
     @Override
     public void show()
     {
-        //setupCamera();
         Gdx.input.setInputProcessor(stage);
-        //createBackground();
+        size=assetsManager.setButtonSize(sizeX,sizeY);
+        sizeX=size[0];
+        sizeY=size[1];
         btn=new Table();
         btn.setFillParent(true);
         createTable();
         createList();
         getInstruments(file);
         createLogo();
-        size=assetsManager.setButtonDimensions(sizeX,sizeY);
-        sizeX=size[0];
-        sizeY=size[1];
-        table.add(createLabel("Select a track:")).padTop(70f);
+        table.add(createLabel("Select a track:")).padTop(VIEWPORT_HEIGHT*0.15f);
         table.row();
-        table.bottom().padBottom(50f);
         createScrollPane();
         if(!isGuest)//Client mustn't go back as the host is responsible for the settings of the game session.
         {
@@ -189,8 +172,7 @@ public class TrackSelect implements Screen
     }
     private void createLogo()
     {
-        Texture img = assetsManager.assetManager.get(Constants.logo);
-        Image logo = new Image(img);
+        Image logo=assetsManager.scaleLogo(Gdx.files.internal(Constants.logo));
         verticalGroup  = new VerticalGroup();
         verticalGroup.setFillParent(true);
         verticalGroup.center();
@@ -235,40 +217,19 @@ public class TrackSelect implements Screen
         table.clear();
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(verticalGroup);
-        //stage.dispose();
         font.dispose();
         fontList.dispose();
         if(!isGuest)
         {
             stage.getRoot().removeActor(btn);
         }
-        //img.dispose();
-
-
     }
-    //create a table for organize buttons and list of tracks
+    //create a table to organize buttons and the list of tracks
     private void createTable(){
         table = new Table();
         table.center();
         table.setFillParent(true);
-        table.pad(60f,10f,30f,10f);
-        if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)//old dimensions
-        {
-            table.pad(60f,10f,30f,10f);
-
-        }
-        if(VIEWPORT_WIDTH==1080 && VIEWPORT_HEIGHT==720)
-        {
-
-            table.pad(120f,10f,30f,10f);
-        }
-        if(VIEWPORT_WIDTH>1080 && VIEWPORT_HEIGHT>720)
-        {
-            table.pad(200f,10f,30f,10f);
-        }
-
-        //table.setTouchable(Touchable.enabled);
-        //table.setDebug(true);
+        table.pad(VIEWPORT_HEIGHT*0.05f,VIEWPORT_WIDTH*0.05f,VIEWPORT_HEIGHT*0.1f,VIEWPORT_WIDTH*0.05f);//TODO Change padding
     }
     private ImageTextButton createButton(String text)
     {
@@ -333,7 +294,8 @@ public class TrackSelect implements Screen
 
 
     private void LoadAssets(){
-        fontH = assetsManager.createBimapFont(45);
+        //fontH = assetsManager.createBimapFont(45);
+        fontH = assetsManager.createBimapFont(VIEWPORT_WIDTH*60/1920);
         font = assetsManager.createBitmapFont();
         selectionColor =new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.ButtonImage,Texture.class))) ;
         selectionColor.setRightWidth(5f);
@@ -390,21 +352,6 @@ public class TrackSelect implements Screen
                     {
                         if(isHost)
                         {
-                            /*System.out.println("Readying file");
-
-                            System.out.println("Readying Filepath");
-                            filepath = file.getAbsolutePath();
-                            System.out.println("Setting obj params");
-                            byte[] arr=new byte[1250000];//1,25Mb buffer
-                            try
-                            {
-                                arr = readFileToByteArray(file);
-                            }
-                            catch (IOException e)
-                            {
-                                e.printStackTrace();
-                            }
-                            srv.sendGameObj(arr,difficulty,true,mode);//Send file to client*/
                             dispose();
                             noteCollector.setScreen((new LoadingScreen(noteCollector,filepath,speed,delay,t,srv,mode,stage,difficulty)));
                         }
@@ -444,7 +391,6 @@ public class TrackSelect implements Screen
             e.printStackTrace();
         }
         ArrayList<MidiTrack> filetracks = midi.getTracks();
-        //ArrayList<MetaEvent> metaEvents=midi.
         Iterator<MidiTrack> it = filetracks.iterator();
         ArrayList<MidiEvent> midiEvents=new ArrayList<>();
         /*If midi file has tracks continue*/
@@ -471,7 +417,7 @@ public class TrackSelect implements Screen
         }
         if(midi.getTracks().size()==1)
         {
-            String name="Track: 1 ";//If file has one track only
+            String name="Track: 1 ";//If file has only one track
             System.out.println(name);
             item.add(name);
             track.add(midi.getTracks().get(0));
@@ -485,30 +431,7 @@ public class TrackSelect implements Screen
         name=program.toString();
         return name;
     }
-    //get the dir of sample tracks
-    private void getDir(String dirPath) {
 
-        path = new ArrayList<String>();
-        item = new ArrayList<String>();
-
-
-        File f = new File(dirPath);
-        File [] files = f.listFiles();
-
-        for (int i = 0; i < files.length; i++) {
-            File file = files[i];
-            if( (checkMidiTYpe(file.getName()) ) )
-                path.add(file.getPath());
-
-
-            if(file.isDirectory() || checkMidiTYpe(file.getName()) )
-            {
-                item.add(file.getName());
-
-            }
-        }
-        list.setItems(item.toArray());
-    }
     //if the type of files is midi return true else return false.
     private boolean checkMidiTYpe(String name){
 
@@ -516,20 +439,6 @@ public class TrackSelect implements Screen
             return true;
         return false;
 
-    }
-
-    private void createBackground()
-    {
-        FileHandle file = Gdx.files.internal(Constants.getBackgroundMenu().toString());
-        Image background=assetsManager.scaleBackground(file);
-        stage.addActor(background);
-
-    }
-
-    private void setupCamera(){
-        viewport = new ScalingViewport(Scaling.stretch, VIEWPORT_WIDTH, VIEWPORT_HEIGHT, new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT));
-        stage = new Stage(viewport);
-        stage.getCamera().update();
     }
 
 }

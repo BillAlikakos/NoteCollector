@@ -109,8 +109,6 @@ public class MultiplayerPreMatchLobby implements Screen
         table.setFillParent(true);
         table.center();
         createVerticalGroup();
-        //setupCamera();
-        //createBackground();
         createLogo();
         createLabel("Initializing ....");
         if(isHost)
@@ -122,7 +120,6 @@ public class MultiplayerPreMatchLobby implements Screen
          send();
         }
 
-        //send();
         stage.addActor(table);
         table.getColor().a = 0;//Set actor's alpha value to 0(Transparent) to enable fading
         table.addAction(Actions.sequence(Actions.fadeIn(0.2f)));
@@ -329,14 +326,18 @@ public class MultiplayerPreMatchLobby implements Screen
 
         private void LoadAssets()
         {
-            font = AssetsManager.createBimapFont(45);
+            font = AssetsManager.createBimapFont(45*VIEWPORT_WIDTH/1920);
 
         }
         private void createLogo()
         {
-            Texture img =  AssetsManager.assetManager.get(Constants.logo);
-            Image background = new Image(img);
-            addVerticalGroup(background);
+            Image logo=noteCollector.getAssetsManager().scaleLogo(Gdx.files.internal(Constants.logo));
+            verticalGroup  = new VerticalGroup();
+            verticalGroup.setFillParent(true);
+            verticalGroup.center();
+            verticalGroup.addActor(logo);
+            noteCollector.getAssetsManager().setLogoPosition(verticalGroup);
+            stage.addActor(verticalGroup);
         }
         private void createBackground()
         {
@@ -361,21 +362,7 @@ public class MultiplayerPreMatchLobby implements Screen
         private void createLabel(String text){
             Label.LabelStyle labelstyle = new Label.LabelStyle(font, Color.WHITE);
             Label label = new Label(text, labelstyle);
-            table.add(label).colspan(2).padTop(100f);
-            //label.setPosition((stage.getCamera().viewportWidth-label.getWidth())/2,100f);
-            if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)//Set appropriate sizes for title spacing according to resolution
-            {
-                table.add(label).colspan(2).padTop(220f).padLeft(50f);;
-            }
-            if(VIEWPORT_WIDTH==1080 && VIEWPORT_HEIGHT==720)
-            {
-                table.add(label).colspan(2).padTop(220f).padLeft(100f);
-            }
-            if(VIEWPORT_WIDTH>1080 && VIEWPORT_HEIGHT>720)
-            {
-                table.add(label).colspan(2).padTop(250f).padLeft(50f);
-            }
-
+            table.add(label).colspan(2).padTop(250f*VIEWPORT_HEIGHT/1080).padLeft(50f*VIEWPORT_WIDTH/1920);
             //stage.addActor(label);
         }
         private void setupCamera(){

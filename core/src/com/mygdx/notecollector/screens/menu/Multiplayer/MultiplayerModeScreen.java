@@ -48,20 +48,11 @@ public class MultiplayerModeScreen implements Screen
     private Table btn;
     private Image icon;
 
-    private int[] size;
-    private int sizeX;
-    private int sizeY;
+    private float[] size;
+    private float sizeX;
+    private float sizeY;
     private boolean networkAccess;
 
-    public MultiplayerModeScreen(NoteCollector noteCollector)
-    {
-        this.noteCollector = noteCollector;
-        assetsManager = noteCollector.getAssetsManager();
-        this.table=new Table();
-        table.setFillParent(true);
-
-        LoadAssets();
-    }
     public MultiplayerModeScreen(NoteCollector noteCollector,Stage stage)
     {
         this.noteCollector = noteCollector;
@@ -77,15 +68,13 @@ public class MultiplayerModeScreen implements Screen
     @Override
     public void show()
     {
-        //setupCamera();
         Gdx.input.setInputProcessor(stage);
         createVerticalGroup();
         createLogo();
-        size = assetsManager.setButtonDimensions(sizeX, sizeY);
+        size = assetsManager.setButtonSize(sizeX, sizeY);
         sizeX = size[0];
         sizeY = size[1];
         ImageTextButton back = createBackButton("Back");
-        //createBackground();
         btn=new Table();
         btn.left();
         btn.add(back).bottom().left().expand().size(sizeX, sizeY);
@@ -101,16 +90,8 @@ public class MultiplayerModeScreen implements Screen
         else
         {
             createImg();
-            if(VIEWPORT_HEIGHT==480 && VIEWPORT_WIDTH==800)
-            {
-                createLabel("Network Connection Unavailable", stage.getCamera().viewportHeight / 2 + 60);
-                createLabel("Please Connect to a Network", stage.getCamera().viewportHeight / 2 + 30);
-            }
-            else
-            {
-                createLabel("Network Connection Unavailable", stage.getCamera().viewportHeight / 2 + 100);
-                createLabel("Please Connect to a Network", stage.getCamera().viewportHeight / 2 + 65);
-            }
+            createLabel("Network Connection Unavailable", (stage.getCamera().viewportHeight / 2 + 100*VIEWPORT_HEIGHT/1080));
+            createLabel("Please Connect to a Network", (stage.getCamera().viewportHeight / 2 + 65*VIEWPORT_HEIGHT/1080));
         }
         table.getColor().a=0;//Set actor's alpha value to 0(Transparent) to enable fading
         btn.getColor().a=0;
@@ -124,18 +105,7 @@ public class MultiplayerModeScreen implements Screen
     {
         Label.LabelStyle labelstyle = new Label.LabelStyle(font, Color.WHITE);
         Label label = new Label(text, labelstyle);
-        if (VIEWPORT_WIDTH == 800 && VIEWPORT_HEIGHT == 480)//old dimensions
-        {
-            label.setPosition((stage.getCamera().viewportWidth - label.getWidth()) / 2, Yaxis + 20);
-        }
-        if (VIEWPORT_WIDTH == 1080 && VIEWPORT_HEIGHT == 720) {
-
-            label.setPosition((stage.getCamera().viewportWidth - label.getWidth()) / 2, Yaxis + 32);
-        }
-        if (VIEWPORT_WIDTH > 1080 && VIEWPORT_HEIGHT > 720) {
-            label.setPosition((stage.getCamera().viewportWidth - label.getWidth()) / 2, Yaxis + 50);
-        }
-
+        label.setPosition((stage.getCamera().viewportWidth - label.getWidth()) / 2, Yaxis + 50*VIEWPORT_HEIGHT/1080);
         stage.addActor(label);
 
     }
@@ -171,36 +141,26 @@ public class MultiplayerModeScreen implements Screen
 
     private void createLogo()
     {
-        img = assetsManager.assetManager.get(Constants.logo);
-        Image background = new Image(img);
-        addVerticalGroup(background);
+        Image logo=noteCollector.getAssetsManager().scaleLogo(Gdx.files.internal(Constants.logo));
+        verticalGroup  = new VerticalGroup();
+        verticalGroup.setFillParent(true);
+        verticalGroup.center();
+        verticalGroup.addActor(logo);
+        noteCollector.getAssetsManager().setLogoPosition(verticalGroup);
+        stage.addActor(verticalGroup);
     }
 
     private void createImg()
     {
         img = assetsManager.assetManager.get(Constants.noConn);
         icon = new Image(img);
-
-        if(VIEWPORT_WIDTH == 800 && VIEWPORT_HEIGHT == 480)
-        {
-            //icon.setSize(50f,50f);
-            icon.setScale(.25f,.25f);
-            icon.setPosition((stage.getCamera().viewportWidth -175)/2,stage.getCamera().viewportHeight/2-125);
-        }
-        else if(VIEWPORT_HEIGHT==720 && VIEWPORT_WIDTH==1080)
-        {
-            icon.setScale(.35f,.35f);
-            icon.setPosition((stage.getCamera().viewportWidth -250)/2,stage.getCamera().viewportHeight/2-175);
-        }
-        else if(VIEWPORT_HEIGHT>720 && VIEWPORT_WIDTH>1080)
-        {
-            icon.setScale(.5f,.5f);
-            icon.setPosition((stage.getCamera().viewportWidth - 375)/2,stage.getCamera().viewportHeight/2-325);
-        }
+        float Xaxis=(stage.getCamera().viewportWidth - 375*VIEWPORT_WIDTH/1920)/2;
+        float Yaxis=stage.getCamera().viewportHeight/2-325*VIEWPORT_HEIGHT/1080;
+        icon.setScale(.5f*VIEWPORT_WIDTH/1920,.5f*VIEWPORT_HEIGHT/1080);
+        icon.setPosition(Xaxis,Yaxis);
         stage.addActor(icon);
         icon.getColor().a=0;//Set actor's alpha value to 0(Transparent) to enable fading
         icon.addAction(Actions.sequence(Actions.fadeIn(0.2f)));
-        // addVerticalGroup(icon);
     }
 
     private void createBackground()
@@ -217,29 +177,13 @@ public class MultiplayerModeScreen implements Screen
         assetsManager.setLogoPosition(verticalGroup);
     }
 
-    private  void addVerticalGroup(Actor actor)
-    {
-        verticalGroup.addActor(actor);
-    }
-
     private void createButton(String text)
     {
         ImageTextButton.ImageTextButtonStyle textButtonStyle = createButtonStyle(selectionColor);
         ImageTextButton MenuButton = new ImageTextButton(text, textButtonStyle);
         AddButtonListener(MenuButton,text);
 
-        if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)
-        {
-            table.add(MenuButton).size(200,100);
-        }
-        if(VIEWPORT_WIDTH==1080 && VIEWPORT_HEIGHT==720)
-        {
-            table.add(MenuButton).size(250,150);
-        }
-        if(VIEWPORT_WIDTH>1080 && VIEWPORT_HEIGHT>720)
-        {
-            table.add(MenuButton).size(300,200);
-        }
+        table.add(MenuButton).size(sizeX,sizeY);
         table.row();
 
     }
@@ -342,7 +286,6 @@ public class MultiplayerModeScreen implements Screen
     @Override
     public void dispose()
     {
-        //img.dispose();
         font.dispose();
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(btn);

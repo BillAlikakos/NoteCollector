@@ -10,13 +10,13 @@ import java.util.ArrayList;
 
 public class ClientClass extends Listener
 {
-    static Client client;//Client obj
+    private static Client client;//Client obj
 
-    static int tcpPort=54555;
-    static int udpPort=54777;
-    static boolean received=false;
-    boolean finished = false;
-    String score;
+    private static int tcpPort=54555;
+    private static int udpPort=54777;
+    private static boolean received=false;
+    private boolean finished = false;
+    private String score;
 
     public ClientClass()
     {
@@ -78,7 +78,7 @@ public class ClientClass extends Listener
     }
 
 
-    public ArrayList<InetAddress> discoverServers()
+    public ArrayList<InetAddress> discoverServers()//Get an arraylist of available servers
     {
         ArrayList<InetAddress> addresses=new ArrayList<>();
         //addresses= (ArrayList<InetAddress>) client.discoverHosts(udpPort,2000);
@@ -217,11 +217,6 @@ Static classes for communication. All classes must contain zero argument constru
 
     public static class GameParamObject
     {
-        /*public byte[] file;
-        public int speed;
-        public long delay;
-        public boolean multiTrack;
-        public boolean mode;*/
         public byte[] file;
         public String difficulty;
         public boolean multiTrack;

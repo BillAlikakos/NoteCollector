@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.view.OrientationEventListener;
 import android.view.WindowManager;
 
 import com.badlogic.gdx.Gdx;
@@ -32,7 +33,7 @@ public class AndroidLauncher extends AndroidApplication
 	{
 		Activity thisActivity = (Activity) this.getContext();
 		super.onCreate(savedInstanceState);
-		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
+		final AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 		config.useImmersiveMode = true;//Launch in immersive mode
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);//Keep screen continuously on
 		WiFi wifi = new WiFi(this.getContext());
@@ -114,5 +115,12 @@ public class AndroidLauncher extends AndroidApplication
 			Gdx.app.log("Gallery","Image path is " + userImagePath);
 			gallery.setImageResult(userImagePath);
 		}
+	}
+
+	@Override
+	public void onBackPressed()//Override back button handler to prevent exiting
+	{
+		System.out.println("Back button pressed");
+		//super.onBackPressed();
 	}
 }

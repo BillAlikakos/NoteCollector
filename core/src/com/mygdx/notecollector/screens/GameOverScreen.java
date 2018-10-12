@@ -125,9 +125,7 @@ public class GameOverScreen implements Screen {
         sizeX=size[0];
         sizeY=size[1];
         sendGameOverMsg();
-       // setupCamera();
         createTable();
-        //createBackground();
         createLogo();
         createButtons();
         createLabel("Your Score:"+Score);
@@ -271,23 +269,14 @@ public class GameOverScreen implements Screen {
     }
     private void createLogo()
     {
-        Texture img = AssetsManager.assetManager.get(Constants.GameOver);
-        Image logo = new Image(img);
+        Image logo=notecollector.getAssetsManager().scaleLogo(Gdx.files.internal(Constants.GameOver));
         verticalGroup  = new VerticalGroup();
         verticalGroup.setFillParent(true);
         verticalGroup.center();
         verticalGroup.addActor(logo);
-        AssetsManager.setLogoPosition(verticalGroup);
+        notecollector.getAssetsManager().setLogoPosition(verticalGroup);
         stage.addActor(verticalGroup);
     }
-    private void createBackground()
-    {
-        FileHandle file = Gdx.files.internal(Constants.getBackgroundMenu().toString());
-        Image background=AssetsManager.scaleBackground(file);
-        stage.addActor(background);
-
-    }
-
     private ImageTextButton createButton(String text,float Xaxis)
     {
 
@@ -372,9 +361,4 @@ public class GameOverScreen implements Screen {
         return textButtonStyle;
     }
 
-    private void setupCamera(){
-        viewport = new ScalingViewport(Scaling.stretch, VIEWPORT_WIDTH, VIEWPORT_HEIGHT, new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT));
-        stage = new Stage(viewport);
-        stage.getCamera().update();
-    }
 }

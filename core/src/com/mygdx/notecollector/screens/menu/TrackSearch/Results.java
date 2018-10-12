@@ -67,9 +67,9 @@ public class Results implements Screen {
 
     private Table btn;
     private Label label;
-    private int[] size;
-    private int sizeX;
-    private int sizeY;
+    private float[] size;
+    private float sizeX;
+    private float sizeY;
     private VerticalGroup verticalGroup;
     private String root=Constants.root;
     private ArrayList<SongObj> songs;
@@ -86,23 +86,20 @@ public class Results implements Screen {
     }
 
     @Override
-    public void show() {
-        //setupCamera();
+    public void show()
+    {
         Gdx.input.setInputProcessor(stage);
-        //createBackground();
         btn = new Table();
-        //btn.padTop(880f);
         btn.setFillParent(true);
         createTable();
         createList();
         getSongs();
         createLogo();
-        size = assetsManager.setButtonDimensions(sizeX, sizeY);
+        size = assetsManager.setButtonSize(sizeX, sizeY);
         sizeX = size[0];
         sizeY = size[1];
-        table.add(createLabel("Select a Song:")).padTop(70f);
+        table.add(createLabel("Select a Song:")).padTop(70f*VIEWPORT_HEIGHT/1080);
         table.row();
-        //table.bottom().padBottom(50f);
         createScrollPane();
 
         ImageTextButton back = createButton("Back");
@@ -121,10 +118,10 @@ public class Results implements Screen {
 
     }
 
-    private void createLogo() {
-        Texture img = assetsManager.assetManager.get(Constants.logo);
-        Image logo = new Image(img);
-        verticalGroup = new VerticalGroup();
+    private void createLogo()
+    {
+        Image logo=assetsManager.scaleLogo(Gdx.files.internal(Constants.logo));
+        verticalGroup  = new VerticalGroup();
         verticalGroup.setFillParent(true);
         verticalGroup.center();
         verticalGroup.addActor(logo);
@@ -164,15 +161,14 @@ public class Results implements Screen {
     }
 
     @Override
-    public void dispose() {
+    public void dispose()
+    {
         table.clear();
-        //stage.dispose();
         stage.getRoot().removeActor(verticalGroup);
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(btn);
         font.dispose();
         fontList.dispose();
-        //img.dispose();
 
 
     }
@@ -182,21 +178,7 @@ public class Results implements Screen {
         table = new Table();
         table.center();
         table.setFillParent(true);
-        //table.pad(60f, 10f, 30f, 10f);
-        if (VIEWPORT_WIDTH == 800 && VIEWPORT_HEIGHT == 480)//old dimensions
-        {
-            table.pad(60f, 10f, 30f, 10f);
-
-        }
-        if (VIEWPORT_WIDTH == 1080 && VIEWPORT_HEIGHT == 720) {
-
-            table.pad(120f, 10f, 30f, 10f);
-        }
-        if (VIEWPORT_WIDTH > 1080 && VIEWPORT_HEIGHT > 720)
-        {
-            table.pad(200f, 10f, 100f, 10f);
-           // table.padBottom(150);
-        }
+        table.pad(200f*VIEWPORT_HEIGHT/1080, 10f*VIEWPORT_WIDTH/1920, 115f*VIEWPORT_HEIGHT/1080, 10f*VIEWPORT_WIDTH/1920);
         //table.setDebug(true);
     }
 
@@ -255,7 +237,7 @@ public class Results implements Screen {
 
 
     private void LoadAssets() {
-        fontH = assetsManager.createBimapFont(45);
+        fontH = assetsManager.createBimapFont(50*VIEWPORT_WIDTH/1920);
         font = assetsManager.createBitmapFont();
         selectionColor = new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.ButtonImage, Texture.class)));
         selectionColor.setRightWidth(5f);
@@ -285,7 +267,7 @@ public class Results implements Screen {
         scrollPane = new ScrollPane(list);
         scrollPane.setSmoothScrolling(false);
         scrollPane.setScrollingDisabled(true, false);
-        table.add(scrollPane).expand().fill().padBottom(50f);
+        table.add(scrollPane).expand().fill().padBottom(50f*VIEWPORT_HEIGHT/1080);
         table.row();
     }
 
@@ -339,10 +321,10 @@ public class Results implements Screen {
             public void handleHttpResponse (Net.HttpResponse httpResponse)
             {
                 System.out.println("Sending request");
-                // Determine how much we have to download
+                // Determine the size of the file we have to download
                 long length = Long.parseLong(httpResponse.getHeader("Content-Length"));
 
-                // We're going to download the file to external storage, create the streams
+                // Create streams for external storage
                 System.out.println("Creating streams");
                 InputStream is = httpResponse.getResultAsStream();
                 OutputStream os = Gdx.files.external("/Note Collector/Sample Tracks/"+name+".midi").write(false);
@@ -398,18 +380,5 @@ public class Results implements Screen {
         list.setItems(item.toArray());
     }
 
-
-    private void createBackground() {
-        FileHandle file = Gdx.files.internal(Constants.getBackgroundMenu().toString());
-        Image background = assetsManager.scaleBackground(file);
-        stage.addActor(background);
-
-    }
-
-    private void setupCamera() {
-        viewport = new ScalingViewport(Scaling.stretch, VIEWPORT_WIDTH, VIEWPORT_HEIGHT, new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT));
-        stage = new Stage(viewport);
-        stage.getCamera().update();
-    }
 
 }

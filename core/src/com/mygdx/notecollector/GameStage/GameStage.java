@@ -4,6 +4,7 @@ package com.mygdx.notecollector.GameStage;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -106,6 +107,7 @@ public class GameStage extends Stage implements ContactListener
     private float squarewidth,squareheight;
 
     private Label resume,quit;
+    private Label title;
     private Image BackgroundPause;
     public long pausetime;
     private Stage stage;
@@ -114,6 +116,8 @@ public class GameStage extends Stage implements ContactListener
     private boolean isHost;
     private boolean isGuest;
     private boolean mode;
+    private float sizeX,sizeY;
+    private float[] size;
     private Thread t;
     private Image x1;
     private Image x2;
@@ -134,8 +138,10 @@ public class GameStage extends Stage implements ContactListener
         this.isGuest=false;
         this.isHost=false;
         this.mode=mode;
+        size=noteCollector.getAssetsManager().setButtonSize(sizeX,sizeY);
+        sizeX=size[0];
+        sizeY=size[1];
         prefs= Gdx.app.getPreferences("NoteCollectorPreferences");
-        //set the size of square which controlled by player
         setCollectorSize();
         message ="";
         GameState ="running";
@@ -168,7 +174,6 @@ public class GameStage extends Stage implements ContactListener
         this.mode=mode;
         prefs= Gdx.app.getPreferences("NoteCollectorPreferences");
 
-        //set the size of square which controlled by player
         setCollectorSize();
         addGameOverListener();
         message ="";
@@ -181,9 +186,7 @@ public class GameStage extends Stage implements ContactListener
         setupCamera();
         setupActros(speed,delay);
         StartTimer();
-        //createPauseLabels();
-        //createBackgroundPause();
-       // addActorSPause();
+
 
     }
     public GameStage(NoteCollector noteCollector, float TickPerMsec, ArrayList<MidiNote> notes, int speed, long delay, ClientClass c, boolean mode,Stage stage) throws IOException, InterruptedException {
@@ -201,7 +204,6 @@ public class GameStage extends Stage implements ContactListener
         this.mode=mode;
         prefs= Gdx.app.getPreferences("NoteCollectorPreferences");
 
-        //set the size of square which controlled by player
         setCollectorSize();
         addGameOverListener();
         message ="";
@@ -216,63 +218,23 @@ public class GameStage extends Stage implements ContactListener
         StartTimer();
 
     }
-    private void setCollectorSize()
+    private void setCollectorSize()//Set the size of the collector according to resolution and preferred size
     {
-        if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)
+        if(prefs.getBoolean("normal"))
         {
-            if(prefs.getBoolean("normal"))
-            {
-                squarewidth =32f;
-                squareheight=32f;
-            }
-            else if (prefs.getBoolean("big"))
-            {
-                squarewidth =40f;
-                squareheight=40f;
-            }
-            else if (prefs.getBoolean("vbig"))
-            {
-                squarewidth =48f;
-                squareheight=48f;
-
-            }
+            squarewidth =32f*VIEWPORT_WIDTH/800;
+            squareheight=32f*VIEWPORT_HEIGHT/480;
         }
-        if(VIEWPORT_WIDTH==1080 && VIEWPORT_HEIGHT==720)
+        else if (prefs.getBoolean("big"))
         {
-            if(prefs.getBoolean("normal"))
-            {
-                squarewidth =40f;
-                squareheight=40f;
-            }
-            else if (prefs.getBoolean("big"))
-            {
-                squarewidth =48f;
-                squareheight=48f;
-            }
-            else if (prefs.getBoolean("vbig"))
-            {
-                squarewidth =56f;
-                squareheight=56f;
-
-            }
+            squarewidth =40f*VIEWPORT_WIDTH/800;
+            squareheight=40f*VIEWPORT_HEIGHT/480;
         }
-        if(VIEWPORT_WIDTH>1080 && VIEWPORT_HEIGHT>720)
+        else if (prefs.getBoolean("vbig"))
         {
-            if(prefs.getBoolean("normal"))
-            {
-                squarewidth =48f;
-                squareheight=48f;
-            }
-            else if (prefs.getBoolean("big"))
-            {
-                squarewidth =56f;
-                squareheight=56f;
-            }
-            else if (prefs.getBoolean("vbig"))
-            {
-                squarewidth =64f;
-                squareheight=64f;
-            }
+            squarewidth =48f*VIEWPORT_WIDTH/800;
+            squareheight=48f*VIEWPORT_HEIGHT/480;
+
         }
     }
 
@@ -347,8 +309,6 @@ public class GameStage extends Stage implements ContactListener
                         ClientClass.scoreObj request = (ClientClass.scoreObj)object;
                         //System.out.println(request.score);
                         score2.setScore(Integer.parseInt(request.score));
-                        //scoreV= request.score;
-                        // srv.getServer().removeListener(this);
                     }
 
                 }
@@ -361,8 +321,6 @@ public class GameStage extends Stage implements ContactListener
         touchPoint = new Vector3();
         PuttonPoint= new Vector3();
         timer = new Timer();
-        System.out.println(touchPoint.x);
-        System.out.println(touchPoint.y);
         collectorPosition = new Rectangle(touchPoint.x, touchPoint.y, 36f, 36f);//Touch
 
         //collectorPosition = new Rectangle(VIEWPORT_WIDTH/2, VIEWPORT_HEIGHT/2, 36f, 36f);//Gamepad
@@ -370,14 +328,18 @@ public class GameStage extends Stage implements ContactListener
     private void createPauseLabels()
     {
         fontbutton = AssetsManager.createBimapFont(45);
-
-        //resume = createLabel("Resume");
-        //resume.setPosition((getCamera().viewportWidth-resume.getWidth())/2,(getCamera().viewportHeight)/2 +50f);
-        //resume.setVisible(false);
-
-        //quit = createLabel("Quit");
-        //quit.setPosition((getCamera().viewportWidth-quit.getWidth())/2,(getCamera().viewportHeight-quit.getHeight())/3 +50f);
-        //quit.setVisible(false);
+        String name=  AssetsManager.MusicName;
+        if(name.contains("/"))
+        {
+            String fullPath = name;
+            int index = fullPath.lastIndexOf("/");
+            String fileName = fullPath.substring(index + 1);
+            name= fileName.substring(0, fileName.lastIndexOf('.'));
+        }
+        title=createLabel(name);//TODO : Detect long names and fit aprropriately, fix button sizing font etc for responsiveness
+        title.setPosition((getCamera().viewportWidth-title.getWidth())/2,(getCamera().viewportHeight)/2 +70f);
+        title.setVisible(false);
+        addActor(title);
     }
     private void addActorSPause(){
         addActor(BackgroundPause);
@@ -390,7 +352,7 @@ public class GameStage extends Stage implements ContactListener
         selectionColor.setRightWidth(5f);
         selectionColor.setBottomHeight(2f);
         BackgroundPause = new Image(selectionColor);
-        if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)
+       /* if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)
         {
             BackgroundPause.setSize(200,200);
         }
@@ -401,7 +363,8 @@ public class GameStage extends Stage implements ContactListener
         if(VIEWPORT_WIDTH>1080 && VIEWPORT_HEIGHT>720)
         {
             BackgroundPause.setSize(400,350);
-        }
+        }*/
+        BackgroundPause.setSize(400*VIEWPORT_WIDTH/1920,350*VIEWPORT_HEIGHT/1080);
         BackgroundPause.setPosition((getCamera().viewportWidth- BackgroundPause.getWidth())/2,(getCamera().viewportHeight  -BackgroundPause.getHeight())/2 );
         //Button pause=new Button();
         font = noteCollector.getAssetsManager().createBitmapFont();
@@ -418,19 +381,12 @@ public class GameStage extends Stage implements ContactListener
         }
         else
         {
-            if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)//Change dimensions of pause button for different resolutions
-            {
-                pause.setSize(800f,56f);
-            }
-            if(VIEWPORT_WIDTH==1080 && VIEWPORT_HEIGHT==720)
-            {
-                pause.setSize(920f,56f);
-            }
-            if(VIEWPORT_WIDTH>1080 && VIEWPORT_HEIGHT>720)
+           /* if(VIEWPORT_WIDTH>1080 && VIEWPORT_HEIGHT>720)
             {
                 //pause.setSize(1520f,56f);
                 pause.setBounds(250f,0f,1500f,100f);
-            }
+            }*/
+            pause.setSize(800f*VIEWPORT_WIDTH/800,56f*VIEWPORT_HEIGHT/480);
             pause.addListener(new InputListener()
             {
                 @Override
@@ -443,8 +399,10 @@ public class GameStage extends Stage implements ContactListener
                         System.out.println(GameState);
                         final ImageTextButton resume = new ImageTextButton("Resume", textButtonStyle);
                         final ImageTextButton quit = new ImageTextButton("Quit", textButtonStyle);
-                        resume.setPosition((getCamera().viewportWidth-resume.getWidth())/2,(getCamera().viewportHeight)/2 +50f);
-                        quit.setPosition((getCamera().viewportWidth-quit.getWidth())/2,(getCamera().viewportHeight-quit.getHeight())/3 +50f);
+                        resume.setSize(sizeX,sizeY);
+                        quit.setSize(sizeX,sizeY);
+                        resume.setPosition((getCamera().viewportWidth-resume.getWidth())/2,(getCamera().viewportHeight)/3 +100f*VIEWPORT_WIDTH/1080);
+                        quit.setPosition((getCamera().viewportWidth-quit.getWidth())/2,(getCamera().viewportHeight-quit.getHeight())/3 +40f*VIEWPORT_WIDTH/1080);
                         resume.addListener(new InputListener()
                         {
                             @Override
@@ -453,6 +411,7 @@ public class GameStage extends Stage implements ContactListener
                                 GameStage.super.getRoot().removeActor(resume);
                                 GameStage.super.getRoot().removeActor(quit);
                                 GameState ="resume";
+                                BackgroundPause.addAction(Actions.sequence(Actions.fadeOut(0.2f)));
                                 return true;
                             }
                         });
@@ -461,8 +420,14 @@ public class GameStage extends Stage implements ContactListener
                             @Override
                             public boolean touchDown(InputEvent event,float x , float y,int pointer,int button)
                             {
-                                dispose();
-                                noteCollector.setScreen(new MainMenuScreen(noteCollector,stage));
+                                fadeToMenu();
+                                Timer.schedule(new Timer.Task() {
+                                    @Override
+                                    public void run() {
+                                        dispose();
+                                        noteCollector.setScreen(new MainMenuScreen(noteCollector,stage));
+                                    }
+                                },2f );
                                 return true;
                             }
                         });
@@ -470,6 +435,7 @@ public class GameStage extends Stage implements ContactListener
                         addActor(quit);
                         resume.setVisible(true);
                         quit.setVisible(true);
+                        title.setVisible(true);
                         //return true;
                     }
                     return true;
@@ -550,7 +516,7 @@ public class GameStage extends Stage implements ContactListener
             x3=new Image(X);
             x4=new Image(X);
             x5=new Image(X);
-            if(VIEWPORT_HEIGHT==480 && VIEWPORT_WIDTH==800)//Set X positions according to resolution so that they don't overlap with the messages
+            /*if(VIEWPORT_HEIGHT==480 && VIEWPORT_WIDTH==800)//Set X positions according to resolution so that they don't overlap with the messages
             {
                 x1.setPosition(getCamera().viewportWidth  / 64, getCamera().viewportHeight * 62 / 70-25);
                 x2.setPosition(getCamera().viewportWidth  / 64+50, getCamera().viewportHeight * 62 / 70-25);
@@ -573,7 +539,12 @@ public class GameStage extends Stage implements ContactListener
                 x3.setPosition(getCamera().viewportWidth  / 64+100, getCamera().viewportHeight * 62 / 70);
                 x4.setPosition(getCamera().viewportWidth  / 64+150, getCamera().viewportHeight * 62 / 70);
                 x5.setPosition(getCamera().viewportWidth  / 64+200, getCamera().viewportHeight * 62 / 70);
-            }
+            }*/
+            x1.setPosition(getCamera().viewportWidth  / 64, getCamera().viewportHeight * 62 / 70-25*VIEWPORT_HEIGHT/480);
+            x2.setPosition(getCamera().viewportWidth  / 64+50, getCamera().viewportHeight * 62 / 70-25*VIEWPORT_HEIGHT/480);
+            x3.setPosition(getCamera().viewportWidth  / 64+100, getCamera().viewportHeight * 62 / 70-25*VIEWPORT_HEIGHT/480);
+            x4.setPosition(getCamera().viewportWidth  / 64+150, getCamera().viewportHeight * 62 / 70-25*VIEWPORT_HEIGHT/480);
+            x5.setPosition(getCamera().viewportWidth  / 64+200, getCamera().viewportHeight * 62 / 70-25*VIEWPORT_HEIGHT/480);
             addActor(x1);
             addActor(x2);
             addActor(x3);
@@ -747,6 +718,8 @@ produce the corresponding square*/
 
 
     private void fadeInPause(boolean visible){
+        BackgroundPause.getColor().a=0;
+        BackgroundPause.addAction(Actions.sequence(Actions.fadeIn(0.2f)));
         BackgroundPause.setVisible(visible);
         //resume.setVisible(visible);
         //quit.setVisible(visible);
@@ -941,9 +914,9 @@ produce the corresponding square*/
                return false;
            }
            else {
-               System.out.println("Collector X:"+collector.getX()+" Collector Y:"+collector.getY());
-               System.out.println("Position X:"+collectorPosition.getX()+" Position Y:"+collectorPosition.getY());
-               collectorPosition.set(touchPoint.x,touchPoint.y,squarewidth,squareheight);//TODO (Collector movement for referance) Also add toggle for touch/gamepad
+               //System.out.println("Collector X:"+collector.getX()+" Collector Y:"+collector.getY());
+              // System.out.println("Position X:"+collectorPosition.getX()+" Position Y:"+collectorPosition.getY());
+               collectorPosition.set(touchPoint.x,touchPoint.y,squarewidth,squareheight);
                collector.changeposition(touchPoint.x, touchPoint.y);
 
            }
@@ -962,6 +935,15 @@ produce the corresponding square*/
 
         return false;
 
+    }
+    public void fadeToMenu()
+    {
+        FileHandle file = Gdx.files.internal(Constants.getBackgroundMenu().toString());//Pseudo-fade out to menu screen
+        Image background=noteCollector.getAssetsManager().scaleBackground(file);
+        addActor(background);
+        addAction(Actions.sequence(Actions.alpha(0), Actions.fadeIn(2f)));
+        background.getColor().a=0;
+        background.addAction(Actions.fadeIn(0.2f));
     }
 
     private void translateScreenToWorldCoordinates(int x, int y){
