@@ -25,7 +25,6 @@ public class Constants {
     public static final String DpadDown="data/Game Images/dpad_arrow_down.png";
     public static final String DpadLeft="data/Game Images/dpad_arrow_left.png";
     public static final String DpadRight="data/Game Images/dpad_arrow_right.png";
-    public static final String dpadKnob="data/Game Images/dpad.png";
 
 
     public static  final String ButtonImage = "data/ui/buttons/appButton.png";
@@ -43,7 +42,7 @@ public class Constants {
     }*/
     public static void viewportDimensions()
     {
-        if(Gdx.graphics.getWidth()<1080)
+        /*if(Gdx.graphics.getWidth()<1080)
         {
             APP_WIDTH=800;
             APP_HEIGHT=480;
@@ -57,7 +56,7 @@ public class Constants {
         {
             APP_WIDTH=1920;
             APP_HEIGHT=1080;
-        }
+        }*/
     }
     public static String getBackgroundMenu() {
         //return BackgroundMenu;
@@ -121,8 +120,8 @@ public class Constants {
     public static final String VeryBigCollector = "data/Game Images/VeryBigCollector.png";
     public static final String square = "data/Game Images/squaremini.png";
 
-    public static final float CollectorStartX480 = 400f;
-    public static final float CollectorStartY480 = 240f;
+    public static final float CollectorStartX = 400f;
+    public static final float CollectorStartY = 240f;
     public static final float CollectorStartX720 = 540f;
     public static final float CollectorStartY720 = 360f;
     public static final float CollectorStartX1080 = 960f;

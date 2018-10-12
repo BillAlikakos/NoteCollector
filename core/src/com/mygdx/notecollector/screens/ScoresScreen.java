@@ -58,19 +58,10 @@ public class ScoresScreen implements Screen {
     private VerticalGroup verticalGroup;
     private VerticalGroup verticalGroupLogo;
     private Table exitBtnTable;
-    private int sizeX;
-    private int sizeY;
-    private int[] size;
+    private float sizeX;
+    private float sizeY;
+    private float[] size;
     private Table table;
-
-    public ScoresScreen(NoteCollector notecollector) {
-        this.notecollector = notecollector;
-        score = new Score();
-        scores = score.getScore();
-        AssetsManager = notecollector.getAssetsManager();
-        LoadAssets();
-
-    }
 
     public ScoresScreen(NoteCollector notecollector,Stage stage) {
         this.notecollector = notecollector;
@@ -84,13 +75,11 @@ public class ScoresScreen implements Screen {
     @Override
     public void show()
     {
-        //setupCamera();
         createVerticalGroup();
-        //createBackground();
         createLogo();
 
         exitBtnTable=new Table();
-        size=AssetsManager.setButtonDimensions(sizeX,sizeY);//Get the dimensions for the button
+        size=AssetsManager.setButtonSize(sizeX,sizeY);//Get the dimensions for the button
         sizeX=size[0];
         sizeY=size[1];
         printScoreList();
@@ -139,7 +128,6 @@ public class ScoresScreen implements Screen {
     @Override
     public void dispose()
     {
-        //stage.dispose();
         font.dispose();
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(verticalGroup);
@@ -150,14 +138,11 @@ public class ScoresScreen implements Screen {
     private void printScoreList()//Create and print the high score table
     {
         int fontSize;
-        fontSize=15;
-        //Skin uiSkin = new Skin(Gdx.files.internal("data/ui/skin/uiskin.json"));
-        //uiSkin.getFont("default-font").getData().setScale(1.5f,1.5f);//Change font size
         //check if there are recorded scores. if exist get all scores with names and print it
         if (scores.size()==0 || scores ==null)
         {
             table = new Table();
-            if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)//Set appropriate sizes for title spacing according to resolution
+            /*if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)//Set appropriate sizes for title spacing according to resolution
             {
                 fontSize=28;
             }
@@ -168,7 +153,8 @@ public class ScoresScreen implements Screen {
             if(VIEWPORT_WIDTH>1080 && VIEWPORT_HEIGHT>720)
             {
                 fontSize=35;
-            }
+            }*/
+            fontSize=45*VIEWPORT_WIDTH/1920;
             Label score = createLabel("No recorded scores ",fontSize);
             addVerticalGroup(score);
         }
@@ -176,19 +162,8 @@ public class ScoresScreen implements Screen {
         {
             int limit=scores.size();
 
-            if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)//Set appropriate sizes for title spacing according to resolution
-            {
-                fontSize=15;
-            }
-            if(VIEWPORT_WIDTH==1080 && VIEWPORT_HEIGHT==720)
-            {
-                fontSize=20;
-            }
-            if(VIEWPORT_WIDTH>1080 && VIEWPORT_HEIGHT>720)
-            {
-                fontSize=30;
-            }
-            Label title = createLabel("High Scores",45);
+            fontSize=43*VIEWPORT_WIDTH/1920;
+            Label title = createLabel("High Scores",VIEWPORT_WIDTH*48/1920);
             Label scoreLabel = createLabel("Score", fontSize+5);
             Label nameLabel=createLabel("Name", fontSize+5);
             Label trackLabel=createLabel("Song",fontSize+5);
@@ -236,7 +211,7 @@ public class ScoresScreen implements Screen {
         verticalGroup  = new VerticalGroup();
         verticalGroup.setFillParent(true);
        // verticalGroup.center().padTop(80f).space(5f);
-        if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)//Set appropriate sizes for title spacing according to resolution
+       /* if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)//Set appropriate sizes for title spacing according to resolution
         {
             //background.setPosition((stage.getCamera().viewportWidth-background.getWidth())/2,(stage.getCamera().viewportHeight-background.getHeight()));
             verticalGroup.center().padTop(10f).space(10f);
@@ -248,7 +223,8 @@ public class ScoresScreen implements Screen {
         if(VIEWPORT_WIDTH>1080 && VIEWPORT_HEIGHT>720)
         {
             verticalGroup.center().padTop(300f).space(10f);
-        }
+        }*/
+        verticalGroup.center().padTop(300f*VIEWPORT_HEIGHT/1080).space(10f);
     }
 
     private  void addVerticalGroup(Actor actor){
@@ -270,26 +246,15 @@ public class ScoresScreen implements Screen {
     }
     private void createLogo()
     {
-        Texture img = AssetsManager.assetManager.get(Constants.logo);
-        Image background = new Image(img);
-        verticalGroupLogo  = new VerticalGroup();
-        verticalGroupLogo.setFillParent(true);
-        verticalGroupLogo.addActor(background);
-        AssetsManager.setLogoPosition(verticalGroupLogo);
-
-        stage.addActor(verticalGroupLogo);
-        //stage.addActor(background);
-        //addVerticalGroup(background);
+        Image logo=notecollector.getAssetsManager().scaleLogo(Gdx.files.internal(Constants.logo));
+        verticalGroup  = new VerticalGroup();
+        verticalGroup.setFillParent(true);
+        verticalGroup.center();
+        verticalGroup.addActor(logo);
+        notecollector.getAssetsManager().setLogoPosition(verticalGroup);
+        stage.addActor(verticalGroup);
     }
-    private void createBackground()
-    {
-        System.out.println("Width:"+VIEWPORT_WIDTH+" Height:"+VIEWPORT_HEIGHT);
-        FileHandle file = Gdx.files.internal(Constants.getBackgroundMenu().toString());
-        Image background=AssetsManager.scaleBackground(file);
-        stage.addActor(background);
-    }
-
-    private void createButton(String text,int sizeX,int sizeY)
+    private void createButton(String text,float sizeX,float sizeY)
     {
         selectionColor =new TextureRegionDrawable(new TextureRegion(AssetsManager.assetManager.get(Constants.ButtonImage,Texture.class))) ;
         selectionColorPressed = new TextureRegionDrawable(new TextureRegion(AssetsManager.assetManager.get(Constants.ButtonPressed,Texture.class)));
@@ -343,11 +308,5 @@ public class ScoresScreen implements Screen {
         textButtonStyle.over = ButtonImage;
         textButtonStyle.font = font;
         return textButtonStyle;
-    }
-
-    private void setupCamera(){
-        viewport = new ScalingViewport(Scaling.stretch, VIEWPORT_WIDTH, VIEWPORT_HEIGHT, new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT));
-        //stage = new Stage(viewport);
-        stage.getCamera().update();
     }
 }

@@ -55,27 +55,13 @@ public class Piano extends  GameActor {
 
         spritewhite = new Sprite(textureWhite);
         sub=0;
-        if(VIEWPORT_WIDTH==1080 && VIEWPORT_HEIGHT==720)
-        {
-           // noteposition=notepositionHD;
-            spriteblack.setScale(1f,0.8f);
-            spriteblackPressed.setScale(1f,0.8f);
-            spritewhitePressed.setScale(1f,1f);
-            spritewhite.setScale(1f,1f);
-            sub=0;
-            pad=120;
-        }
-        if(VIEWPORT_WIDTH>1080 && VIEWPORT_HEIGHT>720)
-        {
-            noteposition=notepositionHD;
-            spriteblack.scale(1f);
-            spriteblackPressed.scale(1f);
-            spritewhitePressed.scale(1.25f);
-            spritewhite.scale(1.25f);
-            pad=250;
-            sub=5;
-        }
-        //initiallize boolean value for pause
+        System.out.println(spriteblack.getScaleX());
+        System.out.println(spriteblack.getScaleY());
+        spriteblack.setScale(1f*VIEWPORT_WIDTH/800,1f*VIEWPORT_HEIGHT/480);
+        spriteblackPressed.setScale(1f*VIEWPORT_WIDTH/800,1f*VIEWPORT_HEIGHT/480);
+        spritewhitePressed.setScale(1f*VIEWPORT_WIDTH/800,1f*VIEWPORT_HEIGHT/480);
+        spritewhite.setScale(1f*VIEWPORT_WIDTH/800,1f*VIEWPORT_HEIGHT/480);
+        // boolean value for pause detection
         paused =false;
 
     }
@@ -130,37 +116,17 @@ public class Piano extends  GameActor {
         //check if the key pressed draw pressed key else draw normal key. Also check if key have pressede before  
         if (noteposition[octave][notescale] == MultipleNotes[j] && pressed == true)
         {
-            float y=20f;
-            if(VIEWPORT_WIDTH==1080 && VIEWPORT_HEIGHT==720)
-            {
-                y=22f;
-            }
-            if(VIEWPORT_WIDTH>1080 && VIEWPORT_HEIGHT>720)
-            {
-               y=45f;
-            }
-
-            spriteblackPressed.setPosition(MultipleNotes[j]+pad, y);
+            float y=20f*VIEWPORT_HEIGHT/480;
+            spriteblackPressed.setPosition(MultipleNotes[j]*VIEWPORT_WIDTH/800, y);
 
             spriteblackPressed.draw(batch);
-                squareNotes.StartNote(noteposition[octave][notescale]);
+                squareNotes.StartNote(noteposition[octave][notescale]*VIEWPORT_WIDTH/800);
 
             j++;
         } else
         {
-            float y=20f;
-            if(VIEWPORT_WIDTH==1080 && VIEWPORT_HEIGHT==720)
-            {
-                y=22f;
-            }
-            if(VIEWPORT_WIDTH>1080 && VIEWPORT_HEIGHT>720)
-            {
-
-
-                y=45f;
-            }
-
-            spriteblack.setPosition(noteposition[octave][notescale]+pad, y);
+            float y=20f*VIEWPORT_HEIGHT/480;
+            spriteblack.setPosition(noteposition[octave][notescale]*VIEWPORT_WIDTH/800, y);
             spriteblack.draw(batch);
 
 
@@ -169,29 +135,19 @@ public class Piano extends  GameActor {
     }
     private void createwhitekeys(int pad)
     {
-        float y=5f;
-        if(VIEWPORT_WIDTH==1080 && VIEWPORT_HEIGHT==720)
-        {
-            y=3f;
-        }
-        if(VIEWPORT_WIDTH>1080 && VIEWPORT_HEIGHT>720)
-        {
-            y=15f;
-        }
+        float y=5f*VIEWPORT_HEIGHT/480;
         //the same function of method createblackkeys in this method 
         if (noteposition[octave][notescale] == MultipleNotes[j] && pressed == true)
         {
-
-
-
-            spritewhitePressed.setPosition( MultipleNotes[j]+pad, y);
+            spritewhitePressed.setPosition( MultipleNotes[j]*VIEWPORT_WIDTH/800, y);
             spritewhitePressed.draw(batch);
-            squareNotes.StartNote(noteposition[octave][notescale]);
+            squareNotes.StartNote(noteposition[octave][notescale]*VIEWPORT_WIDTH/800);
 
             j++;
-        } else {
-
-            spritewhite.setPosition(noteposition[octave][notescale]+pad, y);
+        }
+        else
+        {
+            spritewhite.setPosition(noteposition[octave][notescale]*VIEWPORT_WIDTH/800, y);
 
             spritewhite.draw(batch);
         }
@@ -233,14 +189,14 @@ public class Piano extends  GameActor {
                 break;
             }
 
-            //if the start time is same or between next and endtime is smaller than currenttick break    
+            //if the start time is same or between next and end time is smaller than current tick break
             if ((startTime <=currentTcik) && (startTime <nextNote)
                     && (currentTcik <endTime)
                     && (startTime <= prevTick) &&(prevTick < nextNote)
                     && (prevTick < endTime) ) {
                 break;
             }
-            //if the start time is between currenttick and end tick of note number push the key else the note is enden an unpressed key
+            //if the start time is between current tick and end tick of note number, push the key
             if((startTime <=currentTcik) && (startTime < endTime)){
                 pressed =true;
 
@@ -285,7 +241,7 @@ public class Piano extends  GameActor {
         }
         return end;
     }
-    //method for finding the last notewhich pressed
+    //method for finding the last note which is pressed
     private int findClosestStartTime(long tick){
          left =0;
          right = notesize -1;

@@ -57,9 +57,9 @@ public class EndGameScreen implements Screen {
     private String Score;
     private String Score2;
     private String Difficulty;
-    private int[] size;
-    private int sizeX;
-    private int sizeY;
+    private float[] size;
+    private float sizeX;
+    private float sizeY;
     private boolean isHost;
     private boolean isGuest;
     private ServerClass srv;
@@ -104,7 +104,7 @@ public class EndGameScreen implements Screen {
     public void show()
     {
 
-        size=AssetsManager.setButtonDimensions(sizeX,sizeY);
+        size=AssetsManager.setButtonSize(sizeX,sizeY);
         sizeX=size[0];
         sizeY=size[1];
         if(isGuest || isHost)
@@ -112,9 +112,7 @@ public class EndGameScreen implements Screen {
             sendMessage();
             addScoreListener();
         }
-        //setupCamera();
         createTable();
-        //createBackground();
         createLogo();
         createLabels();
         createButtons();
@@ -224,32 +222,17 @@ public class EndGameScreen implements Screen {
 
     private void createButtons(){
         float Xaxis =(stage.getCamera().viewportWidth/2)-160f;
-        if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)//old dimensions
-        {
-            createButton("Continue",Xaxis,(stage.getCamera().viewportHeight-52)/2);
-            Xaxis =Xaxis+195f;
-            createButton("Submit",Xaxis,(stage.getCamera().viewportHeight-52)/2);
-
-        }
-        if(VIEWPORT_WIDTH==1080 && VIEWPORT_HEIGHT==720)
-        {
-
-            createButton("Continue",Xaxis-35,(stage.getCamera().viewportHeight-52)/2-50);
-            Xaxis =Xaxis+195f;
-            createButton("Submit",Xaxis+35,(stage.getCamera().viewportHeight-52)/2-50);
-        }
-        if(VIEWPORT_WIDTH>1080 && VIEWPORT_HEIGHT>720)
-        {
-            createButton("Continue",Xaxis-50,(stage.getCamera().viewportHeight)/2-100);
-            Xaxis =Xaxis+195f;
-            createButton("Submit",Xaxis+50,(stage.getCamera().viewportHeight)/2-100);
-        }
-
+        float Yaxis=(stage.getCamera().viewportHeight-52)/2;
+        createButton("Continue",Xaxis*VIEWPORT_WIDTH/480,Yaxis*VIEWPORT_HEIGHT/480);
+        Xaxis =Xaxis+195f*VIEWPORT_WIDTH/480;
+        createButton("Submit",Xaxis,Yaxis*VIEWPORT_HEIGHT/480);
     }
     private void createLabels(){
         //createLabel("Game finished!",stage.getCamera().viewportHeight/2+100);
-        createLabel("Game finished!",stage.getCamera().viewportHeight/2+75);
-        createLabel("Your Score:"+Score,stage.getCamera().viewportHeight/2+30);
+        float Yaxis1=stage.getCamera().viewportHeight/2+75;
+        float Yaxis2=stage.getCamera().viewportHeight/2+30;
+        createLabel("Game finished!",Yaxis1*VIEWPORT_HEIGHT/1920);
+        createLabel("Your Score:"+Score,Yaxis2*VIEWPORT_HEIGHT/1920);
         /*if(isGuest || isHost)
         {
             createLabel("Opponent's Score:"+Score2,stage.getCamera().viewportHeight/2);
@@ -257,18 +240,13 @@ public class EndGameScreen implements Screen {
 
     }
     @Override
-    public void render(float delta) {
-
-        /*if (Gdx.input.justTouched()){
-            notecollector.closeAds();
-        }*/
+    public void render(float delta)
+    {
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
-
-
     }
 
     @Override
@@ -303,7 +281,6 @@ public class EndGameScreen implements Screen {
         }
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(verticalGroup);
-       // stage.dispose();
         font.dispose();
     }
 
@@ -342,21 +319,13 @@ public class EndGameScreen implements Screen {
     }
     private void createLogo()
     {
-        Texture img = AssetsManager.assetManager.get(Constants.logo);
-        Image logo = new Image(img);
+        Image logo=notecollector.getAssetsManager().scaleLogo(Gdx.files.internal(Constants.logo));
         verticalGroup  = new VerticalGroup();
         verticalGroup.setFillParent(true);
         verticalGroup.center();
         verticalGroup.addActor(logo);
-        AssetsManager.setLogoPosition(verticalGroup);
+        notecollector.getAssetsManager().setLogoPosition(verticalGroup);
         stage.addActor(verticalGroup);
-    }
-    private void createBackground()
-    {
-        FileHandle file = Gdx.files.internal(Constants.getBackgroundMenu().toString());
-        Image background=AssetsManager.scaleBackground(file);
-        stage.addActor(background);
-
     }
 
     private void createButton(String text,float Xaxis,float Yaxis){
@@ -429,9 +398,4 @@ public class EndGameScreen implements Screen {
         return textButtonStyle;
     }
 
-    private void setupCamera(){
-        viewport = new ScalingViewport(Scaling.stretch, VIEWPORT_WIDTH, VIEWPORT_HEIGHT, new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT));
-        stage = new Stage(viewport);
-        stage.getCamera().update();
-    }
 }

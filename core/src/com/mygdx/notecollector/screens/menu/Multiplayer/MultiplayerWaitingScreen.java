@@ -46,7 +46,6 @@ public class MultiplayerWaitingScreen implements Screen
     private NoteCollector noteCollector;
     private Assets AssetsManager;
     private Stage stage;
-    private Viewport viewport;
     private static final int VIEWPORT_WIDTH = Constants.APP_WIDTH;
     private static final int VIEWPORT_HEIGHT = Constants.APP_HEIGHT;
     private Table table;
@@ -74,9 +73,6 @@ public class MultiplayerWaitingScreen implements Screen
         table = new Table();
         table.setFillParent(true);
         table.center();
-        createVerticalGroup();
-        //setupCamera();
-        //createBackground();
         createLogo();
         listen();
         createLabel("Waiting Host ....");
@@ -85,7 +81,7 @@ public class MultiplayerWaitingScreen implements Screen
         table.addAction(Actions.sequence(Actions.fadeIn(0.2f)));
     }
 
-    private void setDifficultyParams(String difficulty)
+    private void setDifficultyParams(String difficulty)//TODO : Remove
     {
         if (VIEWPORT_WIDTH == 800 && VIEWPORT_HEIGHT == 480)//Different speeds and delay for each resolution
         {
@@ -133,7 +129,7 @@ public class MultiplayerWaitingScreen implements Screen
         }
         else if(VIEWPORT_HEIGHT>720&&VIEWPORT_WIDTH>1080)
         {
-            switch (difficulty)//Listeners for multiplayer difficulty screen TODO check speeds (Possibly OK)
+            switch (difficulty)//Listeners for multiplayer difficulty screen TODO change speed handling to responsive sizing
             {
                 case "Easy":
                     speed=260;
@@ -238,42 +234,24 @@ public class MultiplayerWaitingScreen implements Screen
         font.dispose();
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(verticalGroup);
-//        stage.dispose();
     }
 
 
     private void LoadAssets()
     {
-        font = AssetsManager.createBimapFont(45);
+        font = AssetsManager.createBimapFont(45*VIEWPORT_WIDTH/1920);
 
     }
 
     private void createLogo()
     {
-        Texture img = AssetsManager.assetManager.get(Constants.logo);
-        Image background = new Image(img);
-        addVerticalGroup(background);
-    }
-
-    private void createBackground()
-    {
-        System.out.println("Width:" + VIEWPORT_WIDTH + " Height:" + VIEWPORT_HEIGHT);
-        FileHandle file = Gdx.files.internal(Constants.getBackgroundMenu().toString());
-        Image background = AssetsManager.scaleBackground(file);
-        stage.addActor(background);
-    }
-
-    private void createVerticalGroup()
-    {
-        verticalGroup = new VerticalGroup();
+        Image logo=noteCollector.getAssetsManager().scaleLogo(Gdx.files.internal(Constants.logo));
+        verticalGroup  = new VerticalGroup();
         verticalGroup.setFillParent(true);
-        AssetsManager.setLogoPosition(verticalGroup);
-    }
-
-    private void addVerticalGroup(Actor actor)
-    {
-        verticalGroup.addActor(actor);
-
+        verticalGroup.center();
+        verticalGroup.addActor(logo);
+        noteCollector.getAssetsManager().setLogoPosition(verticalGroup);
+        stage.addActor(verticalGroup);
     }
 
 
@@ -281,29 +259,10 @@ public class MultiplayerWaitingScreen implements Screen
     {
         Label.LabelStyle labelstyle = new Label.LabelStyle(font, Color.WHITE);
         Label label = new Label(text, labelstyle);
-        table.add(label).colspan(2).padTop(100f);
-        if (VIEWPORT_WIDTH == 800 && VIEWPORT_HEIGHT == 480)//Set appropriate sizes for title spacing according to resolution
-        {
-            table.add(label).colspan(2).padTop(220f).padLeft(50f);
-            ;
-        }
-        if (VIEWPORT_WIDTH == 1080 && VIEWPORT_HEIGHT == 720)
-        {
-            table.add(label).colspan(2).padTop(220f).padLeft(100f);
-        }
-        if (VIEWPORT_WIDTH > 1080 && VIEWPORT_HEIGHT > 720)
-        {
-            table.add(label).colspan(2).padTop(250f).padLeft(50f);
-        }
+        table.add(label).colspan(2).padTop(250f*VIEWPORT_HEIGHT/1080).padLeft(50f*VIEWPORT_WIDTH/1920);
 
     }
 
-    private void setupCamera()
-    {
-        viewport = new ScalingViewport(Scaling.stretch, VIEWPORT_WIDTH, VIEWPORT_HEIGHT, new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT));
-        stage = new Stage(viewport);
-        stage.getCamera().update();
-    }
 
 
 }

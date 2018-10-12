@@ -58,21 +58,10 @@ public class DialogScore implements Screen {
     private boolean touched;
     private VerticalGroup verticalGroup;
     private String trackName;//String to hold the name of the song
-    private int[] size;
-    private int sizeX;
-    private int sizeY;
+    private float[] size;
+    private float sizeX;
+    private float sizeY;
 
-    public DialogScore(String ScoreNumber, NoteCollector noteCollector, String trackName,String Difficulty)
-    {
-        this.ScoreNumber = ScoreNumber;
-        this.noteCollector = noteCollector;
-        this.trackName=trackName;
-        this.Difficulty=Difficulty;
-        score = new Score();
-        touched=false;
-        AssetsManager = noteCollector.getAssetsManager();
-        LoadAssets();
-    }
     public DialogScore(String ScoreNumber, NoteCollector noteCollector, String trackName,String Difficulty,Stage stage)
     {
         this.stage=stage;
@@ -86,31 +75,17 @@ public class DialogScore implements Screen {
         LoadAssets();
     }
     @Override
-    public void show() {
-        //setupCamera();
+    public void show()
+    {
         createTable();
-        //createBackground();
         createLogo();
         createLabel("Submit Score",stage.getCamera().viewportHeight/2+100);
         createTextField();
-        size=AssetsManager.setButtonDimensions(sizeX,sizeY);//Get the dimensions for the button
+        size=AssetsManager.setButtonSize(sizeX,sizeY);//Get the dimensions for the button
         sizeX=size[0];
         sizeY=size[1];
         createButton("Back",5f,10f,sizeX,sizeY);
-        if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)//old dimensions
-        {
-            createButton("Submit",350,180f,75,100);
-
-        }
-        if(VIEWPORT_WIDTH==1080 && VIEWPORT_HEIGHT==720)
-        {
-
-            createButton("Submit",410f,300f,sizeX,sizeY);
-        }
-        if(VIEWPORT_WIDTH>1080 && VIEWPORT_HEIGHT>720)
-        {
-            createButton("Submit",820f,420f,sizeX,sizeY);
-        }
+        createButton("Submit",VIEWPORT_WIDTH/2-sizeX/2,VIEWPORT_HEIGHT/2-sizeY,sizeX,sizeY);
         stage.addActor(table);
         Gdx.input.setInputProcessor(stage);
         label.getColor().a=0;
@@ -119,22 +94,20 @@ public class DialogScore implements Screen {
     }
 
     private void addListener(){
-        //if click show keyboard for writting score
+        //if the textbox is clicked show the keyboard
         textField.addListener(new ClickListener(){
             public void clicked(InputEvent e, float x, float y) {
                 if (touched == false)
                     touched =true;
                 Gdx.input.setOnscreenKeyboardVisible(true);
-
-
             }
         });
     }
     private void createTextField(){
         textField = new TextField("",createTextFieldStyle());
         textField.setMessageText("Write a name");
-        textField.setWidth(360);
-        textField.setPosition((stage.getCamera().viewportWidth-360)/2,(stage.getCamera().viewportHeight)/2+50);
+        textField.setWidth(360*VIEWPORT_WIDTH/1920);
+        textField.setPosition((stage.getCamera().viewportWidth-360*VIEWPORT_WIDTH/1920)/2,(stage.getCamera().viewportHeight)/2+50*VIEWPORT_WIDTH/1920);
         addListener();
         table.addActor(textField);
     }
@@ -158,7 +131,7 @@ public class DialogScore implements Screen {
 
         stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
-        // if touch screen not textfield hide keyboard
+        // if touch screen is touched, hide keyboard
         if(Gdx.input.isTouched() && touched == true) {
             Gdx.input.setOnscreenKeyboardVisible(false);
             stage.unfocus(textField);
@@ -198,20 +171,7 @@ public class DialogScore implements Screen {
     private void createLabel(String text,float Yaxis){
         Label.LabelStyle labelstyle = new Label.LabelStyle(font, Color.WHITE);
         label = new Label(text, labelstyle);
-        if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)//old dimensions
-        {
-            label.setPosition((stage.getCamera().viewportWidth-label.getWidth())/2,Yaxis+20);
-        }
-        if(VIEWPORT_WIDTH==1080 && VIEWPORT_HEIGHT==720)
-        {
-
-            label.setPosition((stage.getCamera().viewportWidth-label.getWidth())/2,Yaxis+32);
-        }
-        if(VIEWPORT_WIDTH>1080 && VIEWPORT_HEIGHT>720)
-        {
-            label.setPosition((stage.getCamera().viewportWidth-label.getWidth())/2,Yaxis+50);
-        }
-
+        label.setPosition((stage.getCamera().viewportWidth-label.getWidth())/2,Yaxis+50*VIEWPORT_HEIGHT/1080);
         stage.addActor(label);
 
     }
@@ -219,7 +179,7 @@ public class DialogScore implements Screen {
         table = new Table();
         table.center();
         table.setFillParent(true);
-        table.pad(10f,10f,30f,10f);
+        table.pad(10f,10f,30f,10f);//TODO : Change padding
         table.setTouchable(Touchable.enabled);
     }
     private void LoadAssets(){
@@ -234,26 +194,18 @@ public class DialogScore implements Screen {
 
 
     }
-    private void createLogo(){
-        Texture img = AssetsManager.assetManager.get(Constants.logo);
-        Image logo = new Image(img);
+    private void createLogo()
+    {
+        Image logo=noteCollector.getAssetsManager().scaleLogo(Gdx.files.internal(Constants.logo));
         verticalGroup  = new VerticalGroup();
         verticalGroup.setFillParent(true);
         verticalGroup.center();
         verticalGroup.addActor(logo);
-        AssetsManager.setLogoPosition(verticalGroup);
+        noteCollector.getAssetsManager().setLogoPosition(verticalGroup);
         stage.addActor(verticalGroup);
-        // addVerticalGroup(background);
-    }
-    private void createBackground()
-    {
-        System.out.println("Width:"+VIEWPORT_WIDTH+" Height:"+VIEWPORT_HEIGHT);
-        FileHandle file = Gdx.files.internal(Constants.getBackgroundMenu().toString());
-        Image background=AssetsManager.scaleBackground(file);
-        stage.addActor(background);
     }
 
-    private void createButton(String text,float Xaxis,float y,int sizeX,int sizeY)
+    private void createButton(String text,float Xaxis,float y,float sizeX,float sizeY)
     {
 
         ImageTextButton.ImageTextButtonStyle textButtonStyle = createButtonStyle(selectionColor);
@@ -286,7 +238,6 @@ public class DialogScore implements Screen {
                             if (text.equals("Submit")) {
                                 String name = textField.getText();
                                 score.WriteScore(name, Integer.parseInt(ScoreNumber),trackName,Difficulty);
-                                //noteCollector.setScreen(new ScoresScreen(noteCollector));
                                 noteCollector.setScreen(new MainMenuScreen(noteCollector,stage));
 
                             } else
@@ -311,11 +262,5 @@ public class DialogScore implements Screen {
         textButtonStyle.over = ButtonImage;
         textButtonStyle.font = font;
         return textButtonStyle;
-    }
-
-    private void setupCamera(){
-        viewport = new ScalingViewport(Scaling.stretch, VIEWPORT_WIDTH, VIEWPORT_HEIGHT, new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT));
-        stage = new Stage(viewport);
-        stage.getCamera().update();
     }
 }

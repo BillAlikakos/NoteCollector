@@ -30,15 +30,15 @@ public class WorldUtils {
     public static Body CreateCollector(World world){
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(Constants.CollectorStartX480, Constants.CollectorStartY480);
-        if(VIEWPORT_WIDTH==1080 && VIEWPORT_HEIGHT==720)
+        bodyDef.position.set(Constants.CollectorStartX, Constants.CollectorStartY);
+        /*if(VIEWPORT_WIDTH==1080 && VIEWPORT_HEIGHT==720)
         {
             bodyDef.position.set(Constants.CollectorStartX720, Constants.CollectorStartY720);
         }
         if(VIEWPORT_WIDTH>1080 && VIEWPORT_HEIGHT>720)
         {
             bodyDef.position.set( Constants.CollectorStartX1080, Constants.CollectorStartY1080);
-        }
+        }*/
         //bodyDef.position.set(Constants.CollectorStartX, Constants.CollectorStartY);
         Body body = world.createBody(bodyDef);
         PolygonShape shape = new PolygonShape();
@@ -77,7 +77,7 @@ public class WorldUtils {
         // SquareNoteType squareNoteType = SquareNoteType.SquarwNoteGrey;
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.StaticBody;
-        bodyDef.position.set(36f, 56f);
+        bodyDef.position.set(36f*VIEWPORT_WIDTH/800, 56f*VIEWPORT_HEIGHT/480);//????
         Body body = world.createBody(bodyDef);
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(5f, 5f);

@@ -87,9 +87,7 @@ public class SquareNotes extends GameActor {
 
         img = AssetsManager.assetManager.get(Constants.square);
         sprite = new Sprite(img);
-        if (VIEWPORT_WIDTH > 1080 && VIEWPORT_HEIGHT > 720) {
-            sprite.scale(1f);
-        }
+        sprite.setScale(1f*VIEWPORT_WIDTH/800,1f*VIEWPORT_HEIGHT/480);
         itemreove = new ArrayList<Pair>(150);
         noteflying = new ArrayList<Pair>(150);
 
@@ -157,12 +155,12 @@ public class SquareNotes extends GameActor {
         while (i < noteflyingsize) {
 
             DrawSprite(batch, i);
-            if (paused == false)
+            if (!paused)
                 note.y += (speed * Gdx.graphics.getDeltaTime());
 
             if (note.getY() + 12f > Gdx.graphics.getHeight())
             {
-                if(mode==true && score>0 && !color.equals(RED))//If the note is red do not subtract score
+                if(mode && score>0 && !color.equals(RED))//If the note is red do not subtract score
                 {
                     score-=2;
                 }
@@ -188,7 +186,7 @@ public class SquareNotes extends GameActor {
         note = noteflying.get(i).note;
         color = noteflying.get(i).color;
         sprite.setColor(color);
-        if (VIEWPORT_WIDTH == 1080 && VIEWPORT_HEIGHT == 720) {
+        /*if (VIEWPORT_WIDTH == 1080 && VIEWPORT_HEIGHT == 720) {
 
 
             //test=note.getX()+100f;
@@ -199,7 +197,7 @@ public class SquareNotes extends GameActor {
         }
         if (VIEWPORT_WIDTH > 1080 && VIEWPORT_HEIGHT > 720) {
             padX = 150;
-        }
+        }*/
         sprite.setPosition(note.getX(), note.getY());
         sprite.draw(batch);
 
@@ -347,7 +345,8 @@ public class SquareNotes extends GameActor {
 
     private void getRandomSpeed() {
         Low = speed + 10;
-        if(VIEWPORT_HEIGHT==480 && VIEWPORT_WIDTH==800)//Different high speed for each resolution (as each resolution has different speed values to counter screen size)
+        High = 210*VIEWPORT_HEIGHT/480;
+       /* if(VIEWPORT_HEIGHT==480 && VIEWPORT_WIDTH==800)//Different high speed for each resolution (as each resolution has different speed values to counter screen size)
         {
             High = 210;
         }
@@ -358,7 +357,7 @@ public class SquareNotes extends GameActor {
         else
         {
             High=390;
-        }
+        }*/
 
         valueSpeed = randSpeed.nextInt(High - Low) + Low;
         speed = valueSpeed;
@@ -371,19 +370,11 @@ public class SquareNotes extends GameActor {
         time = valueTime;
     }
 
-    public void StartNote(float Xaxis) {
-        int padX = 0;
-        int padY = 0;
-        if (VIEWPORT_WIDTH == 1080 && VIEWPORT_HEIGHT == 720) {
-            padX = 120;
-            // padY=22;
-        }
-        if (VIEWPORT_WIDTH > 1080 && VIEWPORT_HEIGHT > 720) {
-            padX = 250;
-        }
+    public void StartNote(float Xaxis)
+    {
         if (TimeUtils.millis() - lastFlyTime > delay) {
 
-            noteflying.add(new Pair(Xaxis + padX));
+            noteflying.add(new Pair(Xaxis));
             lastFlyTime = TimeUtils.millis();
         }
 

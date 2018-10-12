@@ -46,20 +46,11 @@ public class HelpScreen implements Screen {
     private TextureRegionDrawable selectionColor;
     private TextureRegionDrawable selectionColorPressed;
     private Table exitBtnTable;
-    private int[] size;
-    private int sizeX;
-    private int sizeY;
+    private float[] size;
+    private float sizeX;
+    private float sizeY;
     private Image background;
     private Texture img;
-
-    public HelpScreen(NoteCollector noteCollector) {
-
-        this.noteCollector = noteCollector;
-        assetsManager = noteCollector.getAssetsManager();
-        font = assetsManager.createBimapFont(25);
-
-
-    }
 
     public HelpScreen(NoteCollector noteCollector,Stage stage)
     {
@@ -75,13 +66,10 @@ public class HelpScreen implements Screen {
     {
         exitBtnTable=new Table();
         createVerticalGroup();
-        //setupCamera();
-        //createBackground();
         createLogo();
         img = assetsManager.assetManager.get(Constants.text);
         background = new Image(img);
-        //background.setPosition(((stage.getCamera().viewportWidth-background.getWidth())/2)-30f,(stage.getCamera().viewportHeight-background.getHeight())-100f);
-        size=assetsManager.setButtonDimensions(sizeX,sizeY);//Get the dimensions for the button
+        size=assetsManager.setButtonSize(sizeX,sizeY);//Get the dimensions for the button
         sizeX=size[0];
         sizeY=size[1];
         stage.addActor(background);
@@ -123,11 +111,9 @@ public class HelpScreen implements Screen {
     }
 
     @Override
-    public void dispose() {
-        //img.dispose();
-       // background.getColor().a=0;
+    public void dispose()
+    {
         stage.getRoot().removeActor(background);
-        //background.clear();
         stage.getRoot().removeActor(verticalGroup);
         stage.getRoot().removeActor(exitBtnTable);
         exitBtnTable.clear();
@@ -155,8 +141,6 @@ public class HelpScreen implements Screen {
                     if (prefs.getBoolean("sound")) {
                         noteCollector.getClick().play();
                     }
-                    //noteCollector.adsHandler.showAds(1);
-
                     Timer.schedule(new Timer.Task() {
 
                         @Override
@@ -177,7 +161,8 @@ public class HelpScreen implements Screen {
     }
     private ImageTextButton.ImageTextButtonStyle createButtonStyle(TextureRegionDrawable ButtonImage){
 
-        BitmapFont  font = assetsManager.createBimapFont(45);
+        BitmapFont  font = assetsManager.createBitmapFont();
+        //BitmapFont  font = assetsManager.createBimapFont(45);
 
         ImageTextButton.ImageTextButtonStyle textButtonStyle = new ImageTextButton.ImageTextButtonStyle();
         textButtonStyle.up = ButtonImage;
@@ -186,14 +171,15 @@ public class HelpScreen implements Screen {
         textButtonStyle.font = font;
         return textButtonStyle;
     }
-    private void createLogo(){
-        /*Texture img = assetsManager.assetManager.get(Constants.logo);
-        Image background = new Image(img);
-        background.setPosition((stage.getCamera().viewportWidth-background.getWidth())/2,(stage.getCamera().viewportHeight-background.getHeight()));
-        stage.addActor(background);*/
-        img = assetsManager.assetManager.get(Constants.logo);
-        background = new Image(img);
-        addVerticalGroup(background);
+    private void createLogo()
+    {
+        Image logo=assetsManager.scaleLogo(Gdx.files.internal(Constants.logo));
+        verticalGroup  = new VerticalGroup();
+        verticalGroup.setFillParent(true);
+        verticalGroup.center();
+        verticalGroup.addActor(logo);
+        assetsManager.setLogoPosition(verticalGroup);
+        stage.addActor(verticalGroup);
     }
     private  void addVerticalGroup(Actor actor)
     {
@@ -206,16 +192,7 @@ public class HelpScreen implements Screen {
         verticalGroup.setFillParent(true);
         assetsManager.setLogoPosition(verticalGroup);
     }
-    private void createBackground(){
-       /* Texture img = assetsManager.assetManager.get(Constants.BackgroundMenu, Texture.class);
-        Image background = new Image(img);
-        background.setScaling(Scaling.fit);
-        stage.addActor(background);*/
-        FileHandle file = Gdx.files.internal(Constants.getBackgroundMenu().toString());
-        Image background=assetsManager.scaleBackground(file);
-        stage.addActor(background);
 
-    }
     private Label createLabel(String text){
 
         Label.LabelStyle labelstyle = new Label.LabelStyle(font, Color.WHITE);
@@ -223,10 +200,4 @@ public class HelpScreen implements Screen {
         return  fileLabel;
 
     }
-    private void setupCamera(){
-        viewport = new ScalingViewport(Scaling.stretch, VIEWPORT_WIDTH, VIEWPORT_HEIGHT, new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT));
-        stage = new Stage(viewport);
-        stage.getCamera().update();
-    }
-
 }

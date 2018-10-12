@@ -62,9 +62,9 @@ public class MultiplayerClientScreen implements  Screen
     private ArrayList<InetAddress> hosts = null;
     private ArrayList<String> names = null;
     private Table btn;
-    private int[] size;
-    private int sizeX;
-    private int sizeY;
+    private float[] size;
+    private float sizeX;
+    private float sizeY;
     private VerticalGroup verticalGroup;
     private Client c;
     private ClientClass client;
@@ -83,10 +83,7 @@ public class MultiplayerClientScreen implements  Screen
     @Override
     public void show()
     {
-        //setupCamera();
-        //c=client.getClient();
         Gdx.input.setInputProcessor(stage);
-        //createBackground();
         btn = new Table();
         btn.setFillParent(true);
         createTable();
@@ -94,12 +91,11 @@ public class MultiplayerClientScreen implements  Screen
         client=new ClientClass();
         getHosts();
         createLogo();
-        size = assetsManager.setButtonDimensions(sizeX, sizeY);
+        size = assetsManager.setButtonSize(sizeX, sizeY);
         sizeX = size[0];
         sizeY = size[1];
         table.add(createLabel("Available Peers:")).padTop(70f);
         table.row();
-       // table.bottom().padBottom(50f);
         table.padBottom(50f);
         createScrollPane();
         ImageTextButton back = createButton("Back");
@@ -120,13 +116,12 @@ public class MultiplayerClientScreen implements  Screen
 
     private void createLogo()
     {
-        img = assetsManager.assetManager.get(Constants.logo);
-        Image logo = new Image(img);
+        Image logo=noteCollector.getAssetsManager().scaleLogo(Gdx.files.internal(Constants.logo));
         verticalGroup  = new VerticalGroup();
         verticalGroup.setFillParent(true);
         verticalGroup.center();
         verticalGroup.addActor(logo);
-        assetsManager.setLogoPosition(verticalGroup);
+        noteCollector.getAssetsManager().setLogoPosition(verticalGroup);
         stage.addActor(verticalGroup);
     }
 
@@ -163,8 +158,6 @@ public class MultiplayerClientScreen implements  Screen
     @Override
     public void dispose()
     {
-       // img.dispose();
-        //stage.dispose();
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(btn);
         stage.getRoot().removeActor(verticalGroup);
@@ -177,23 +170,7 @@ public class MultiplayerClientScreen implements  Screen
         table = new Table();
         table.center();
         table.setFillParent(true);
-        table.pad(60f,10f,30f,10f);
-
-        if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)//old dimensions
-        {
-            table.pad(60f,10f,30f,10f);
-
-        }
-        if(VIEWPORT_WIDTH==1080 && VIEWPORT_HEIGHT==720)
-        {
-
-            table.pad(120f,10f,30f,10f);
-        }
-        if(VIEWPORT_WIDTH>1080 && VIEWPORT_HEIGHT>720)
-        {
-            table.pad(200f,10f,30f,10f);
-        }
-
+        table.pad(200f*VIEWPORT_HEIGHT/1080,10f*VIEWPORT_WIDTH/1920,30f*VIEWPORT_HEIGHT/1080,10f*VIEWPORT_WIDTH/1920);
         table.setTouchable(Touchable.enabled);
         //table.setDebug(true);
     }
@@ -252,7 +229,7 @@ public class MultiplayerClientScreen implements  Screen
 
 
     private void LoadAssets(){
-        fontH = assetsManager.createBimapFont(45);
+        fontH = assetsManager.createBimapFont(45*VIEWPORT_WIDTH/1920);
         font = assetsManager.createBitmapFont();
         selectionColor =new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.ButtonImage,Texture.class))) ;
         selectionColor.setRightWidth(5f);
@@ -374,20 +351,5 @@ public class MultiplayerClientScreen implements  Screen
         }
         list.setItems(names.toArray());
     }
-
-    private void createBackground()
-    {
-        FileHandle file = Gdx.files.internal(Constants.getBackgroundMenu().toString());
-        Image background=assetsManager.scaleBackground(file);
-        stage.addActor(background);
-
-    }
-
-    private void setupCamera(){
-        viewport = new ScalingViewport(Scaling.stretch, VIEWPORT_WIDTH, VIEWPORT_HEIGHT, new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT));
-        stage = new Stage(viewport);
-        stage.getCamera().update();
-    }
-
 
 }

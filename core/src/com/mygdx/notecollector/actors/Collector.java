@@ -31,27 +31,23 @@ public class Collector extends GameActor {
         prefs = Gdx.app.getPreferences("NoteCollectorPreferences");
 
 
-        //Check size of gray square    
-        if(prefs.getBoolean("normal")) {
+        //Check the size of the collector from preferences
+        if(prefs.getBoolean("normal"))
+        {
             img = AssetsManager.assetManager.get(Constants.Collector);
-        }else if (prefs.getBoolean("big")){
+        }
+        else if (prefs.getBoolean("big"))
+        {
             img = AssetsManager.assetManager.get(Constants.BigCollector);
-        }else if (prefs.getBoolean("vbig")){
+        }
+        else if (prefs.getBoolean("vbig"))
+        {
             img = AssetsManager.assetManager.get(Constants.VeryBigCollector);
         }
         sprite = new Sprite(img);
-        this.Xaxis = Constants.CollectorStartX480;
-        this.Yaxis = Constants.CollectorStartY480;
-        if(VIEWPORT_WIDTH==1080 && VIEWPORT_HEIGHT==720)
-        {
-            this.Xaxis = Constants.CollectorStartX720;
-            this.Yaxis = Constants.CollectorStartY720;
-        }
-        if(VIEWPORT_WIDTH>1080 && VIEWPORT_HEIGHT>720)
-        {
-            this.Xaxis = Constants.CollectorStartX1080;
-            this.Yaxis = Constants.CollectorStartY1080;
-        }
+        sprite.setScale(1f*VIEWPORT_WIDTH/800,1f*VIEWPORT_HEIGHT/480);//Set the scale nad starting coordinates of the collector according to the device resolution
+        this.Xaxis = Constants.CollectorStartX*VIEWPORT_HEIGHT/480;
+        this.Yaxis = Constants.CollectorStartY*VIEWPORT_WIDTH/800;
         sprite.setColor(Color.GRAY);
        paused=false;
 
@@ -75,17 +71,18 @@ public class Collector extends GameActor {
 
     public void changeposition(float Xaxis, float Yaxis)
     {
-        //if game not paused
-        if(paused==false) {
+        //if game is not paused
+        if(!paused) {
             //change position
             this.Xaxis = Xaxis;
             this.Yaxis = Yaxis;
         }
 
     }
+    //Methods for moving the collector with the d-pad
     public void moveUp()
     {
-        if(paused==false)
+        if(!paused)
         {
             //System.out.println("move up");
             //System.out.println("Y axis:"+this.Yaxis);
@@ -95,7 +92,7 @@ public class Collector extends GameActor {
     }
     public void moveDown()
     {
-        if(paused==false)
+        if(!paused)
         {
             System.out.println("move down");
             this.Yaxis -= 200 * Gdx.graphics.getDeltaTime();
@@ -103,14 +100,14 @@ public class Collector extends GameActor {
     }
     public void moveRight()
     {
-        if(paused==false)
+        if(!paused)
         {
             this.Xaxis += 200 * Gdx.graphics.getDeltaTime();
         }
     }
     public void moveLeft()
     {
-        if(paused==false)
+        if(!paused)
         {
             this.Xaxis -= 200 * Gdx.graphics.getDeltaTime();
         }

@@ -77,34 +77,9 @@ public class LoadingScreen implements Screen {
     private String difficulty;
     private boolean done=false;
 
-    public LoadingScreen(NoteCollector noteCollector,String filepath,int speed,long delay,boolean mode)
-    {
-        this.noteCollector = noteCollector;
-        this.filepath = filepath;
-        AssetsManager = noteCollector.getAssetsManager();
-        f = new File(filepath);
-        AssetsManager.LoadLoadingAssets(filepath);
-        LoadAssets();
-        this.delay = delay;
-        this.speed = speed;
-        this.mode=mode;
-    }
     public LoadingScreen(NoteCollector noteCollector,String filepath,int speed,long delay,boolean mode,Stage stage)
     {
         this.stage=stage;
-        this.noteCollector = noteCollector;
-        this.filepath = filepath;
-        AssetsManager = noteCollector.getAssetsManager();
-        f = new File(filepath);
-        AssetsManager.LoadLoadingAssets(filepath);
-        LoadAssets();
-        this.delay = delay;
-        this.speed = speed;
-        this.mode=mode;
-    }
-    public LoadingScreen(NoteCollector noteCollector,String filepath,int speed,long delay,MidiTrack track,boolean mode)//Constructor for split track midi file
-    {
-        this.track=track;
         this.noteCollector = noteCollector;
         this.filepath = filepath;
         AssetsManager = noteCollector.getAssetsManager();
@@ -173,8 +148,6 @@ public class LoadingScreen implements Screen {
         table.setFillParent(true);
         table.center();
         createVerticalGroup();
-        //setupCamera();
-        //createBackground();
         createLogo();
         createLabel("Please Wait ....");
         createSpinner();
@@ -221,7 +194,7 @@ public class LoadingScreen implements Screen {
         spinnerImage.addAction(repeatAction);
     }
 
-    //method for running in a new thread the method setupmidi
+    //method for running the method setupmidi in a new thread
     private void setupMidiManipulator(){
         t = new Thread() {
             @Override
@@ -236,7 +209,7 @@ public class LoadingScreen implements Screen {
         t.start();
     }
 
-    private void initMidiManipulator()//Method to initiialize midiManipulator for only one track
+    private void initMidiManipulator()//Method to initialize midiManipulator for only one track
     {
         t = new Thread() {
             @Override
@@ -362,13 +335,6 @@ public class LoadingScreen implements Screen {
         Image background = new Image(img);
         addVerticalGroup(background);
     }
-    private void createBackground()
-    {
-        System.out.println("Width:"+VIEWPORT_WIDTH+" Height:"+VIEWPORT_HEIGHT);
-        FileHandle file = Gdx.files.internal(Constants.getBackgroundMenu().toString());
-        Image background=AssetsManager.scaleBackground(file);
-        stage.addActor(background);
-    }
     private void createVerticalGroup()
     {
         verticalGroup  = new VerticalGroup();
@@ -403,9 +369,9 @@ public class LoadingScreen implements Screen {
         Label label = new Label(text, labelstyle);
         table.add(label).colspan(2).padTop(100f);
         //label.setPosition((stage.getCamera().viewportWidth-label.getWidth())/2,100f);
-        if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)//Set appropriate sizes for title spacing according to resolution
+        /*if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)//Set appropriate sizes for title spacing according to resolution
         {
-            table.add(label).colspan(2).padTop(220f).padLeft(50f);;
+            table.add(label).colspan(2).padTop(220f).padLeft(50f);
         }
         if(VIEWPORT_WIDTH==1080 && VIEWPORT_HEIGHT==720)
         {
@@ -414,14 +380,9 @@ public class LoadingScreen implements Screen {
         if(VIEWPORT_WIDTH>1080 && VIEWPORT_HEIGHT>720)
         {
             table.add(label).colspan(2).padTop(250f).padLeft(50f);
-        }
-
+        }*/
+        table.add(label).colspan(2).padTop(220f*VIEWPORT_HEIGHT/480).padLeft(50f*VIEWPORT_WIDTH/800);
         //stage.addActor(label);
-    }
-    private void setupCamera(){
-        viewport = new ScalingViewport(Scaling.stretch, VIEWPORT_WIDTH, VIEWPORT_HEIGHT, new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT));
-        stage = new Stage(viewport);
-        stage.getCamera().update();
     }
 
 }

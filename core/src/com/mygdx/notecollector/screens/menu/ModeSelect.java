@@ -45,9 +45,9 @@ public class ModeSelect implements Screen
     private VerticalGroup verticalGroup;
     private TextureRegionDrawable selectionColor;
     private TextureRegionDrawable selectionColorPressed;
-    private int[] size;
-    private int sizeX;
-    private int sizeY;
+    private float[] size;
+    private float sizeX;
+    private float sizeY;
     private Table table;
     private Table exitBtnTable;
     private boolean multiplayer;
@@ -78,7 +78,6 @@ public class ModeSelect implements Screen
     {
         System.out.println("WIDTH: "+VIEWPORT_WIDTH);
         System.out.println("HEIGHT: "+VIEWPORT_HEIGHT);
-        //setupCamera();//Already set
         table = new Table();
         table.center().padBottom(10f);
         exitBtnTable = new Table();
@@ -87,24 +86,10 @@ public class ModeSelect implements Screen
         table.setFillParent(true);
 
         Gdx.input.setInputProcessor(stage);
-        //createBackground();//Background is already set for menu stage
         createLogo();
-        //createVerticalGroup();
-        size = assetsManager.setButtonDimensions(sizeX, sizeY);
+        size = assetsManager.setButtonSize(sizeX, sizeY);
         sizeX = size[0];
         sizeY = size[1];
-        if (VIEWPORT_WIDTH == 800 && VIEWPORT_HEIGHT == 480)//TODO Test multiplayer for possible bugs
-        {
-            table.padBottom(100f);
-
-        }
-        if (VIEWPORT_WIDTH == 1080 && VIEWPORT_HEIGHT == 720) {
-
-            table.padBottom(85f);
-        }
-        if (VIEWPORT_WIDTH > 1080 && VIEWPORT_HEIGHT > 720) {
-            table.padBottom(135f);
-        }
 
         createLabel("Select Game Mode:");
         createButton("Practice");//Original Game Mode
@@ -115,22 +100,18 @@ public class ModeSelect implements Screen
         ImageTextButton MenuButton = new ImageTextButton("Back", textButtonStyle);
         AddButtonListener(MenuButton, "Back");
         exitBtnTable.add(MenuButton).bottom().left().padRight(5f).size(sizeX, sizeY);
-        //MenuButton.setPosition(5f,10f);
-       // stage.addActor(verticalGroup);
         stage.addActor(table);
         stage.addActor(exitBtnTable);
         table.getColor().a=0;//Set actor's alpha value to 0(Transparent) to enable fading
         exitBtnTable.getColor().a=0;
         table.addAction(Actions.sequence(Actions.fadeIn(0.2f)));//Fade button table in
         exitBtnTable.addAction(Actions.sequence(Actions.fadeIn(0.2f)));
-        //stage.addActor(MenuButton);
-
     }
 
     private void createLabel(String text)
     {
-        int fontSize;
-        fontSize = 45;
+        int fontSize=VIEWPORT_WIDTH/30;
+        //fontSize = 45;
         BitmapFont font = assetsManager.createBimapFont(fontSize);
 
         Label.LabelStyle labelstyle = new Label.LabelStyle(font, Color.WHITE);
@@ -142,13 +123,6 @@ public class ModeSelect implements Screen
         table.row();
 
 
-    }
-
-    private void setupCamera()
-    {
-        viewport = new ScalingViewport(Scaling.stretch, VIEWPORT_WIDTH, VIEWPORT_HEIGHT, new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT));
-        stage = new Stage(viewport);
-        stage.getCamera().update();
     }
 
     private void LoadAssets()
@@ -166,24 +140,14 @@ public class ModeSelect implements Screen
 
     private void createLogo()
     {
-        Texture img = assetsManager.assetManager.get(Constants.logo);
-        Image logo = new Image(img);
-        verticalGroup = new VerticalGroup();
+        Image logo=assetsManager.scaleLogo(Gdx.files.internal(Constants.logo));
+        verticalGroup  = new VerticalGroup();
         verticalGroup.setFillParent(true);
         verticalGroup.center();
         verticalGroup.addActor(logo);
         assetsManager.setLogoPosition(verticalGroup);
         stage.addActor(verticalGroup);
     }
-
-    private void createBackground()
-    {
-        FileHandle file = Gdx.files.internal(Constants.getBackgroundMenu().toString());
-        Image background = assetsManager.scaleBackground(file);
-        stage.addActor(background);
-
-    }
-
 
     private void createButton(String text)
     {
@@ -216,8 +180,10 @@ public class ModeSelect implements Screen
                         public void run()
                         {
                                 dispose();
-                                if (multiplayer == false) {
-                                    switch (text) {
+                                if (!multiplayer)
+                                {
+                                    switch (text)
+                                    {
                                         case "Practice":
                                             noteCollector.setScreen(new DifficultyScreen(noteCollector,false,stage));
                                             break;
@@ -228,7 +194,9 @@ public class ModeSelect implements Screen
                                             noteCollector.setScreen(new MainMenuScreen(noteCollector,stage));
                                             break;
                                     }
-                                } else {
+                                }
+                                else
+                                {
                                     switch (text)//Multiplayer host parameters
                                     {
                                         case "Practice":

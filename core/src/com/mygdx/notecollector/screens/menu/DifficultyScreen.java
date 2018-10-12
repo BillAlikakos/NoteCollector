@@ -39,16 +39,15 @@ public class DifficultyScreen implements Screen
     private Stage stage;
     private BitmapFont font;
     private Assets assetsManager;
-    private Viewport viewport;
     private static final int VIEWPORT_WIDTH = Constants.APP_WIDTH;
     private static final int VIEWPORT_HEIGHT = Constants.APP_HEIGHT;
     private NoteCollector noteCollector;
     private VerticalGroup verticalGroup;
     private TextureRegionDrawable selectionColor;
     private TextureRegionDrawable selectionColorPressed;
-    private int[] size;
-    private int sizeX;
-    private int sizeY;
+    private float[] size;
+    private float sizeX;
+    private float sizeY;
     private Table table;
     private Table exitBtnTable;
     private boolean multiplayer;
@@ -65,15 +64,6 @@ public class DifficultyScreen implements Screen
         this.mode=mode;
     }
 
-    public DifficultyScreen(NoteCollector noteCollector, ServerClass srv, boolean mode)//Constructor for multiplayer
-    {
-        this.noteCollector = noteCollector;
-        assetsManager = noteCollector.getAssetsManager();
-        LoadAssets();
-        this.multiplayer=true;
-        this.srv=srv;
-        this.mode=mode;
-    }
     public DifficultyScreen(NoteCollector noteCollector, ServerClass srv, boolean mode,Stage stage)//Constructor for multiplayer
     {
         this.noteCollector = noteCollector;
@@ -87,34 +77,19 @@ public class DifficultyScreen implements Screen
     @Override
     public void show()
     {
-        //setupCamera();
         table =new Table();
-        table.center().padBottom(10f);
+        table.bottom();
+        table.padBottom(VIEWPORT_HEIGHT*0.1f);
         exitBtnTable=new Table();
         exitBtnTable.bottom().left();
         exitBtnTable.setFillParent(true);
         table.setFillParent(true);
 
         Gdx.input.setInputProcessor(stage);
-        //createBackground();
         createLogo();
-        size=assetsManager.setButtonDimensions(sizeX,sizeY);
+        size=assetsManager.setButtonSize(sizeX,sizeY);
         sizeX=size[0];
         sizeY=size[1];
-        if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)//old dimensions
-        {
-            table.bottom().padBottom(100f);
-
-        }
-        if(VIEWPORT_WIDTH==1080 && VIEWPORT_HEIGHT==720)
-        {
-
-            table.bottom().padBottom(85f);
-        }
-        if(VIEWPORT_WIDTH>1080 && VIEWPORT_HEIGHT>720)
-        {
-            table.bottom().padBottom(135f);
-        }
 
         createLabel("Select Difficulty:");
         createButton("Easy");
@@ -143,26 +118,16 @@ public class DifficultyScreen implements Screen
     private void createLabel(String text)
     {
         int fontSize;
-        fontSize=45;
+        fontSize=VIEWPORT_WIDTH/30;
         BitmapFont font = assetsManager.createBimapFont(fontSize);
 
         Label.LabelStyle labelstyle = new Label.LabelStyle(font, Color.WHITE);
         Label label = new Label(text, labelstyle);
-        //label.setPosition((stage.getCamera().viewportWidth-label.getWidth())/2,Yaxis);
-        //stage.addActor(label);
 
         table.add(label);
         table.row();
-
-
-
     }
 
-    private void setupCamera(){
-        viewport = new ScalingViewport(Scaling.stretch, VIEWPORT_WIDTH, VIEWPORT_HEIGHT, new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT));
-        stage = new Stage(viewport);
-        stage.getCamera().update();
-    }
     private void LoadAssets()
     {
         assetsManager.LoadAssets();
@@ -178,26 +143,13 @@ public class DifficultyScreen implements Screen
 
     private void createLogo()
     {
-        Texture img = assetsManager.assetManager.get(Constants.logo);
-        Image logo = new Image(img);
+        Image logo=assetsManager.scaleLogo(Gdx.files.internal(Constants.logo));
         verticalGroup  = new VerticalGroup();
         verticalGroup.setFillParent(true);
         verticalGroup.center();
         verticalGroup.addActor(logo);
         assetsManager.setLogoPosition(verticalGroup);
         stage.addActor(verticalGroup);
-    }
-    private void createBackground()
-    {
-        FileHandle file = Gdx.files.internal(Constants.getBackgroundMenu().toString());
-        Image background=assetsManager.scaleBackground(file);
-        stage.addActor(background);
-
-    }
-
-    private  void addVerticalGroup(Actor actor){
-        verticalGroup.addActor(actor);
-
     }
     private void createButton(String text)
     {
@@ -228,148 +180,50 @@ public class DifficultyScreen implements Screen
                         @Override
                         public void run() {
                             dispose();
-                            if (VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)//Different speeds and delay for each resolution
+                            if(!multiplayer)
                             {
-                                if(multiplayer==false)
+                                switch (text)
                                 {
-                                    switch (text)
-                                    {
-                                        case "Easy":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 130, 200,mode,stage));
-                                            break;
-                                        case "Normal":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 150, 160,mode,stage));
-                                            break;
-                                        case "Hard":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 170, 120,mode,stage));
-                                            break;
-                                        case "Very Hard":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 180, 100,mode,stage));
-                                            break;
-                                        case "Back":
-                                            noteCollector.setScreen(new ModeSelect(noteCollector,stage));
-                                            break;
-                                    }
-                                }
-                                else
-                                {
-                                    switch (text)//Multiplayer host parameters
-                                    {
-                                        case "Easy":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 130, 200,srv,mode,"Easy",stage));
-                                            break;
-                                        case "Normal":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 150, 160,srv,mode,"Normal",stage));
-                                            break;
-                                        case "Hard":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 170, 120,srv,mode,"Hard",stage));
-                                            break;
-                                        case "Very Hard":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 180, 100,srv,mode,"Very Hard",stage));
-                                            break;
-                                        case "Back":
-                                            System.out.println("Closing server");
-                                            //srv.getServer().close();
-                                            noteCollector.setScreen(new ModeSelect(noteCollector,srv,stage));
-                                            break;
-                                    }
+                                    case "Easy":
+                                        noteCollector.setScreen(new SamplesTrack(noteCollector, 130*VIEWPORT_HEIGHT/480, 200,mode,stage));
+                                        break;
+                                    case "Normal":
+                                        noteCollector.setScreen(new SamplesTrack(noteCollector, 150*VIEWPORT_HEIGHT/480, 160,mode,stage));
+                                        break;
+                                    case "Hard":
+                                        noteCollector.setScreen(new SamplesTrack(noteCollector, 170*VIEWPORT_HEIGHT/480, 120,mode,stage));
+                                        break;
+                                    case "Very Hard":
+                                        noteCollector.setScreen(new SamplesTrack(noteCollector, 180*VIEWPORT_HEIGHT/480, 100,mode,stage));
+                                        break;
+                                    case "Back":
+                                        noteCollector.setScreen(new ModeSelect(noteCollector,stage));
+                                        break;
                                 }
                             }
-                            else if(VIEWPORT_HEIGHT==720 && VIEWPORT_WIDTH==1080)
+                            else
                             {
-                                if(multiplayer==false)
+                                switch (text)//Multiplayer host parameters
                                 {
-                                    switch (text)//Original speeds * 1,5
-                                    {
-                                        case "Easy":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 195, 300,mode,stage));
-                                            break;
-                                        case "Normal":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 225, 240,mode,stage));
-                                            break;
-                                        case "Hard":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 255, 180,mode,stage));
-                                            break;
-                                        case "Very Hard":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 270, 150,mode,stage));
-                                            break;
-                                        case "Back":
-                                            noteCollector.setScreen(new ModeSelect(noteCollector,stage));
-                                            break;
-                                    }
-                                }
-                                else
-                                {
-                                    switch (text)//Listeners for multiplayer difficulty screen
-                                    {
-                                        case "Easy":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 195, 300,srv,mode,"Easy",stage));
-                                            break;
-                                        case "Normal":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 225, 240,srv,mode,"Normal",stage));
-                                            break;
-                                        case "Hard":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 255, 180,srv,mode,"Hard",stage));
-                                            break;
-                                        case "Very Hard":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 270, 150,srv,mode,"Very Hard",stage));
-                                            break;
-                                        case "Back":
-                                            System.out.println("Closing server");
-                                            //srv.getServer().close();
-                                            noteCollector.setScreen(new ModeSelect(noteCollector,srv,stage));
-                                            break;
-                                    }
+                                    case "Easy":
+                                        noteCollector.setScreen(new SamplesTrack(noteCollector, 130*VIEWPORT_HEIGHT/480, 200,srv,mode,"Easy",stage));
+                                        break;
+                                    case "Normal":
+                                        noteCollector.setScreen(new SamplesTrack(noteCollector, 150*VIEWPORT_HEIGHT/480, 160,srv,mode,"Normal",stage));
+                                        break;
+                                    case "Hard":
+                                        noteCollector.setScreen(new SamplesTrack(noteCollector, 170*VIEWPORT_HEIGHT/480, 120,srv,mode,"Hard",stage));
+                                        break;
+                                    case "Very Hard":
+                                        noteCollector.setScreen(new SamplesTrack(noteCollector, 180*VIEWPORT_HEIGHT/480, 100,srv,mode,"Very Hard",stage));
+                                        break;
+                                    case "Back":
+                                        System.out.println("Closing server");
+                                        //srv.getServer().close();
+                                        noteCollector.setScreen(new ModeSelect(noteCollector,srv,stage));
+                                        break;
                                 }
                             }
-                            else if(VIEWPORT_HEIGHT>720 && VIEWPORT_WIDTH>1080)
-                            {
-                                if(multiplayer==false)
-                                {
-                                    switch (text)//Original speed * 2
-                                    {
-                                        case "Easy":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 260, 400,mode,stage));
-                                            break;
-                                        case "Normal":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 300, 320,mode,stage));
-                                            break;
-                                        case "Hard":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 340, 240,mode,stage));
-                                            break;
-                                        case "Very Hard":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 360, 200,mode,stage));
-                                            break;
-                                        case "Back":
-                                            noteCollector.setScreen(new ModeSelect(noteCollector,stage));
-                                            break;
-                                    }
-                                }
-                                else
-                                {
-                                    switch (text)//Listeners for multiplayer difficulty screen
-                                    {
-                                        case "Easy":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 260, 400,srv,mode,"Easy",stage));
-                                            break;
-                                        case "Normal":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 300, 320,srv,mode,"Normal",stage));
-                                            break;
-                                        case "Hard":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 340, 240,srv,mode,"Hard",stage));
-                                            break;
-                                        case "Very Hard":
-                                            noteCollector.setScreen(new SamplesTrack(noteCollector, 360, 200,srv,mode,"Very Hard",stage));
-                                            break;
-                                        case "Back":
-                                            System.out.println("Closing server");
-                                            //srv.getServer().close();
-                                            noteCollector.setScreen(new ModeSelect(noteCollector,srv,stage));
-                                            break;
-                                    }
-                                }
-                            }
-
 
                         }
                     }, 0.4f);
@@ -425,12 +279,11 @@ public class DifficultyScreen implements Screen
     }
 
     @Override
-    public void dispose() {
+    public void dispose()
+    {
         font.dispose();
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(exitBtnTable);
         stage.getRoot().removeActor(verticalGroup);
-        //stage.dispose();
-
     }
 }
