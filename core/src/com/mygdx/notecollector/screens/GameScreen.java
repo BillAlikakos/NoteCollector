@@ -34,7 +34,8 @@ import java.util.ArrayList;
 public class GameScreen implements  Screen {
 
 //class of the main screen of game
-    public GameStage gameStage;
+    private static int VIEWPORT_HEIGHT = Constants.APP_HEIGHT;//Gdx.graphics.getHeight(); //
+    private GameStage gameStage;
     private NoteCollector game;
     private String filepath;
     private int speed;
@@ -46,6 +47,7 @@ public class GameScreen implements  Screen {
     private boolean isHost;
     private boolean isGuest;
     private boolean mode;
+    private String gameMode;
 
     private Stage stage;
     private boolean upPressed, downPressed, leftPressed, rightPressed;
@@ -118,19 +120,18 @@ public class GameScreen implements  Screen {
         //Update the stage
         gameStage.act(Gdx.graphics.getDeltaTime());
         gameStage.draw();
-
         if (gameStage.getGameState().equals("finished"))
         {
             String difficulty;//Pass difficulty setting (For scoreboard)
-            if(this.delay==200 && this.speed==130)
+            if(this.delay==200 && this.speed==130*VIEWPORT_HEIGHT/480)
             {
                 difficulty="Easy";
             }
-            else if(this.delay==160 && this.speed==150)
+            else if(this.delay==160 && this.speed==150*VIEWPORT_HEIGHT/480)
             {
                 difficulty="Normal";
             }
-            else if(this.delay==120 && this.speed==170)
+            else if(this.delay==120 && this.speed==170*VIEWPORT_HEIGHT/480)
             {
                 difficulty="Hard";
             }
@@ -138,22 +139,30 @@ public class GameScreen implements  Screen {
             {
                 difficulty="Very Hard";
             }
+            if(mode)
+            {
+                gameMode="competitive";
+            }
+            else
+            {
+                gameMode="practice";
+            }
             if(isHost)
             {
                 //gameStage.fadeToMenu();//
                 dispose();
-                game.setScreen(new EndGameScreen(game,gameStage.getScore(),difficulty,srv,stage));
+                game.setScreen(new EndGameScreen(game,gameStage.getScore(),difficulty,srv,stage,gameMode));
             }
             else if(isGuest)
             {
                 dispose();
-                game.setScreen(new EndGameScreen(game,gameStage.getScore(),difficulty,c,stage));//TODO possibly display a message on opponents score if he collected more than 5 red
+                game.setScreen(new EndGameScreen(game,gameStage.getScore(),difficulty,c,stage,gameMode));//TODO possibly display a message on opponents score if he collected more than 5 red
             }
             else
             {
 
                 dispose();
-                game.setScreen(new EndGameScreen(game,gameStage.getScore(),difficulty,stage));
+                game.setScreen(new EndGameScreen(game,gameStage.getScore(),difficulty,stage,gameMode));
             }
 
         }

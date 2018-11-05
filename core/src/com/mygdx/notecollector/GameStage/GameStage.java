@@ -48,6 +48,7 @@ import com.mygdx.notecollector.screens.menu.MainMenuScreen;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 
 import static com.badlogic.gdx.graphics.Color.RED;
 
@@ -60,7 +61,7 @@ public class GameStage extends Stage implements ContactListener
 {
 
     private World world;
-    private Vector3 touchPoint,PuttonPoint;
+    private Vector3 touchPoint,PuttonPoint,dragPoint;
 
     private Rectangle collectorPosition;
     private BitmapFont font;
@@ -144,6 +145,8 @@ public class GameStage extends Stage implements ContactListener
         prefs= Gdx.app.getPreferences("NoteCollectorPreferences");
         setCollectorSize();
         message ="";
+
+
         GameState ="running";
         redcounts =0;
         fisttime =true;
@@ -177,6 +180,7 @@ public class GameStage extends Stage implements ContactListener
         setCollectorSize();
         addGameOverListener();
         message ="";
+
         GameState ="running";
         redcounts =0;
         fisttime =true;
@@ -189,7 +193,8 @@ public class GameStage extends Stage implements ContactListener
 
 
     }
-    public GameStage(NoteCollector noteCollector, float TickPerMsec, ArrayList<MidiNote> notes, int speed, long delay, ClientClass c, boolean mode,Stage stage) throws IOException, InterruptedException {
+    public GameStage(NoteCollector noteCollector, float TickPerMsec, ArrayList<MidiNote> notes, int speed, long delay, ClientClass c, boolean mode,Stage stage)
+    {
         super(new ScalingViewport(Scaling.stretch, VIEWPORT_WIDTH, VIEWPORT_HEIGHT, new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)));
         this.stage=stage;
         squarewidth=32f;
@@ -238,7 +243,7 @@ public class GameStage extends Stage implements ContactListener
         }
     }
 
-   public void addGameOverListener()//If the one player loses the other player wins automatically
+   private void addGameOverListener()//If the one player loses the other player wins automatically
    {
        if(isHost)
        {
@@ -275,7 +280,7 @@ public class GameStage extends Stage implements ContactListener
        }
    }
 
-    public void receiveScore()
+    private void receiveScore()
     {
         if(isHost)
         {
@@ -320,6 +325,7 @@ public class GameStage extends Stage implements ContactListener
     private void createObjects(){
         touchPoint = new Vector3();
         PuttonPoint= new Vector3();
+        dragPoint=new Vector3();
         timer = new Timer();
         collectorPosition = new Rectangle(touchPoint.x, touchPoint.y, 36f, 36f);//Touch
 
@@ -337,8 +343,9 @@ public class GameStage extends Stage implements ContactListener
             name= fileName.substring(0, fileName.lastIndexOf('.'));
         }
         title=createLabel(name);//TODO : Detect long names and fit aprropriately, fix button sizing font etc for responsiveness
-        title.setPosition((getCamera().viewportWidth-title.getWidth())/2,(getCamera().viewportHeight)/2 +70f);
-        title.setVisible(false);
+        title.setPosition((getCamera().viewportWidth-title.getWidth())/2,(getCamera().viewportHeight)/2 +70f*VIEWPORT_HEIGHT/1080+sizeY/2);
+        //title.setVisible(false);
+        title.getColor().a=0;
         addActor(title);
     }
     private void addActorSPause(){
@@ -364,8 +371,10 @@ public class GameStage extends Stage implements ContactListener
         {
             BackgroundPause.setSize(400,350);
         }*/
-        BackgroundPause.setSize(400*VIEWPORT_WIDTH/1920,350*VIEWPORT_HEIGHT/1080);
+        //BackgroundPause.setSize(400*VIEWPORT_WIDTH/1920,350*VIEWPORT_HEIGHT/1080);
+        BackgroundPause.setSize(title.getWidth()+100*VIEWPORT_WIDTH/1920+sizeX,2*sizeY+100*VIEWPORT_HEIGHT/1080);
         BackgroundPause.setPosition((getCamera().viewportWidth- BackgroundPause.getWidth())/2,(getCamera().viewportHeight  -BackgroundPause.getHeight())/2 );
+        BackgroundPause.setVisible(false);
         //Button pause=new Button();
         font = noteCollector.getAssetsManager().createBitmapFont();
         final ImageTextButton.ImageTextButtonStyle textButtonStyle = new ImageTextButton.ImageTextButtonStyle();
@@ -392,11 +401,9 @@ public class GameStage extends Stage implements ContactListener
                 @Override
                 public boolean touchDown(InputEvent event, float x, float y, int pointer, int button)//TODO : Fix other resolutions sizes for gamepad/pause
                 {
-                    if(GameState!="paused")//If already paused resume
+                    if(!GameState.equals("paused"))//If already paused resume
                     {
-                        System.out.println(GameState);
                         GameState = "paused";
-                        System.out.println(GameState);
                         final ImageTextButton resume = new ImageTextButton("Resume", textButtonStyle);
                         final ImageTextButton quit = new ImageTextButton("Quit", textButtonStyle);
                         resume.setSize(sizeX,sizeY);
@@ -410,6 +417,7 @@ public class GameStage extends Stage implements ContactListener
                             {
                                 GameStage.super.getRoot().removeActor(resume);
                                 GameStage.super.getRoot().removeActor(quit);
+                                title.addAction(Actions.fadeOut(0.2f));
                                 GameState ="resume";
                                 BackgroundPause.addAction(Actions.sequence(Actions.fadeOut(0.2f)));
                                 return true;
@@ -435,7 +443,8 @@ public class GameStage extends Stage implements ContactListener
                         addActor(quit);
                         resume.setVisible(true);
                         quit.setVisible(true);
-                        title.setVisible(true);
+                        title.addAction(Actions.fadeIn(0.2f));
+                        //title.setVisible(true);
                         //return true;
                     }
                     return true;
@@ -720,7 +729,7 @@ produce the corresponding square*/
     private void fadeInPause(boolean visible){
         BackgroundPause.getColor().a=0;
         BackgroundPause.addAction(Actions.sequence(Actions.fadeIn(0.2f)));
-        BackgroundPause.setVisible(visible);
+        BackgroundPause.setVisible(false);
         //resume.setVisible(visible);
         //quit.setVisible(visible);
     }
@@ -792,14 +801,14 @@ produce the corresponding square*/
 
      //check what type of message is; to printintg it
     private void checkMessages(){
-        if (squareNotes.getSquareColor() == 3 && fisttime == true && squareNotes.getTypeOfFailure() == 1) {
+        if (squareNotes.getSquareColor() == 3 && fisttime && squareNotes.getTypeOfFailure() == 1) {
             createMessage(RED,"Collector disabled for ");
-        }else  if (squareNotes.getSquareColor() == 3 && fisttime == true && squareNotes.getTypeOfFailure() == 2) {
+        }else  if (squareNotes.getSquareColor() == 3 && fisttime && squareNotes.getTypeOfFailure() == 2) {
             createMessage(RED,"Speed up for ");
         }
-        else if(squareNotes.getSquareColor() ==2 && fisttime == true ) {
+        else if(squareNotes.getSquareColor() ==2 && fisttime) {
             createMessage(Color.GREEN,"Bonus X "+squareNotes.getMultiplier()+" for ");
-        }else if(squareNotes.getSquareColor() == 1 && fisttime == false){
+        }else if(squareNotes.getSquareColor() == 1 && !fisttime){
             message="";
             fisttime=true;
         }
@@ -916,8 +925,22 @@ produce the corresponding square*/
            else {
                //System.out.println("Collector X:"+collector.getX()+" Collector Y:"+collector.getY());
               // System.out.println("Position X:"+collectorPosition.getX()+" Position Y:"+collectorPosition.getY());
+              // dragPoint.set(Gdx.graphics.getWidth()-screenX,screenY,0);
+              // System.out.println("Touch point x: "+touchPoint.x+" Drag point x:"+dragPoint.x);
+               //System.out.println("Touch point y: "+touchPoint.y+" Drag point y:"+dragPoint.y);
+              // float distX=touchPoint.x-dragPoint.x;
+               //float distY=touchPoint.y-dragPoint.y;
+               //System.out.println("Distance from touch to drag x:"+distX);
+               //System.out.println("Distance from touch to drag y:"+distY);
+              // float distanceX = touchPoint.dst(dragPoint);
+               //System.out.println("Sq dist "+distanceX);
+               //collector.move(distX,distY);
+              // collector.changeposition(collector.getX()+distX, collector.getY()+distY);
+              // collectorPosition.set(collector.getXaxis(),collector.getYaxis(),squarewidth,squareheight);
+               //collector.getSprite().setScale(1.5f*VIEWPORT_WIDTH/800,1.5f*VIEWPORT_HEIGHT/480);
+
                collectorPosition.set(touchPoint.x,touchPoint.y,squarewidth,squareheight);
-               collector.changeposition(touchPoint.x, touchPoint.y);
+               collector.changeposition(touchPoint.x, touchPoint.y+collector.getSprite().getHeight());//Set the collector sprite higher
 
            }
            return true;

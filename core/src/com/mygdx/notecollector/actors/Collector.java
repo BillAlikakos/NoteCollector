@@ -48,6 +48,7 @@ public class Collector extends GameActor {
         sprite.setScale(1f*VIEWPORT_WIDTH/800,1f*VIEWPORT_HEIGHT/480);//Set the scale nad starting coordinates of the collector according to the device resolution
         this.Xaxis = Constants.CollectorStartX*VIEWPORT_HEIGHT/480;
         this.Yaxis = Constants.CollectorStartY*VIEWPORT_WIDTH/800;
+        System.out.println("Xaxis "+Xaxis+" Yaxis "+Yaxis);
         sprite.setColor(Color.GRAY);
        paused=false;
 
@@ -78,6 +79,27 @@ public class Collector extends GameActor {
             this.Yaxis = Yaxis;
         }
 
+    }
+    public void move(float x, float y)
+    {
+        //if game is not paused
+        if(!paused) {
+            //change position
+            System.out.println("Origin X:"+this.Xaxis);
+            System.out.println("New X:"+x);
+            System.out.println();
+            System.out.println("Origin Y:"+this.Yaxis);
+            System.out.println("new Y:"+y);
+            if(Xaxis+x*Gdx.graphics.getDeltaTime()<Gdx.graphics.getWidth() &&Xaxis+x*Gdx.graphics.getDeltaTime()>0)//Check if the collector is going to get out of bounds
+            {
+                this.Xaxis += x* Gdx.graphics.getDeltaTime();
+            }
+            if(Yaxis+y*Gdx.graphics.getDeltaTime()<Gdx.graphics.getHeight() && Yaxis+y*Gdx.graphics.getDeltaTime()>0)
+            {
+                this.Yaxis += y* Gdx.graphics.getDeltaTime();
+            }
+
+        }
     }
     //Methods for moving the collector with the d-pad
     public void moveUp()
@@ -121,5 +143,9 @@ public class Collector extends GameActor {
     public float getYaxis()
     {
         return Yaxis;
+    }
+    public Sprite getSprite()
+    {
+        return sprite;
     }
 }

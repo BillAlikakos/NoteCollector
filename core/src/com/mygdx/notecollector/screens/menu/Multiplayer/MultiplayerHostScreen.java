@@ -67,11 +67,6 @@ public class MultiplayerHostScreen implements  Screen
     private VerticalGroup verticalGroup;
     private ServerClass srv;
 
-    public MultiplayerHostScreen(NoteCollector noteCollector) {
-        this.noteCollector = noteCollector;
-        assetsManager = noteCollector.getAssetsManager();
-        LoadAssets();
-    }
 
     public MultiplayerHostScreen(NoteCollector noteCollector,Stage stage)
     {
@@ -243,6 +238,7 @@ public class MultiplayerHostScreen implements  Screen
         private Label createLabel(String text){
             Label.LabelStyle labelstyle = new Label.LabelStyle(fontH, Color.WHITE);
             Label fileLabel = new Label(text, labelstyle);
+            fileLabel.setPosition(VIEWPORT_WIDTH/2-fileLabel.getWidth(),VIEWPORT_HEIGHT/2);
             return  fileLabel;
 
         }
@@ -250,7 +246,8 @@ public class MultiplayerHostScreen implements  Screen
     
     private void getRequest()
     {
-            table.add(createLabel("Awaiting for connection...")).padTop(70f*VIEWPORT_HEIGHT/1080);
+            table.top().add(createLabel("Awaiting for connection..."));
+            //table.add(createLabel("Awaiting for connection...")).padTop(70f*VIEWPORT_HEIGHT/1080);
             srv = new ServerClass();
             srv.getServer().addListener(new Listener() {
                 public void received (Connection connection, Object object)

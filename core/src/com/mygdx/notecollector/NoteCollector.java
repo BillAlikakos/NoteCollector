@@ -17,11 +17,15 @@ public class NoteCollector extends Game {
 	private Sound click;
 	private IWiFi wifiCtx;
 	private IGallery andoridGallery;
+	private IAuthUser auth;
+	private IDataBase db;
 	public NoteCollector(){}
-	public NoteCollector(IWiFi wiFi, IGallery gallery)
+	public NoteCollector(IWiFi wiFi, IGallery gallery,IAuthUser authUser,IDataBase dbRef)
 	{
 	    wifiCtx=wiFi;
 		andoridGallery=gallery;
+		auth=authUser;
+		db=dbRef;
 	}
 
 
@@ -34,7 +38,23 @@ public class NoteCollector extends Game {
 	{
 		return andoridGallery;
 	}
-// method for getting asset manager
+
+	public IAuthUser getAuth()
+	{
+		return auth;
+	}
+
+	public IGallery getAndoridGallery()
+	{
+		return andoridGallery;
+	}
+
+	public IDataBase getDb()
+	{
+		return db;
+	}
+
+	// method for getting asset manager
 	public Assets getAssetsManager() {
 		return AssetsManager;
 	}

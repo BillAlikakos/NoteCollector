@@ -12,8 +12,8 @@ public class Constants {
 
     public static final Vector2 WORLD_GRAVITY = new Vector2(0, -10f);
 
-    public static int APP_WIDTH =Gdx.graphics.getWidth();//800
-    public static int APP_HEIGHT =Gdx.graphics.getHeight();//480
+    public static int APP_WIDTH =Gdx.graphics.getWidth();//800;
+    public static int APP_HEIGHT =Gdx.graphics.getHeight();//480;
 
     public static final String WhiteKey = "data/Game Images/white_key.png";
     public static final String WhitePressedKey = "data/Game Images/white_pressed_key.png";
@@ -32,10 +32,14 @@ public class Constants {
     public static  final String helpImage = "data/ui/buttons/help.png";
     public static  final String settingsImage = "data/ui/buttons/settings.png";
     public static  final String exitImage = "data/ui/buttons/exit.png";
+    public static  final String logInImage="data/ui/buttons/logIn.png";
+    public static  final String logInImageP="data/ui/buttons/logInPressed.png";
     public static  final String scoresImageP = "data/ui/buttons/highScorePressed.png";
     public static  final String helpImageP = "data/ui/buttons/helpPressed.png";
     public static  final String settingsImageP = "data/ui/buttons/settingsPressed.png";
     public static  final String exitImageP = "data/ui/buttons/exitPressed.png";
+    public static  final String showPasswordImage = "data/ui/buttons/showPassword.png";
+    public static  final String showPasswordImageP = "data/ui/buttons/showPasswordPressed.png";
 
     /*public static String getBackgroundGame() {
         return BackgroundGame;

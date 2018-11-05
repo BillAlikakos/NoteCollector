@@ -106,7 +106,7 @@ public class MultiplayerModeScreen implements Screen
         Label.LabelStyle labelstyle = new Label.LabelStyle(font, Color.WHITE);
         Label label = new Label(text, labelstyle);
         label.setPosition((stage.getCamera().viewportWidth - label.getWidth()) / 2, Yaxis + 50*VIEWPORT_HEIGHT/1080);
-        stage.addActor(label);
+        table.addActor(label);
 
     }
 
@@ -129,7 +129,8 @@ public class MultiplayerModeScreen implements Screen
     private void LoadAssets()
     {
         assetsManager.LoadWiFiAssets();
-        font = assetsManager.createBitmapFont();
+        //font = assetsManager.createBitmapFont();
+        font = assetsManager.createFont();
         selectionColor =new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.ButtonImage,Texture.class))) ;
 
         selectionColor.setRightWidth(5f);
@@ -163,13 +164,6 @@ public class MultiplayerModeScreen implements Screen
         icon.addAction(Actions.sequence(Actions.fadeIn(0.2f)));
     }
 
-    private void createBackground()
-    {
-        System.out.println("Width:"+VIEWPORT_WIDTH+" Height:"+VIEWPORT_HEIGHT);
-        FileHandle file = Gdx.files.internal(Constants.getBackgroundMenu().toString());
-        Image background=assetsManager.scaleBackground(file);
-        stage.addActor(background);
-    }
     private void createVerticalGroup()
     {
         verticalGroup  = new VerticalGroup();

@@ -73,7 +73,7 @@ public class LoadingScreen implements Screen {
     private boolean isHost;
     private boolean isGuest;
     private boolean mode;
-    boolean flag ;
+    private boolean flag ;
     private String difficulty;
     private boolean done=false;
 
@@ -226,13 +226,7 @@ public class LoadingScreen implements Screen {
     @Override
     public void render(float delta) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        try {
-            showLoadProgress();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        showLoadProgress();
         stage.act();
         stage.draw();
     }
@@ -271,7 +265,7 @@ public class LoadingScreen implements Screen {
 
 
     //if the method setupmidi isn't running show the game screen  
-    private void showLoadProgress() throws IOException, InterruptedException//
+    private void showLoadProgress()
     {
         if ( !t.isAlive() && AssetsManager.assetManager.update() && AssetsManager.assetManagerFiles.update())
         {
@@ -297,14 +291,21 @@ public class LoadingScreen implements Screen {
                     }
                     else if(isGuest)
                     {
-                       // dispose();
-                        noteCollector.setScreen(new MultiplayerPreMatchLobby(noteCollector,TickPerMsec,notes,filepath,speed,delay,c,mode,stage));
+                        // dispose();
+                        if(!done)
+                        {
+                            System.out.println("Client entering lobby");
+                            noteCollector.setScreen(new MultiplayerPreMatchLobby(noteCollector, TickPerMsec, notes, filepath, speed, delay, c, mode, stage));
+                            done=true;
+                        }
                     }
                     else//Single player
                     {
                         //dispose();
+                        /*
                         try
                         {
+                            System.out.println("Sheogorath");
                             noteCollector.setScreen(new GameScreen(noteCollector,TickPerMsec,notes,filepath,speed,delay,mode,stage));
                         }
                         catch (IOException e)
@@ -314,6 +315,22 @@ public class LoadingScreen implements Screen {
                         catch (InterruptedException e)
                         {
                             e.printStackTrace();
+                        }*/
+                        if(!done)//Avoid loading the screen multiple times
+                        {
+                            try
+                            {
+                                noteCollector.setScreen(new GameScreen(noteCollector,TickPerMsec,notes,filepath,speed,delay,mode,stage));
+                            }
+                            catch (IOException e)
+                            {
+                                e.printStackTrace();
+                            }
+                            catch (InterruptedException e)
+                            {
+                                e.printStackTrace();
+                            }
+                            done=true;
                         }
                     }
                 }

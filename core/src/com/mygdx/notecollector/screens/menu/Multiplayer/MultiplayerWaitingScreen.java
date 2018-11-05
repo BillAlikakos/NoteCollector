@@ -70,6 +70,7 @@ public class MultiplayerWaitingScreen implements Screen
     @Override
     public void show()
     {
+        System.out.println("Show (Waiting screen)");
         table = new Table();
         table.setFillParent(true);
         table.center();
@@ -83,71 +84,24 @@ public class MultiplayerWaitingScreen implements Screen
 
     private void setDifficultyParams(String difficulty)//TODO : Remove
     {
-        if (VIEWPORT_WIDTH == 800 && VIEWPORT_HEIGHT == 480)//Different speeds and delay for each resolution
+        switch (difficulty)
         {
-            switch (difficulty)
-            {
-                case "Easy":
-                    speed=130;
-                    delay=200;
-                    break;
-                case "Normal":
-                    speed=150;
-                    delay=160;
-                    break;
-                case "Hard":
-                    speed=170;
-                    delay=120;
-                    break;
-                case "Very Hard":
-                    speed=180;
-                    delay=100;
-                    break;
-            }
-        }
-        else if(VIEWPORT_HEIGHT==720&&VIEWPORT_WIDTH==1080)
-        {
-            switch (difficulty)
-            {
-                case "Easy":
-                    speed=195;
-                    delay=300;
-                    break;
-                case "Normal":
-                    speed=225;
-                    delay=240;
-                    break;
-                case "Hard":
-                    speed=255;
-                    delay=180;
-                    break;
-                case "Very Hard":
-                    speed=270;
-                    delay=150;
-                    break;
-            }
-        }
-        else if(VIEWPORT_HEIGHT>720&&VIEWPORT_WIDTH>1080)
-        {
-            switch (difficulty)//Listeners for multiplayer difficulty screen TODO change speed handling to responsive sizing
-            {
-                case "Easy":
-                    speed=260;
-                    delay=300;
-                    break;
-                case "Normal":
-                    speed=300;
-                    delay=240;
-                    break;
-                case "Hard":
-                    speed=340;
-                    delay=180;
-                    break;
-                case "Very Hard":
-                    speed=360;
-                    delay=160;
-                    break;
-            }
+            case "Easy":
+                speed=130*VIEWPORT_HEIGHT/480;
+                delay=200;
+                break;
+            case "Normal":
+                speed=150*VIEWPORT_HEIGHT/480;
+                delay=160;
+                break;
+            case "Hard":
+                speed=170*VIEWPORT_HEIGHT/480;
+                delay=120;
+                break;
+            case "Very Hard":
+                speed=180*VIEWPORT_HEIGHT/480;
+                delay=100;
+                break;
         }
     }
 

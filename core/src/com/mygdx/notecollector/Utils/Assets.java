@@ -35,6 +35,8 @@ public  class Assets {
     private Preferences prefs;
     private int viewportHeight;
     private BitmapFont font;
+    private BitmapFont fontH;
+    private BitmapFont fontList;
     private BitmapFont fontBig;
     private BitmapFont fontMid;
     private BitmapFont fontSm;
@@ -54,17 +56,17 @@ public  class Assets {
     {
         if(!prefs.getString("menuBackground").equals("data/ui/images/new1080.png"))
         {
-            System.out.println("External Asset");
+            //System.out.println("External Asset");
             AssetManager manager = new AssetManager(new ExternalFileHandleResolver());
 
             File  bg = new File(prefs.getString("menuBackground"));
-            System.out.println(bg.getPath());
+            //System.out.println(bg.getPath());
             manager.load(bg.getPath(),Texture.class);
             manager.finishLoading();
         }
         else
         {
-            System.out.println("Internal Asset");
+            //System.out.println("Internal Asset");
             LoadTexture(prefs.getString("menuBackground"));
            // LoadTexture(Constants.BackgroundMenu);
 
@@ -78,12 +80,20 @@ public  class Assets {
         LoadTexture(Constants.ButtonPressed);
         LoadTexture(Constants.exitImage);
         LoadTexture(Constants.scoresImage);
+        LoadTexture(Constants.logInImage);
         LoadTexture(Constants.helpImage);
         LoadTexture(Constants.settingsImage);
         LoadTexture(Constants.exitImageP);
         LoadTexture(Constants.scoresImageP);
+        LoadTexture(Constants.logInImageP);
         LoadTexture(Constants.helpImageP);
         LoadTexture(Constants.settingsImageP);
+        assetManager.finishLoading();
+    }
+    public void LoadLogInAssets()
+    {
+        LoadTexture(Constants.showPasswordImage);
+        LoadTexture(Constants.showPasswordImageP);
         assetManager.finishLoading();
     }
 
@@ -92,17 +102,17 @@ public  class Assets {
 
         if(!prefs.getString("menuBackground").equals("data/ui/images/new1080.png"))
         {
-            System.out.println("External Asset");
+            //System.out.println("External Asset");
             AssetManager manager = new AssetManager(new ExternalFileHandleResolver());
 
             File  bg = new File(prefs.getString("menuBackground"));
-            System.out.println(bg.getPath());
+            //System.out.println(bg.getPath());
             manager.load(bg.getPath(),Texture.class);
             manager.finishLoading();
         }
         else
         {
-            System.out.println("Internal Asset");
+            //System.out.println("Internal Asset");
             LoadTexture(prefs.getString("menuBackground"));
             // LoadTexture(Constants.BackgroundMenu);
 
@@ -121,17 +131,17 @@ public  class Assets {
 
         if(!prefs.getString("menuBackground").equals("data/ui/images/new1080.png"))
         {
-            System.out.println("External Asset");
+            //System.out.println("External Asset");
             AssetManager manager = new AssetManager(new ExternalFileHandleResolver());
 
             File  bg = new File(prefs.getString("menuBackground"));
-            System.out.println(bg.getPath());
+            //System.out.println(bg.getPath());
             manager.load(bg.getPath(),Texture.class);
             manager.finishLoading();
         }
         else
         {
-            System.out.println("Internal Asset");
+            //System.out.println("Internal Asset");
             LoadTexture(prefs.getString("menuBackground"));
             // LoadTexture(Constants.BackgroundMenu);
 
@@ -149,7 +159,7 @@ public  class Assets {
 
     public void disposeMenuAssets()
     {
-      System.out.println("Disposing icons");
+      //System.out.println("Disposing icons");
      /* assetManager.unload(Constants.ButtonImage);
       assetManager.unload(Constants.BackgroundGame);
       assetManager.unload(Constants.BackgroundMenu);
@@ -221,18 +231,18 @@ public  class Assets {
     }
 
 
-    public void LoadGameAssets(){
+    private void LoadGameAssets(){
         LoadTexture(Constants.ButtonImage);
         //LoadTexture(Constants.BackgroundGame);
         if(!prefs.getString("gameBackground").equals("data/Game Images/backgrounGame.jpg"))
         {
-            System.out.println("External Asset");
+            //System.out.println("External Asset");
             externalAssets = new AssetManager(new ExternalFileHandleResolver());
 
             File  bg = new File(prefs.getString("gameBackground"));
-            System.out.println(bg.getPath());
+            //System.out.println(bg.getPath());
             externalAssets.load(bg.getPath(),Texture.class);
-            System.out.println("BG Loaded");
+            //System.out.println("BG Loaded");
             System.out.println(bg.getAbsolutePath());
             externalAssets.finishLoading();
         }
@@ -276,6 +286,29 @@ public  class Assets {
         font = this.createBimapFont(fontSize);
         return font;
     }
+    public BitmapFont createFont()//Create standard size font for buttons etc.
+    {
+        int fontSize=VIEWPORT_WIDTH*48/1920;//Set font size to the resolution (1920 is used as divider as it is considered the development resolution)
+        System.out.println("Standard font size:"+fontSize);
+        font = this.createBimapFont(fontSize);
+        return font;
+    }
+    public BitmapFont createFontH()//Create font for headers
+    {
+       // int fontSize=VIEWPORT_WIDTH*64/1920;//Set font size to the resolution (1920 is used as divider as it is considered the development resolution)
+        int fontSize=VIEWPORT_WIDTH*55/1920;//Set font size to the resolution (1920 is used as divider as it is considered the development resolution)
+        System.out.println("Header font size:"+fontSize);
+        fontH = this.createBimapFont(fontSize);
+        return fontH;
+    }
+    public BitmapFont createFontList()//Create font for lists
+    {
+        int fontSize=VIEWPORT_WIDTH*55/1920;//Set font size to the resolution (1920 is used as divider as it is considered the development resolution)
+        System.out.println("List font size:"+fontSize);
+        fontList = this.createBimapFont(fontSize);
+        return fontList;
+    }
+
     public BitmapFont createFreetypeFont(int size,boolean shadow)
     {
         System.out.println("Creating font");

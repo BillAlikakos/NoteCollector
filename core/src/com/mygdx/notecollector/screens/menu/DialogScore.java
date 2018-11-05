@@ -3,10 +3,8 @@ package com.mygdx.notecollector.screens.menu;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -22,15 +20,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.Timer;
-import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.notecollector.NoteCollector;
 import com.mygdx.notecollector.Utils.Assets;
 import com.mygdx.notecollector.Utils.Constants;
-import com.mygdx.notecollector.Utils.Score;
+import com.mygdx.notecollector.Utils.ScoreClass;
 import com.mygdx.notecollector.screens.EndGameScreen;
+import com.mygdx.notecollector.screens.menu.UserArea.ScoresScreen;
+import com.mygdx.notecollector.screens.menu.UserArea.SocialSplashScreen;
 
 /**
  * Created by bill on 7/25/16.
@@ -50,9 +48,10 @@ public class DialogScore implements Screen {
     private TextureRegionDrawable selectionColorPressed;
     private Label label;
     private BitmapFont font;
-    private Score score;
+    //private Score score;
     private String ScoreNumber;
     private String Difficulty;
+    private String gameMode;
     private NoteCollector noteCollector;
     private TextureRegionDrawable selectionColorList;
     private boolean touched;
@@ -61,15 +60,17 @@ public class DialogScore implements Screen {
     private float[] size;
     private float sizeX;
     private float sizeY;
+    private ScoreClass score;
 
-    public DialogScore(String ScoreNumber, NoteCollector noteCollector, String trackName,String Difficulty,Stage stage)
+    public DialogScore(String ScoreNumber, NoteCollector noteCollector, String trackName,String Difficulty,Stage stage,String gameMode)
     {
         this.stage=stage;
         this.ScoreNumber = ScoreNumber;
         this.noteCollector = noteCollector;
         this.trackName=trackName;
         this.Difficulty=Difficulty;
-        score = new Score();
+        this.gameMode=gameMode;
+        //score = new Score();
         touched=false;
         AssetsManager = noteCollector.getAssetsManager();
         LoadAssets();
@@ -79,13 +80,46 @@ public class DialogScore implements Screen {
     {
         createTable();
         createLogo();
-        createLabel("Submit Score",stage.getCamera().viewportHeight/2+100);
-        createTextField();
         size=AssetsManager.setButtonSize(sizeX,sizeY);//Get the dimensions for the button
         sizeX=size[0];
         sizeY=size[1];
         createButton("Back",5f,10f,sizeX,sizeY);
-        createButton("Submit",VIEWPORT_WIDTH/2-sizeX/2,VIEWPORT_HEIGHT/2-sizeY,sizeX,sizeY);
+        if(noteCollector.getAuth().isConnected())
+        {
+            /*createButton("Submit",VIEWPORT_WIDTH/2-sizeX/2,VIEWPORT_HEIGHT/2-sizeY,sizeX,sizeY);//Old score submitting method
+            createLabel("Submit Score",stage.getCamera().viewportHeight/2+100);
+            createTextField();*/
+            createLabel("Score Submitted",stage.getCamera().viewportHeight/2+sizeY);
+            try
+            {
+                wait(500);
+            }
+            catch (InterruptedException e)
+            {
+                e.printStackTrace();
+            }
+            table.addAction(Actions.fadeOut(0.4f));
+            label.addAction(Actions.fadeOut(0.4f));
+            Timer.schedule(new Timer.Task() {
+                @Override
+                public void run()
+                {
+                    dispose();
+                    //ASSEMBLE SCORE OBJ HERE
+                    System.out.println(trackName+" "+ScoreNumber+" "+Difficulty+" "+noteCollector.getAuth().getUserName());
+                    score=new ScoreClass(trackName,ScoreNumber,Difficulty,noteCollector.getAuth().getUserName(),gameMode);
+                    noteCollector.getDb().write(noteCollector.getAuth(),score);
+                    noteCollector.setScreen(new ScoresScreen(noteCollector,stage));
+                    /*String name = textField.getText();
+                    score.WriteScore(name, Integer.parseInt(ScoreNumber), trackName, Difficulty);
+                    noteCollector.setScreen(new MainMenuScreen(noteCollector, stage));*/
+            }  }, 0.4f);
+        }
+        else
+        {
+            createLabel("Please Log In to submit your high score",stage.getCamera().viewportHeight/2+sizeY);
+            createButton("Log In",VIEWPORT_WIDTH/2-sizeX/2,VIEWPORT_HEIGHT/2-sizeY,sizeX,sizeY);
+        }
         stage.addActor(table);
         Gdx.input.setInputProcessor(stage);
         label.getColor().a=0;
@@ -97,7 +131,7 @@ public class DialogScore implements Screen {
         //if the textbox is clicked show the keyboard
         textField.addListener(new ClickListener(){
             public void clicked(InputEvent e, float x, float y) {
-                if (touched == false)
+                if (!touched)
                     touched =true;
                 Gdx.input.setOnscreenKeyboardVisible(true);
             }
@@ -132,7 +166,7 @@ public class DialogScore implements Screen {
         stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
         // if touch screen is touched, hide keyboard
-        if(Gdx.input.isTouched() && touched == true) {
+        if(Gdx.input.isTouched() && touched) {
             Gdx.input.setOnscreenKeyboardVisible(false);
             stage.unfocus(textField);
             touched =false;
@@ -233,15 +267,30 @@ public class DialogScore implements Screen {
                     label.addAction(Actions.fadeOut(0.4f));
                     Timer.schedule(new Timer.Task() {
                         @Override
-                        public void run() {
+                        public void run()
+                        {
                             dispose();
-                            if (text.equals("Submit")) {
-                                String name = textField.getText();
-                                score.WriteScore(name, Integer.parseInt(ScoreNumber),trackName,Difficulty);
-                                noteCollector.setScreen(new MainMenuScreen(noteCollector,stage));
+                            switch (text)
+                            {
+                                case "Submit":
+                                    //ASSEMBLE SCORE OBJ HERE
+                                    System.out.println(trackName + " " + ScoreNumber + " " + Difficulty + " " + noteCollector.getAuth().getUserName());
+                                    score = new ScoreClass(trackName, ScoreNumber, Difficulty, noteCollector.getAuth().getUserName(), gameMode);
+                                    noteCollector.getDb().write(noteCollector.getAuth(), score);
+                                    noteCollector.setScreen(new ScoresScreen(noteCollector, stage));
+                                /*String name = textField.getText();
+                                score.WriteScore(name, Integer.parseInt(ScoreNumber), trackName, Difficulty);
+                                noteCollector.setScreen(new MainMenuScreen(noteCollector, stage));*/
 
-                            } else
-                                noteCollector.setScreen(new EndGameScreen(noteCollector, ScoreNumber,Difficulty,stage));
+                                    break;
+                                case "Log In":
+                                    noteCollector.setScreen(new SocialSplashScreen(noteCollector, stage, ScoreNumber, trackName, Difficulty, gameMode));
+                                    break;
+                                default:
+                                    noteCollector.setScreen(new EndGameScreen(noteCollector, ScoreNumber, Difficulty, stage, gameMode));
+                                    break;
+                            }
+
 
                         }
 

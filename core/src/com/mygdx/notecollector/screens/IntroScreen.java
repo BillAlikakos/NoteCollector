@@ -46,9 +46,12 @@ public class IntroScreen implements Screen {
         this.noteCollector =noteCollector;
         noteCollector.getAssetsManager().assetManager.load(Constants.IntroImage, Texture.class);
         noteCollector.getAssetsManager().assetManager.finishLoading();
-        noteCollector.getAssetsManager().createFonts();
+        //noteCollector.getAssetsManager().createFonts();
         setupCamera();
         createBackground();
+        noteCollector.getAssetsManager().createFont();//Generate fonts
+        noteCollector.getAssetsManager().createFontH();
+        noteCollector.getAssetsManager().createFontList();
         stage.addAction(Actions.sequence(Actions.alpha(0), Actions.fadeIn(2f)));
         background.getColor().a=0;
         background.addAction(Actions.fadeIn(0.2f));
@@ -67,8 +70,6 @@ public class IntroScreen implements Screen {
             //prefs.putString("menuBackground","data/ui/images/new1080.png");
             System.out.println("gameBackground "+prefs.getString("gameBackground"));
         }
-        //setupCamera();
-        //createBackground();
         createFolders();
         // load preferences
         prefs.putBoolean("music", true);
