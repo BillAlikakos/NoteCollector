@@ -119,6 +119,10 @@ public class OptionsScreen implements Screen{
         {
            @Override public boolean touchDown(InputEvent event, float x, float y, int pointer, int button)
            {
+               if (prefs.getBoolean("sound"))
+               {
+                   noteCollector.getClick().play();
+               }
                table.addAction(Actions.fadeOut(0.4f));
                exitBtnTable.addAction(Actions.fadeOut(0.4f));
                Timer.schedule(new Timer.Task() {
@@ -138,6 +142,10 @@ public class OptionsScreen implements Screen{
         {
            @Override public boolean touchDown(InputEvent event, float x, float y, int pointer, int button)
            {
+               if (prefs.getBoolean("sound"))
+               {
+                   noteCollector.getClick().play();
+               }
                table.addAction(Actions.fadeOut(0.4f));
                exitBtnTable.addAction(Actions.fadeOut(0.4f));
                Timer.schedule(new Timer.Task()
@@ -156,6 +164,10 @@ public class OptionsScreen implements Screen{
         {
            @Override public boolean touchDown(InputEvent event, float x, float y, int pointer, int button)
            {
+               if (prefs.getBoolean("sound"))
+               {
+                   noteCollector.getClick().play();
+               }
                table.addAction(Actions.fadeOut(0.4f));
                exitBtnTable.addAction(Actions.fadeOut(0.4f));
                Timer.schedule(new Timer.Task()

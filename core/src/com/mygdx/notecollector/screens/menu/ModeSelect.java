@@ -112,7 +112,8 @@ public class ModeSelect implements Screen
     {
         int fontSize=VIEWPORT_WIDTH/30;
         //fontSize = 45;
-        BitmapFont font = assetsManager.createBimapFont(fontSize);
+        //BitmapFont font = assetsManager.createBimapFont(fontSize);
+        BitmapFont font = assetsManager.createFontH();
 
         Label.LabelStyle labelstyle = new Label.LabelStyle(font, Color.WHITE);
         Label label = new Label(text, labelstyle);

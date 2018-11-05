@@ -219,7 +219,9 @@ public class MiscOptions implements Screen
                     @Override
                     public void run()
                     {
+                        System.out.println("ssssss");
                         System.out.println(this.isInterrupted());
+                        System.out.println("aaaaaa");
                         gallery=noteCollector.getGallery();
                         gallery.getImagePath();
                         res="";

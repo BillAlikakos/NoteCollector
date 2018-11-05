@@ -1,23 +1,19 @@
 package com.mygdx.notecollector.screens.menu;
 
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
@@ -32,15 +28,13 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.notecollector.NoteCollector;
 import com.mygdx.notecollector.Utils.Assets;
 import com.mygdx.notecollector.Utils.Constants;
-import com.mygdx.notecollector.screens.ScoresScreen;
 import com.mygdx.notecollector.screens.menu.Multiplayer.MultiplayerModeScreen;
 import com.mygdx.notecollector.screens.menu.TrackSearch.SearchTrack;
-
-import java.util.ArrayList;
+import com.mygdx.notecollector.screens.menu.UserArea.ResultScreen;
+import com.mygdx.notecollector.screens.menu.UserArea.SocialSplashScreen;
 
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.fadeIn;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.fadeOut;
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.run;
 
 public class MainMenuScreen implements Screen {
 
@@ -55,10 +49,12 @@ public class MainMenuScreen implements Screen {
     private TextureRegionDrawable selectionColor;//Textures for the buttons
     private TextureRegionDrawable selectionColorPressed;
     private TextureRegionDrawable scoreBtn;
+    private TextureRegionDrawable logInBtn;
     private TextureRegionDrawable helpBtn;
     private TextureRegionDrawable settingsBtn;
     private TextureRegionDrawable exitBtn;
     private TextureRegionDrawable scoreBtnP;
+    private TextureRegionDrawable logInBtnP;
     private TextureRegionDrawable helpBtnP;
     private TextureRegionDrawable settingsBtnP;
     private TextureRegionDrawable exitBtnP;
@@ -107,7 +103,7 @@ public class MainMenuScreen implements Screen {
         sizeX=size[0];
         sizeY=size[1];
         createLogo();
-        createButton("Play");
+        createButton("Single Player");
         createButton("Multiplayer");
         createButton("Search Tracks");
         createIcons();
@@ -120,7 +116,7 @@ public class MainMenuScreen implements Screen {
         top.getColor().a=0;
         table.addAction(Actions.sequence(Actions.fadeIn(0.2f)));
         top.addAction(Actions.sequence(Actions.fadeIn(0.2f)));
-
+        System.out.println(font.toString());
     }
 
     private void setupCamera(){
@@ -132,21 +128,24 @@ public class MainMenuScreen implements Screen {
 
         assetsManager.LoadMenuAssets();
 
-        font = assetsManager.createBitmapFont();
+        //font = assetsManager.createBitmapFont();
+        font = assetsManager.createFont();
         scoreBtn=new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.scoresImage,Texture.class)));
+        logInBtn=new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.logInImage,Texture.class)));
         helpBtn=new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.helpImage,Texture.class)));
         settingsBtn=new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.settingsImage,Texture.class)));
         exitBtn=new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.exitImage,Texture.class)));
         selectionColor =new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.ButtonImage,Texture.class))) ;
 
-        selectionColor.setRightWidth(5f);
+        selectionColor.setRightWidth(5f*VIEWPORT_WIDTH/800);
         selectionColor.setBottomHeight(2f);
         helpBtnP=new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.helpImageP,Texture.class)));
         scoreBtnP=new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.scoresImageP,Texture.class)));
+        logInBtnP=new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.logInImageP,Texture.class)));
         settingsBtnP=new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.settingsImageP,Texture.class)));
         exitBtnP=new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.exitImageP,Texture.class)));
         selectionColorPressed = new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.ButtonPressed,Texture.class)));
-        selectionColorPressed.setRightWidth(5f);
+        selectionColorPressed.setRightWidth(5f*VIEWPORT_WIDTH/800);
         selectionColorPressed.setBottomHeight(2f);
 
     }
@@ -183,9 +182,11 @@ public class MainMenuScreen implements Screen {
 
     private void createIcons()//Set styles, event handlers etc.
     {
-        System.out.println("Creating icons");
+        //System.out.println("Creating icons");
         final ImageButton scoreButton = new ImageButton(scoreBtn);
         scoreButton.getStyle().down=scoreBtnP;
+        final ImageButton logInButton = new ImageButton(logInBtn);
+        logInButton.getStyle().down=logInBtnP;
         final ImageButton settingsButton = new ImageButton(settingsBtn);
         settingsButton.getStyle().down=settingsBtnP;
         final ImageButton helpButton = new ImageButton(helpBtn);
@@ -198,25 +199,49 @@ public class MainMenuScreen implements Screen {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button)
             {
                 Preferences prefs = Gdx.app.getPreferences("NoteCollectorPreferences");
-               if(scoreButton.isPressed())
-               {
-                   playSound(prefs);
-                   table.addAction(Actions.sequence(Actions.fadeOut(0.35f)));//Fade out table
-                   top.addAction(Actions.sequence(Actions.fadeOut(0.35f)));//Fade out icon table
-                   Timer.schedule(new Timer.Task()
-                   {
-                       @Override
-                       public void run()
-                       {
-                           dispose();
-                           noteCollector.setScreen(new ScoresScreen(noteCollector,stage));
-                       }
-                   }, 0.4f);
-               }
-
-               return true;
+                if(scoreButton.isPressed())
+                {
+                    playSound(prefs);
+                    table.addAction(Actions.sequence(Actions.fadeOut(0.35f)));//Fade out table
+                    top.addAction(Actions.sequence(Actions.fadeOut(0.35f)));//Fade out icon table
+                    Timer.schedule(new Timer.Task()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            dispose();
+                            noteCollector.setScreen(new ResultScreen(noteCollector,stage));
+                        }
+                    }, 0.4f);
+                }
+                return true;
             }
         }));
+        logInButton.addListener((new ClickListener()
+        {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button)
+            {
+                Preferences prefs = Gdx.app.getPreferences("NoteCollectorPreferences");
+                if(logInButton.isPressed())
+                {
+                    playSound(prefs);
+                    table.addAction(Actions.sequence(Actions.fadeOut(0.35f)));//Fade out table
+                    top.addAction(Actions.sequence(Actions.fadeOut(0.35f)));//Fade out icon table
+                    Timer.schedule(new Timer.Task()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            dispose();
+                            noteCollector.setScreen(new SocialSplashScreen(noteCollector,stage));
+                        }
+                    }, 0.4f);
+                }
+                return true;
+            }
+        }));
+
         helpButton.addListener((new ClickListener()
         {
             @Override
@@ -289,7 +314,15 @@ public class MainMenuScreen implements Screen {
             }
         }));
         top.right().top();
-        top.add(scoreButton).expand().top().right().size(VIEWPORT_WIDTH*0.06f,VIEWPORT_HEIGHT*0.10f);//TODO : Possibly tweak sizing
+        if(noteCollector.getAuth().isConnected())//If user is connected add the high score button instead of log in / sign up button
+        {
+            //System.out.println(noteCollector.getAuth().getUserName());
+            top.add(scoreButton).expand().top().right().size(VIEWPORT_WIDTH*0.06f,VIEWPORT_HEIGHT*0.10f);//TODO : Possibly tweak sizing
+        }
+        else
+        {
+            top.add(logInButton).expand().top().right().size(VIEWPORT_WIDTH*0.06f,VIEWPORT_HEIGHT*0.10f);
+        }
         top.add(settingsButton).top().right().size(VIEWPORT_WIDTH*0.06f,VIEWPORT_HEIGHT*0.10f);
         top.add(helpButton).top().right().size(VIEWPORT_WIDTH*0.06f,VIEWPORT_HEIGHT*0.10f);
         top.add(exitButton).top().right().size(VIEWPORT_WIDTH*0.06f,VIEWPORT_HEIGHT*0.10f);
@@ -322,7 +355,7 @@ public class MainMenuScreen implements Screen {
                          public void run() {
                                 dispose();
                               switch (text) {
-                                  case "Play":
+                                  case "Single Player":
                                       noteCollector.setScreen(new ModeSelect(noteCollector,stage));//new Browse(noteCollector));
                                       break;
                                   case "Multiplayer":
@@ -395,7 +428,7 @@ public class MainMenuScreen implements Screen {
     {
         table.clear();
         //assetsManager.disposeMenuAssets();
-        font.dispose();
+        //font.dispose();
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(top);
         stage.getRoot().removeActor(verticalGroup);

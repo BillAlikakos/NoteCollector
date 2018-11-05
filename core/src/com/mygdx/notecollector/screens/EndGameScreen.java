@@ -32,8 +32,11 @@ import com.mygdx.notecollector.Multiplayer.ServerClass;
 import com.mygdx.notecollector.NoteCollector;
 import com.mygdx.notecollector.Utils.Assets;
 import com.mygdx.notecollector.Utils.Constants;
+import com.mygdx.notecollector.Utils.ScoreClass;
 import com.mygdx.notecollector.screens.menu.DialogScore;
 import com.mygdx.notecollector.screens.menu.MainMenuScreen;
+import com.mygdx.notecollector.screens.menu.UserArea.ScoresScreen;
+import com.mygdx.notecollector.screens.menu.UserArea.SocialSplashScreen;
 
 /**
  * Created by bill on 7/22/16.
@@ -57,6 +60,7 @@ public class EndGameScreen implements Screen {
     private String Score;
     private String Score2;
     private String Difficulty;
+    private String gameMode;
     private float[] size;
     private float sizeX;
     private float sizeY;
@@ -65,22 +69,25 @@ public class EndGameScreen implements Screen {
     private ServerClass srv;
     private ClientClass c;
     private Thread t;
+    private ScoreClass score;
 
-    public EndGameScreen(NoteCollector notecollector,String Score,String Difficulty,Stage stage) {
+    public EndGameScreen(NoteCollector notecollector,String Score,String Difficulty,Stage stage,String gameMode) {
         this.notecollector = notecollector;
         this.stage=stage;
         this.Score = Score;
         this.Difficulty=Difficulty;
+        this.gameMode=gameMode;
         AssetsManager = notecollector.getAssetsManager();
         LoadAssets();
     }
 
-    public EndGameScreen(NoteCollector notecollector, String Score, String Difficulty, ServerClass srv,Stage stage)
+    public EndGameScreen(NoteCollector notecollector, String Score, String Difficulty, ServerClass srv,Stage stage,String gameMode)
     {
         this.notecollector = notecollector;
         this.stage=stage;
         this.Score = Score;
         this.Difficulty=Difficulty;
+        this.gameMode=gameMode;
         this.srv=srv;
         isHost=true;
         isGuest=false;
@@ -88,12 +95,13 @@ public class EndGameScreen implements Screen {
         LoadAssets();
     }
 
-    public EndGameScreen(NoteCollector notecollector, String Score, String Difficulty, ClientClass c,Stage stage)
+    public EndGameScreen(NoteCollector notecollector, String Score, String Difficulty, ClientClass c,Stage stage,String gameMode)
     {
         this.notecollector = notecollector;
         this.stage=stage;
         this.Score = Score;
         this.Difficulty=Difficulty;
+        this.gameMode=gameMode;
         this.c=c;
         AssetsManager = notecollector.getAssetsManager();
         isHost=false;
@@ -107,15 +115,19 @@ public class EndGameScreen implements Screen {
         size=AssetsManager.setButtonSize(sizeX,sizeY);
         sizeX=size[0];
         sizeY=size[1];
+        createTable();
+        createLogo();
+        createLabels();
         if(isGuest || isHost)
         {
             sendMessage();
             addScoreListener();
         }
-        createTable();
+        createButtons();
+        /*createTable();
         createLogo();
         createLabels();
-        createButtons();
+        createButtons();*/
         stage.addActor(table);
         Gdx.input.setInputProcessor(stage);
         table.getColor().a=0;
@@ -184,9 +196,11 @@ public class EndGameScreen implements Screen {
                         Score2=request.score;
                         System.out.println("Score2: "+Score2);
                         srv.getServer().removeListener(this);
+                        float Yaxis=stage.getCamera().viewportHeight/2-30;
                         if(isGuest || isHost)
                         {
-                            createLabel("Opponent's Score:"+Score2,stage.getCamera().viewportHeight/2);
+                            //createLabel("Opponent's Score:"+Score2,stage.getCamera().viewportHeight/2);
+                            createLabel("Opponent's Score:"+Score2,Yaxis*VIEWPORT_HEIGHT/1080);
                         }
                         //t.interrupt();
                     }
@@ -207,9 +221,10 @@ public class EndGameScreen implements Screen {
                     System.out.println("Host score: "+request.score);
                     Score2=request.score;
                     c.getClient().removeListener(this);
+                    float Yaxis=stage.getCamera().viewportHeight/2-30;
                      if(isGuest || isHost)
                      {
-                         createLabel("Opponent's Score:"+Score2,stage.getCamera().viewportHeight/2);
+                         createLabel("Opponent's Score:"+Score2,Yaxis*VIEWPORT_HEIGHT/1080);
                      }
                     //t.interrupt();
                  }
@@ -231,8 +246,8 @@ public class EndGameScreen implements Screen {
         //createLabel("Game finished!",stage.getCamera().viewportHeight/2+100);
         float Yaxis1=stage.getCamera().viewportHeight/2+75;
         float Yaxis2=stage.getCamera().viewportHeight/2+30;
-        createLabel("Game finished!",Yaxis1*VIEWPORT_HEIGHT/1920);
-        createLabel("Your Score:"+Score,Yaxis2*VIEWPORT_HEIGHT/1920);
+        createLabel("Game finished!",Yaxis1*VIEWPORT_HEIGHT/1080);
+        createLabel("Your Score:"+Score,Yaxis2*VIEWPORT_HEIGHT/1080);
         /*if(isGuest || isHost)
         {
             createLabel("Opponent's Score:"+Score2,stage.getCamera().viewportHeight/2);
@@ -289,10 +304,11 @@ public class EndGameScreen implements Screen {
     private void createLabel(String text,float Yaxis){
         Label.LabelStyle labelstyle = new Label.LabelStyle(font, Color.WHITE);
         Label label = new Label(text, labelstyle);
-        label.setPosition((stage.getCamera().viewportWidth-label.getWidth())/2,Yaxis);
+        //label.setPosition((stage.getCamera().viewportWidth-label.getWidth())/2,Yaxis);
+        label.setPosition((stage.getCamera().viewportWidth)/2-label.getWidth(),Yaxis);
         //stage.addActor(label);
-        table.center();
-        table.add(label);
+       // table.center();
+        table.center().add(label);//TODO : Align text to center ?
         table.row();
         label.addAction(Actions.fadeIn(0.2f));
     }
@@ -368,12 +384,26 @@ public class EndGameScreen implements Screen {
                             if (text.equals("Submit"))
                             {
                                 dispose();
-                                notecollector.setScreen(new DialogScore(Score, notecollector,AssetsManager.MusicName,Difficulty,stage));
+                                System.out.println(notecollector.getAuth().isConnected());
+                                if(!notecollector.getAuth().isConnected())
+                                {
+                                    //Redirect to scores screen
+                                    notecollector.setScreen(new SocialSplashScreen(notecollector, stage,Score,AssetsManager.MusicName,Difficulty,gameMode));
+                                }
+                                else
+                                {
+                                    //Submit score to db and redirect to scores screen
+                                    System.out.println(AssetsManager.MusicName+" "+Score+" "+Difficulty+" "+notecollector.getAuth().getUserName());
+                                    score=new ScoreClass(AssetsManager.MusicName,Score,Difficulty,notecollector.getAuth().getUserName(),gameMode);
+                                    notecollector.getDb().write(notecollector.getAuth(),score);
+                                    notecollector.setScreen(new ScoresScreen(notecollector,stage));
+                                }
+                                //notecollector.setScreen(new DialogScore(Score, notecollector,AssetsManager.MusicName,Difficulty,stage,gameMode));//Old
                             }
                             else
                             {
                                dispose();
-                               System.out.println("Exiting to main menu?");
+                               System.out.println("Exiting to main menu");
                                notecollector.setScreen(new MainMenuScreen(notecollector,stage));
                             }
 

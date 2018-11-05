@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -20,12 +21,19 @@ import android.view.WindowManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 
 
 public class AndroidLauncher extends AndroidApplication
 {
 	private static String TAG = "AndroidLauncher";
-	Gallery gallery;
+	private WiFi wifi;
+	private AndroidApplicationConfiguration config;
+	private AuthUser user;
+	private DataBase db;
+	private Gallery gallery;
 	String userImagePath = null;
 	//@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 	@Override
@@ -33,11 +41,15 @@ public class AndroidLauncher extends AndroidApplication
 	{
 		Activity thisActivity = (Activity) this.getContext();
 		super.onCreate(savedInstanceState);
-		final AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
+		//final AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
+		config = new AndroidApplicationConfiguration();
 		config.useImmersiveMode = true;//Launch in immersive mode
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);//Keep screen continuously on
-		WiFi wifi = new WiFi(this.getContext());
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+		wifi = new WiFi(this.getContext());
+		user=new AuthUser(this.getContext());
+		db=new DataBase(this.getContext());
+		gallery = new Gallery(this);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)//Check if device is running android version >6
 		{
 			if (this.getContext().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
 			{
@@ -48,12 +60,11 @@ public class AndroidLauncher extends AndroidApplication
 			{
 				// Permission has already been granted
 			}
-			gallery = new Gallery(this);
-			initialize(new NoteCollector(wifi,gallery), config);
+			initialize(new NoteCollector(wifi,gallery,user,db), config);
 		}
 		else
 		{
-			initialize(new NoteCollector(wifi,gallery), config);
+			initialize(new NoteCollector(wifi,gallery,user,db), config);
 		}
 	}
 
@@ -75,6 +86,7 @@ public class AndroidLauncher extends AndroidApplication
 				}
 				else
 				{
+					finish();
 					// permission denied
 				}
 			}
@@ -109,7 +121,6 @@ public class AndroidLauncher extends AndroidApplication
 	{
 		if(resultCode== RESULT_OK && requestCode ==Gallery.SELECT_IMAGE_CODE)
 		{
-			System.out.println("OnActivityResult");
 			Uri imageUri=data.getData();
 			this.userImagePath=getPath(imageUri);
 			Gdx.app.log("Gallery","Image path is " + userImagePath);
@@ -120,7 +131,6 @@ public class AndroidLauncher extends AndroidApplication
 	@Override
 	public void onBackPressed()//Override back button handler to prevent exiting
 	{
-		System.out.println("Back button pressed");
 		//super.onBackPressed();
 	}
 }

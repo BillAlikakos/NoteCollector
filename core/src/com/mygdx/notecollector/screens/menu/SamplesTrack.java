@@ -277,7 +277,9 @@ public class SamplesTrack implements Screen {
 
 
     private void LoadAssets(){
-        fontH = assetsManager.createBimapFont(VIEWPORT_WIDTH*64/1920);
+       // fontH = assetsManager.createBimapFont(VIEWPORT_WIDTH*64/1920);
+        fontH = assetsManager.createFontH();
+
         font = assetsManager.createBitmapFont();
         selectionColor =new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.ButtonImage,Texture.class))) ;
         selectionColor.setRightWidth(5f);

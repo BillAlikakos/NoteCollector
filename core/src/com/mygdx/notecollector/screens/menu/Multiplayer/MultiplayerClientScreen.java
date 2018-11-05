@@ -58,6 +58,7 @@ public class MultiplayerClientScreen implements  Screen
     private Table table;
     private ScrollPane scrollPane;
     private List<Object> list;
+    private Thread t;
     private Skin skin;
     private ArrayList<InetAddress> hosts = null;
     private ArrayList<String> names = null;
@@ -89,14 +90,15 @@ public class MultiplayerClientScreen implements  Screen
         createTable();
         createList();
         client=new ClientClass();
+        c=client.getClient();
         getHosts();
         createLogo();
         size = assetsManager.setButtonSize(sizeX, sizeY);
         sizeX = size[0];
         sizeY = size[1];
-        table.add(createLabel("Available Peers:")).padTop(70f);
+        table.add(createLabel("Available Peers:")).padTop(70f*VIEWPORT_HEIGHT/1080);
         table.row();
-        table.padBottom(50f);
+        table.padBottom(50f*VIEWPORT_HEIGHT/1080);
         createScrollPane();
         ImageTextButton back = createButton("Back");
         btn.left();
@@ -162,8 +164,9 @@ public class MultiplayerClientScreen implements  Screen
         stage.getRoot().removeActor(btn);
         stage.getRoot().removeActor(verticalGroup);
         font.dispose();
+        fontH.dispose();
         fontList.dispose();
-
+        t.interrupt();
     }
     //create a table for organize buttons and list of tracks
     private void createTable(){
@@ -229,8 +232,11 @@ public class MultiplayerClientScreen implements  Screen
 
 
     private void LoadAssets(){
-        fontH = assetsManager.createBimapFont(45*VIEWPORT_WIDTH/1920);
-        font = assetsManager.createBitmapFont();
+        //fontH = assetsManager.createBimapFont(45*VIEWPORT_WIDTH/1920);
+        //font = assetsManager.createBitmapFont();
+        font=assetsManager.createFont();
+        fontH=assetsManager.createFontH();
+        fontList=assetsManager.createFontList();
         selectionColor =new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.ButtonImage,Texture.class))) ;
         selectionColor.setRightWidth(5f);
         selectionColor.setBottomHeight(2f);
@@ -301,16 +307,16 @@ public class MultiplayerClientScreen implements  Screen
         hosts = new ArrayList<InetAddress>();
         names = new ArrayList<String>();
 
-            final ClientClass client= new ClientClass();
+            //final ClientClass client= new ClientClass();
             hosts=client.discoverServers();
 
         if(hosts.size()==0)
             {
-                Thread t=new Thread()
+                t=new Thread()
                 {
                     @Override public void run()//Start a thread to manage host discovery
                     {
-                        while(hosts.size()==0)
+                        while(hosts.size()==0 &&!interrupted())
                         {
                             hosts=client.discoverServers();
                             if(hosts.size()!=0)
@@ -335,7 +341,7 @@ public class MultiplayerClientScreen implements  Screen
 
     private void addToList()//Method to display discovered hosts
     {
-        c=client.getClient();
+        //c=client.getClient();
         for (int i = 0; i <hosts.size() ; i++)
         {
             System.out.println(i);

@@ -320,6 +320,7 @@ public class GameOverScreen implements Screen {
                     menu.addAction(Actions.fadeOut(0.4f));
                     restart.addAction(Actions.fadeOut(0.4f));
                     fileLabel.addAction(Actions.fadeOut(0.4f));
+                    dispose();
                     Timer.schedule(new Timer.Task() {
 
 

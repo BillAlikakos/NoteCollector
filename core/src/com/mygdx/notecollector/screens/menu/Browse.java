@@ -274,7 +274,8 @@ public class Browse implements Screen {
 
 
     private void LoadAssets(){
-        fontH = assetsManager.createBimapFont(VIEWPORT_WIDTH/30);
+        //fontH = assetsManager.createBimapFont(VIEWPORT_WIDTH/30);
+        fontH = assetsManager.createFontH();
         font = assetsManager.createBitmapFont();
         selectionColor =new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.ButtonImage,Texture.class))) ;
         selectionColor.setRightWidth(5f);

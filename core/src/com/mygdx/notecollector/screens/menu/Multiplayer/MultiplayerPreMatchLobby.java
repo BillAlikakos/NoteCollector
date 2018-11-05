@@ -105,6 +105,7 @@ public class MultiplayerPreMatchLobby implements Screen
     @Override
     public void show()
     {
+        System.out.println("Show (PreMatchLobby)");
         table = new Table();
         table.setFillParent(true);
         table.center();
@@ -168,10 +169,7 @@ public class MultiplayerPreMatchLobby implements Screen
                     {
                         dispose();
                         noteCollector.setScreen(new GameScreen(noteCollector, TickPerMsec, notes, filepath, speed, delay, c, mode, stage));
-                    } catch (IOException e)
-                    {
-                        e.printStackTrace();
-                    } catch (InterruptedException e)
+                    } catch (IOException | InterruptedException e)
                     {
                         e.printStackTrace();
                     }
