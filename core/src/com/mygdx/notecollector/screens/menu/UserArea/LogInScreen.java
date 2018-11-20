@@ -54,13 +54,9 @@ public class LogInScreen implements Screen
     private float[] size;
     private Table table;
     private IAuthUser user;
-    private TextField userName;
-    private TextField email;
-    private TextField password;
-    private TextureRegionDrawable selectionColorList;
-    private boolean touched;
     private ScoreClass score;
     private Label error;
+    private Label label;
     private TextureRegionDrawable showPasswordBtn;
     private TextureRegionDrawable showPasswordBtnP;
 
@@ -102,13 +98,16 @@ public class LogInScreen implements Screen
         size=AssetsManager.setButtonSize(sizeX,sizeY);//Get the dimensions for the button
         sizeX=size[0];
         sizeY=size[1];
-
+        table.add(createLabel("Log In with :"));
+        table.row();
         //printScoreList();
+        createButton("Email");
+        createButton("Google Account");
+        //createButton("Log in with Facebook");
         createButton("Back",sizeX,sizeY);
         stage.addActor(verticalGroup);
         stage.addActor(exitBtnTable);
         stage.addActor(table);
-        createForm();
         Gdx.input.setInputProcessor(stage);
         table.getColor().a=0;
         exitBtnTable.getColor().a=0;
@@ -116,96 +115,17 @@ public class LogInScreen implements Screen
         exitBtnTable.addAction(Actions.fadeIn(0.2f));
     }
 
-    private void createForm()
+    private void createButton(String text)
     {
-        email = new TextField("", createTextFieldStyle());
-        email.setMessageText("Email");
-        email.setHeight(100*VIEWPORT_HEIGHT/1080);
-        email.setWidth(360*VIEWPORT_WIDTH/1920);
-        float Xaxis=(stage.getCamera().viewportWidth - 360*VIEWPORT_WIDTH/1920) / 2;
-        float Yaxis=(stage.getCamera().viewportHeight)/2+ 200*VIEWPORT_HEIGHT/1080;
-        email.setPosition(Xaxis, Yaxis);
-        addListener(email);
-        table.addActor(email);
-        password = new TextField("", createTextFieldStyle());
-        password.setMessageText("Password");
-        password.setPasswordMode(true);
-        password.setHeight(100*VIEWPORT_HEIGHT/1080);
-        password.setWidth(360*VIEWPORT_WIDTH/1920);
-        //Xaxis=(stage.getCamera().viewportWidth - 360*VIEWPORT_WIDTH/1920) / 2;
-        Yaxis=(stage.getCamera().viewportHeight)/2+ 100*VIEWPORT_HEIGHT/1080;
-        password.setPosition(Xaxis, Yaxis);
-        addListener(password);
-        table.addActor(password);
-        final ImageButton showPassword = new ImageButton(showPasswordBtn);
-        showPassword.getStyle().down=showPasswordBtnP;
-        showPassword.addListener((new ClickListener()
-        {
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button)
-            {
-                Preferences prefs = Gdx.app.getPreferences("NoteCollectorPreferences");
-                if(showPassword.isPressed())
-                {
-                    if (prefs.getBoolean("sound"))
-                    {
-                        notecollector.getClick().play();
-                    }
-                    if(password.isPasswordMode())
-                    {
-                        password.setPasswordMode(false);
-                    }
-                    else
-                    {
-                        password.setPasswordMode(true);
-                    }
-                }
-                return true;
-            }
-        }));
-
-        showPassword.setSize(VIEWPORT_WIDTH*0.06f,VIEWPORT_HEIGHT*0.10f);
-        showPassword.setPosition(password.getX()+password.getWidth()/2+(1.75f*showPassword.getWidth()), password.getY());
-        table.addActor(showPassword);
-        //table.add(showPassword).center().right().size(VIEWPORT_WIDTH*0.06f,VIEWPORT_HEIGHT*0.10f);
-        table.row();
-        Yaxis=(stage.getCamera().viewportHeight)/2-(sizeY);
-        createButton("Submit",Xaxis,Yaxis,sizeX,sizeY);
-    }
-
-    private void createButton(String text, float Xaxis, float y, float sizeX, float sizeY) {
         ImageTextButton.ImageTextButtonStyle textButtonStyle = createButtonStyle(selectionColor);
         ImageTextButton MenuButton = new ImageTextButton(text, textButtonStyle);
+
         AddButtonListener(MenuButton, text);
-        MenuButton.setPosition(Xaxis, y);
-        MenuButton.setSize(sizeX, sizeY);
-        //table.add(MenuButton).size(sizeX, sizeY);
-        table.addActor(MenuButton);
-    }
-    private void addListener(TextField textField) {
-        //if textbox is clicked, show the keyboard
-        textField.addListener(new ClickListener() {
-            public void clicked(InputEvent e, float x, float y) {
-                if (!touched)
-                    touched = true;
-                Gdx.input.setOnscreenKeyboardVisible(true);
+        table.add(MenuButton).size(sizeX, sizeY);
 
-
-            }
-        });
+        table.row();
     }
-    private TextField.TextFieldStyle createTextFieldStyle()//Method to create the style for the submission text field
-    {
-        TextField.TextFieldStyle textFieldStyle = new TextField.TextFieldStyle();
-        selectionColorList = new TextureRegionDrawable(new TextureRegion(AssetsManager.assetManager.get(Constants.SelectionColor, Texture.class)));
-        textFieldStyle.background = selectionColorList;
-        textFieldStyle.font = font;
-        textFieldStyle.fontColor = Color.WHITE;
-        textFieldStyle.messageFont = font;
-        textFieldStyle.messageFontColor = Color.WHITE;
 
-        return textFieldStyle;
-    }
     @Override
     public void render(float delta) {
 
@@ -320,13 +240,12 @@ public class LogInScreen implements Screen
                     if (prefs.getBoolean("sound")) {
                         notecollector.getClick().play();
                     }
+                    table.addAction(Actions.fadeOut(0.4f));
+                    exitBtnTable.addAction(Actions.fadeOut(0.4f));
                     switch (text)
                     {
                         case "Back":
                             //notecollector.adsHandler.showAds(1);
-                            table.addAction(Actions.fadeOut(0.4f));
-                            exitBtnTable.addAction(Actions.fadeOut(0.4f));
-
                             Timer.schedule(new Timer.Task() {
 
                                 @Override
@@ -338,20 +257,27 @@ public class LogInScreen implements Screen
 
                             }, 0.4f);
                         break;
-                        case "Submit":
-                            if(email.getText().equals("") || password.getText().equals("") || password.getText().length()<6 || !email.getText().contains("@") )
+                        case "Email":
+                            /*table.addAction(Actions.fadeOut(0.4f));
+                            exitBtnTable.addAction(Actions.fadeOut(0.4f));*/
+                            Timer.schedule(new Timer.Task()
                             {
-                                System.out.println("Fill out correct data !");
-                                error.setText("Please fill out the form");
-                                table.add(error).bottom().padTop(sizeY+225f*VIEWPORT_HEIGHT/1080);
-                                error.getColor().a=0;
-                                error.addAction(Actions.fadeIn(0.2f));
-                            }
-                            else
-                            {
-                                System.out.println("Logging user in");
-                                user.signIn(email.getText(),password.getText(),notecollector,stage,score);
-                            }
+                                @Override
+                                public void run()
+                                {
+                                    dispose();
+                                    notecollector.setScreen(new LogInEmail(notecollector, stage, score));
+                                }
+                        }, 0.4f);
+                        break;
+                        case "Google Account":
+                            //notecollector.getAuth().signInGoogleAccount();
+                            notecollector.getGoogleLogin().login(notecollector,stage,score);
+                            //dispose();
+                        break;
+                        case "Log in with Facebook":
+                            dispose();
+                        break;
                     }
                 }
                 return true;

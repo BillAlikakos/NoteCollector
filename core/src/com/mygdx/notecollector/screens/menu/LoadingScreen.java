@@ -318,15 +318,12 @@ public class LoadingScreen implements Screen {
                         }*/
                         if(!done)//Avoid loading the screen multiple times
                         {
+                            dispose();
                             try
                             {
                                 noteCollector.setScreen(new GameScreen(noteCollector,TickPerMsec,notes,filepath,speed,delay,mode,stage));
                             }
-                            catch (IOException e)
-                            {
-                                e.printStackTrace();
-                            }
-                            catch (InterruptedException e)
+                            catch (IOException | InterruptedException e)
                             {
                                 e.printStackTrace();
                             }

@@ -6,6 +6,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.mygdx.notecollector.Utils.Assets;
 import com.mygdx.notecollector.Utils.Constants;
 import com.mygdx.notecollector.screens.IntroScreen;
@@ -19,16 +20,29 @@ public class NoteCollector extends Game {
 	private IGallery andoridGallery;
 	private IAuthUser auth;
 	private IDataBase db;
+	private IGoogleLogin login;
+	private Stage stage;
 	public NoteCollector(){}
-	public NoteCollector(IWiFi wiFi, IGallery gallery,IAuthUser authUser,IDataBase dbRef)
+	public NoteCollector(IWiFi wiFi, IGallery gallery,IAuthUser authUser,IDataBase dbRef,IGoogleLogin logIn)
 	{
 	    wifiCtx=wiFi;
 		andoridGallery=gallery;
 		auth=authUser;
 		db=dbRef;
+		login=logIn;
 	}
 
+    public Stage getStage()
+    {
+        return stage;
+    }
 
+    public void setStage(Stage stage)
+    {
+        this.stage = stage;
+    }
+
+    public IGoogleLogin getGoogleLogin() { return login; }
 	public boolean getWifiCtx()
 	{
 		return  wifiCtx.isNetworkConnected();

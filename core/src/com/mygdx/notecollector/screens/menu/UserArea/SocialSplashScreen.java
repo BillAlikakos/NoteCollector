@@ -72,9 +72,6 @@ public class SocialSplashScreen implements Screen
     @Override
     public void show()
     {
-        System.out.println("WIDTH: "+VIEWPORT_WIDTH);
-        System.out.println("HEIGHT: "+VIEWPORT_HEIGHT);
-
         table = new Table();
         table.center().padBottom(10f);
         exitBtnTable = new Table();
@@ -180,7 +177,6 @@ public class SocialSplashScreen implements Screen
 
                                 switch (text)
                                 {
-
                                     case "Log In":
                                         noteCollector.setScreen(!onSubmit ? new LogInScreen(noteCollector, stage) : new LogInScreen(noteCollector, stage, score));
 

@@ -308,7 +308,7 @@ public class EndGameScreen implements Screen {
         label.setPosition((stage.getCamera().viewportWidth)/2-label.getWidth(),Yaxis);
         //stage.addActor(label);
        // table.center();
-        table.center().add(label);//TODO : Align text to center ?
+        table.center().add(label);
         table.row();
         label.addAction(Actions.fadeIn(0.2f));
     }

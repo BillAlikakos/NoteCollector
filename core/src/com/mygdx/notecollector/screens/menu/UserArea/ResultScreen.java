@@ -21,8 +21,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Timer;
-import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.notecollector.IAuthUser;
+import com.mygdx.notecollector.IGoogleLogin;
 import com.mygdx.notecollector.NoteCollector;
 import com.mygdx.notecollector.Utils.Assets;
 import com.mygdx.notecollector.Utils.Constants;
@@ -65,7 +65,6 @@ public class ResultScreen implements Screen
         table.setFillParent(true);
         AssetsManager = notecollector.getAssetsManager();
         LoadAssets();
-
     }
 
     @Override
@@ -73,13 +72,15 @@ public class ResultScreen implements Screen
     {
         createVerticalGroup();
         createLogo();
-        exitBtnTable=new Table();
-        size=AssetsManager.setButtonSize(sizeX,sizeY);//Get the dimensions for the button
-        sizeX=size[0];
-        sizeY=size[1];
+        exitBtnTable = new Table();
+        size = AssetsManager.setButtonSize(sizeX, sizeY);//Get the dimensions for the button
+        sizeX = size[0];
+        sizeY = size[1];
         //label=createLabel("Welcome, "+user.getUserName());
         createLabel("Welcome, "+user.getUserName());
         name=user.getUserName();
+
+
         //table.top().padTop(VIEWPORT_HEIGHT*0.05f).addActor(label);
         //table.row();
         //printScoreList();

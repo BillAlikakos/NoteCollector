@@ -174,6 +174,7 @@ public class ClientClass extends Listener
         msg.score=score;
         System.out.println("Sending game over: "+score);
         client.sendTCP(msg);
+        System.out.println("LOLOLOL");
     }
 
 

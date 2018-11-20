@@ -25,7 +25,6 @@ import com.mygdx.notecollector.NoteCollector;
 import com.mygdx.notecollector.Utils.Assets;
 import com.mygdx.notecollector.Utils.Constants;
 import com.mygdx.notecollector.Utils.ScoreClass;
-import com.mygdx.notecollector.screens.menu.UserArea.ResultScreen;
 
 import java.util.ArrayList;
 

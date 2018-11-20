@@ -58,9 +58,9 @@ public class GameOverScreen implements Screen {
     private String Score;
     private String filepath;
     private VerticalGroup verticalGroup;
-    private int[] size;
-    private int sizeX;
-    private int sizeY;
+    private float[] size;
+    private float sizeX;
+    private float sizeY;
 
     private long delay;
     private int speed;
@@ -121,7 +121,7 @@ public class GameOverScreen implements Screen {
     @Override
     public void show()
     {
-        size=AssetsManager.setButtonDimensions(sizeX,sizeY);
+        size=AssetsManager.setButtonSize(sizeX,sizeY);
         sizeX=size[0];
         sizeY=size[1];
         sendGameOverMsg();
@@ -131,9 +131,13 @@ public class GameOverScreen implements Screen {
         createLabel("Your Score:"+Score);
         Gdx.input.setInputProcessor(stage);
         menu.getColor().a=0;
-        restart.getColor().a=0;
+        if(!isGuest && !isHost)
+        {
+            restart.getColor().a=0;
+            restart.addAction(Actions.fadeIn(0.2f));
+        }
         menu.addAction(Actions.fadeIn(0.2f));
-        restart.addAction(Actions.fadeIn(0.2f));
+
     }
 
     private void sendGameOverMsg()//Notify the other player that host/guest has lost
@@ -152,8 +156,8 @@ public class GameOverScreen implements Screen {
     {
         if (isHost || isGuest)//Multiplayer doesn't need restart button
         {
-            float Xaxis =300f;//TODO Check new dimensions
-            if (VIEWPORT_WIDTH == 800 && VIEWPORT_HEIGHT == 480)//old dimensions
+            float Xaxis =300f;
+            /*if (VIEWPORT_WIDTH == 800 && VIEWPORT_HEIGHT == 480)//old dimensions
             {
                 Xaxis=305f;
             }
@@ -164,36 +168,17 @@ public class GameOverScreen implements Screen {
             if (VIEWPORT_WIDTH > 1080 && VIEWPORT_HEIGHT > 720)
             {
                 Xaxis=(viewport.getScreenWidth() / 2) - sizeX / 2;
-            }
+            }*/
+            Xaxis=(VIEWPORT_WIDTH / 2) - sizeX / 2;
+            System.out.println(Xaxis);
             menu=createButton("Menu",Xaxis);
 
         }
         else
         {
-            float Xaxis =(stage.getCamera().viewportWidth/2)-200f;
-            if(VIEWPORT_WIDTH==1080 && VIEWPORT_HEIGHT==720)
-            {
-                Xaxis =Xaxis-50f;
-            }
-            if(VIEWPORT_WIDTH>1080 && VIEWPORT_HEIGHT>720)
-            {
-                Xaxis =Xaxis-100f;
-            }
+            float Xaxis =(stage.getCamera().viewportWidth/2)-160f;
             restart=createButton("Restart",Xaxis);
-            if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)//old dimensions
-            {
-                Xaxis =Xaxis+200f;
-
-            }
-            if(VIEWPORT_WIDTH==1080 && VIEWPORT_HEIGHT==720)
-            {
-                Xaxis =Xaxis+250f;
-            }
-            if(VIEWPORT_WIDTH>1080 && VIEWPORT_HEIGHT>720)
-            {
-                Xaxis =Xaxis+310f;
-            }
-
+            Xaxis =Xaxis+sizeX;
             menu=createButton("Menu",Xaxis);
         }
 
@@ -241,7 +226,7 @@ public class GameOverScreen implements Screen {
     private void createLabel(String text){
         Label.LabelStyle labelstyle = new Label.LabelStyle(font, Color.WHITE);
         fileLabel = new Label(text, labelstyle);
-        fileLabel.setPosition((stage.getCamera().viewportWidth-fileLabel.getWidth())/2,stage.getCamera().viewportHeight/2);
+        fileLabel.setPosition((stage.getCamera().viewportWidth-fileLabel.getWidth())/2,stage.getCamera().viewportHeight/2+sizeY);
         stage.addActor(fileLabel);
         fileLabel.getColor().a=0;
         fileLabel.addAction(Actions.sequence(Actions.fadeIn(0.2f)));//Fade label in
@@ -284,7 +269,7 @@ public class GameOverScreen implements Screen {
         ImageTextButton.ImageTextButtonStyle textButtonStyle = createButtonStyle(selectionColor);
         ImageTextButton MenuButton = new ImageTextButton(text, textButtonStyle);
         AddButtonListener(MenuButton,text);
-        if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)//old dimensions
+       /* if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)//old dimensions
         {
             MenuButton.setPosition(Xaxis,(stage.getCamera().viewportHeight-52)/2-15);
 
@@ -296,7 +281,9 @@ public class GameOverScreen implements Screen {
         if(VIEWPORT_WIDTH>1080 && VIEWPORT_HEIGHT>720)
         {
             MenuButton.setPosition(Xaxis,(stage.getCamera().viewportHeight-52)/2-105);
-        }
+        }*/
+        float Yaxis=(stage.getCamera().viewportHeight-52)/2;
+        MenuButton.setPosition(Xaxis,Yaxis*VIEWPORT_HEIGHT/480);
         System.out.println(MenuButton.getWidth());
         MenuButton.setSize(sizeX,sizeY);
         //MenuButton.setPosition(Xaxis,(stage.getCamera().viewportHeight -MenuButton.getHeight() )/4);
@@ -318,9 +305,13 @@ public class GameOverScreen implements Screen {
                         notecollector.getClick().play();
                     }
                     menu.addAction(Actions.fadeOut(0.4f));
-                    restart.addAction(Actions.fadeOut(0.4f));
+                    if(!isGuest && !isHost)
+                    {
+                        restart.addAction(Actions.fadeOut(0.4f));
+                    }
                     fileLabel.addAction(Actions.fadeOut(0.4f));
-                    dispose();
+                    verticalGroup.addAction(Actions.fadeOut(0.4f));
+                    //dispose();
                     Timer.schedule(new Timer.Task() {
 
 
@@ -334,12 +325,11 @@ public class GameOverScreen implements Screen {
                             {
                                 c.getClient().close();
                             }
+                            dispose();
                             if (text.equals("Menu"))
                                 notecollector.setScreen(new MainMenuScreen(notecollector,stage));
                             else
                                 notecollector.setScreen(new LoadingScreen(notecollector, filepath, speed, delay,mode,stage));
-
-
                         }
 
                     }, 0.4f);
