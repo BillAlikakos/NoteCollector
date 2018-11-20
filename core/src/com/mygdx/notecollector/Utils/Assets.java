@@ -349,8 +349,7 @@ public  class Assets {
         Texture texture = new Texture(pixmap100);
         pixmap200.dispose();
         pixmap100.dispose();
-        Image background = new Image(texture);
-        return background;
+        return new Image(texture);
     }
     public Image scaleLogo(FileHandle file)//Use pixmap to scale logo for all resolutions
     {
@@ -408,7 +407,6 @@ public  class Assets {
 
         if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)
         {
-            System.out.println("480P");
             sizeX=200;
             sizeY=50;
 

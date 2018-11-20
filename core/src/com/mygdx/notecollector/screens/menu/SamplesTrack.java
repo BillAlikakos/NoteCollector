@@ -135,7 +135,7 @@ public class SamplesTrack implements Screen {
         btn.getColor().a=0;
         table.addAction(Actions.sequence(Actions.fadeIn(0.2f)));//Fade button table in
         btn.addAction(Actions.sequence(Actions.fadeIn(0.2f)));
-        System.out.println(0.11f*VIEWPORT_HEIGHT);
+        //System.out.println(0.11f*VIEWPORT_HEIGHT);
 
 
     }

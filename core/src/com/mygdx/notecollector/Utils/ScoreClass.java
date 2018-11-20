@@ -105,8 +105,8 @@ public class ScoreClass
             int index = fullPath.lastIndexOf("/");
             String fileName = fullPath.substring(index + 1);
             String finalName= fileName.substring(0, fileName.lastIndexOf('.'));
-            System.out.println("FILE NAME IS: "+finalName);
-            System.out.println("FULL FILE NAME: "+tempName);
+            //System.out.println("FILE NAME IS: "+finalName);
+            //System.out.println("FULL FILE NAME: "+tempName);
             return finalName;
         }
         return songName;

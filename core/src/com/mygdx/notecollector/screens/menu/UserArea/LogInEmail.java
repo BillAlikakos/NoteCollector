@@ -22,19 +22,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Timer;
-import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.notecollector.IAuthUser;
 import com.mygdx.notecollector.NoteCollector;
 import com.mygdx.notecollector.Utils.Assets;
 import com.mygdx.notecollector.Utils.Constants;
-import com.mygdx.notecollector.Utils.Score;
 import com.mygdx.notecollector.Utils.ScoreClass;
-import com.mygdx.notecollector.Utils.scoreObj;
-import com.mygdx.notecollector.screens.menu.MainMenuScreen;
 
-import java.util.ArrayList;
-
-public class SignUpScreen implements Screen
+public class LogInEmail implements Screen
 {
     private Assets AssetsManager;
     private NoteCollector notecollector;
@@ -43,11 +37,9 @@ public class SignUpScreen implements Screen
     private static final int VIEWPORT_WIDTH = Constants.APP_WIDTH;
     private static final int VIEWPORT_HEIGHT = Constants.APP_HEIGHT;
 
-
     private TextureRegionDrawable selectionColor;
     private TextureRegionDrawable selectionColorPressed;
     private BitmapFont font;
-    private Label error;
     private VerticalGroup verticalGroup;
     private VerticalGroup verticalGroupLogo;
     private Table exitBtnTable;
@@ -62,10 +54,11 @@ public class SignUpScreen implements Screen
     private TextureRegionDrawable selectionColorList;
     private boolean touched;
     private ScoreClass score;
+    private Label error;
     private TextureRegionDrawable showPasswordBtn;
     private TextureRegionDrawable showPasswordBtnP;
 
-    public SignUpScreen(NoteCollector notecollector, Stage stage)
+    public LogInEmail(NoteCollector notecollector, Stage stage)
     {
         this.notecollector = notecollector;
         user=notecollector.getAuth();
@@ -78,8 +71,9 @@ public class SignUpScreen implements Screen
         AssetsManager = notecollector.getAssetsManager();
         LoadAssets();
         error=createLabel("");
+
     }
-    public SignUpScreen(NoteCollector notecollector, Stage stage, ScoreClass score)
+    public LogInEmail(NoteCollector notecollector, Stage stage, ScoreClass score)
     {
         this.notecollector = notecollector;
         user=notecollector.getAuth();
@@ -102,12 +96,13 @@ public class SignUpScreen implements Screen
         size=AssetsManager.setButtonSize(sizeX,sizeY);//Get the dimensions for the button
         sizeX=size[0];
         sizeY=size[1];
-        createForm();
+
         //printScoreList();
         createButton("Back",sizeX,sizeY);
         stage.addActor(verticalGroup);
         stage.addActor(exitBtnTable);
         stage.addActor(table);
+        createForm();
         Gdx.input.setInputProcessor(stage);
         table.getColor().a=0;
         exitBtnTable.getColor().a=0;
@@ -117,24 +112,13 @@ public class SignUpScreen implements Screen
 
     private void createForm()
     {
-        userName = new TextField("", createTextFieldStyle());
-        userName.setMessageText("Username");
-        userName.setHeight(100*VIEWPORT_HEIGHT/1080);
-        userName.setWidth(360*VIEWPORT_WIDTH/1920);
-        float Xaxis=(stage.getCamera().viewportWidth - 360*VIEWPORT_WIDTH/1920) / 2;
-        float Yaxis=(stage.getCamera().viewportHeight)/2+ 200*VIEWPORT_HEIGHT/1080;
-        userName.setPosition(Xaxis, Yaxis);
-
-        addListener(userName);
-        table.addActor(userName);
         email = new TextField("", createTextFieldStyle());
         email.setMessageText("Email");
         email.setHeight(100*VIEWPORT_HEIGHT/1080);
         email.setWidth(360*VIEWPORT_WIDTH/1920);
-        //Xaxis=(stage.getCamera().viewportWidth - 360*VIEWPORT_WIDTH/1920) / 2;
-        Yaxis=(stage.getCamera().viewportHeight)/2+ 100*VIEWPORT_HEIGHT/1080;
+        float Xaxis=(stage.getCamera().viewportWidth - 360*VIEWPORT_WIDTH/1920) / 2;
+        float Yaxis=(stage.getCamera().viewportHeight)/2+ 200*VIEWPORT_HEIGHT/1080;
         email.setPosition(Xaxis, Yaxis);
-
         addListener(email);
         table.addActor(email);
         password = new TextField("", createTextFieldStyle());
@@ -142,8 +126,11 @@ public class SignUpScreen implements Screen
         password.setPasswordMode(true);
         password.setHeight(100*VIEWPORT_HEIGHT/1080);
         password.setWidth(360*VIEWPORT_WIDTH/1920);
-        Yaxis=(stage.getCamera().viewportHeight)/2-VIEWPORT_HEIGHT/1080;
+        //Xaxis=(stage.getCamera().viewportWidth - 360*VIEWPORT_WIDTH/1920) / 2;
+        Yaxis=(stage.getCamera().viewportHeight)/2+ 100*VIEWPORT_HEIGHT/1080;
         password.setPosition(Xaxis, Yaxis);
+        addListener(password);
+        table.addActor(password);
         final ImageButton showPassword = new ImageButton(showPasswordBtn);
         showPassword.getStyle().down=showPasswordBtnP;
         showPassword.addListener((new ClickListener()
@@ -174,8 +161,7 @@ public class SignUpScreen implements Screen
         showPassword.setSize(VIEWPORT_WIDTH*0.06f,VIEWPORT_HEIGHT*0.10f);
         showPassword.setPosition(password.getX()+password.getWidth()/2+(1.75f*showPassword.getWidth()), password.getY());
         table.addActor(showPassword);
-        addListener(password);
-        table.addActor(password);
+        //table.add(showPassword).center().right().size(VIEWPORT_WIDTH*0.06f,VIEWPORT_HEIGHT*0.10f);
         table.row();
         Yaxis=(stage.getCamera().viewportHeight)/2-(sizeY);
         createButton("Submit",Xaxis,Yaxis,sizeX,sizeY);
@@ -262,8 +248,7 @@ public class SignUpScreen implements Screen
         //BitmapFont font = AssetsManager.createBimapFont(size);
         BitmapFont font = AssetsManager.createFontH();
         Label.LabelStyle labelstyle = new Label.LabelStyle(font, Color.WHITE);
-        Label label = new Label(text, labelstyle);
-        return label;
+        return new Label(text, labelstyle);
 
     }
 
@@ -281,11 +266,11 @@ public class SignUpScreen implements Screen
     private void LoadAssets()
     {
         AssetsManager.LoadListAssets();
-        font=AssetsManager.createBitmapFont();
         AssetsManager.LoadLogInAssets();
+        font=AssetsManager.createBitmapFont();
+        // font = AssetsManager.createBimapFont(45);
         showPasswordBtn=new TextureRegionDrawable(new TextureRegion(AssetsManager.assetManager.get(Constants.showPasswordImage,Texture.class)));
         showPasswordBtnP=new TextureRegionDrawable(new TextureRegion(AssetsManager.assetManager.get(Constants.showPasswordImageP,Texture.class)));
-        // font = AssetsManager.createBimapFont(45);
         selectionColor =new TextureRegionDrawable(new TextureRegion(AssetsManager.assetManager.get(Constants.ButtonImage,Texture.class))) ;
         selectionColor.setRightWidth(5f);
         selectionColor.setBottomHeight(2f);
@@ -334,50 +319,33 @@ public class SignUpScreen implements Screen
                             //notecollector.adsHandler.showAds(1);
                             table.addAction(Actions.fadeOut(0.4f));
                             exitBtnTable.addAction(Actions.fadeOut(0.4f));
-                            if(!error.getText().equals(""))
-                            {
-                                error.addAction(Actions.fadeOut(0.4f));
-                            }
+
                             Timer.schedule(new Timer.Task() {
 
                                 @Override
                                 public void run() {
                                     dispose();
-                                    notecollector.setScreen(new SocialSplashScreen(notecollector,stage));
+                                    notecollector.setScreen(new LogInScreen(notecollector,stage,score));
 
                                 }
 
                             }, 0.4f);
-                        break;
+                            break;
                         case "Submit":
-
-                            if(userName.getText().equals("") || email.getText().equals("") || password.getText().equals("") || !email.getText().contains("@") )
+                            if(email.getText().equals("") || password.getText().equals("") || password.getText().length()<6 || !email.getText().contains("@") )
                             {
+                                System.out.println("Fill out correct data !");
                                 error.setText("Please fill out the form");
                                 table.add(error).bottom().padTop(sizeY+225f*VIEWPORT_HEIGHT/1080);
                                 error.getColor().a=0;
                                 error.addAction(Actions.fadeIn(0.2f));
-
-                                //error.addAction(Actions.fadeOut(0.4f));
-                            }
-                            else if( password.getText().length()<6 )
-                            {
-                                error.setText("Password must be longer than 6 characters");
-                                table.add(error).bottom().padTop(sizeY+225f*VIEWPORT_HEIGHT/1080);
-                                error.addAction(Actions.fadeIn(0.2f));
-                                //error.addAction(Actions.fadeOut(0.4f));
                             }
                             else
                             {
-                                if(!error.getText().equals(""))
-                                {
-                                    error.addAction(Actions.fadeOut(0.4f));
-                                }
-                                user.createAccount(userName.getText(),email.getText().trim(),password.getText(),notecollector,stage,score);
+                                System.out.println("Logging user in");
+                                user.signInEmail(email.getText(),password.getText(),notecollector,stage,score);
                             }
-
                     }
-
                 }
                 return true;
             }

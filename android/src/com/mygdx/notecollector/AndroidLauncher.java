@@ -15,25 +15,45 @@ import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 import android.view.OrientationEventListener;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
+import com.badlogic.gdx.utils.Timer;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
+import com.mygdx.notecollector.Utils.ScoreClass;
+import com.mygdx.notecollector.screens.menu.UserArea.ResultScreen;
+import com.mygdx.notecollector.screens.menu.UserArea.ScoresScreen;
+import com.mygdx.notecollector.screens.menu.UserArea.SocialSplashScreen;
 
+import static android.content.ContentValues.TAG;
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.show;
 
 public class AndroidLauncher extends AndroidApplication
 {
-	private static String TAG = "AndroidLauncher";
+    private static final int RC_SIGN_IN = 100;
+    private static String TAG = "AndroidLauncher";
 	private WiFi wifi;
 	private AndroidApplicationConfiguration config;
 	private AuthUser user;
 	private DataBase db;
 	private Gallery gallery;
+	private LoginHandler googleHandler;
+	private NoteCollector noteCollector;
 	String userImagePath = null;
 	//@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 	@Override
@@ -46,9 +66,15 @@ public class AndroidLauncher extends AndroidApplication
 		config.useImmersiveMode = true;//Launch in immersive mode
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);//Keep screen continuously on
 		wifi = new WiFi(this.getContext());
-		user=new AuthUser(this.getContext());
+		user=new AuthUser(this.getContext(),this);
 		db=new DataBase(this.getContext());
 		gallery = new Gallery(this);
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+		//OAuth id 455152900263-dtn5ri21rrcaenup2lgr9je2sb6sfum1.apps.googleusercontent.com
+		googleHandler=new LoginHandler(this.getContext());
+		//LoginHandler.getInstance().setContext(this.getContext());
+		//LoginHandler.getInstance().startApiClient();
+        noteCollector=new NoteCollector(wifi,gallery,user,db,googleHandler);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)//Check if device is running android version >6
 		{
 			if (this.getContext().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
@@ -60,11 +86,13 @@ public class AndroidLauncher extends AndroidApplication
 			{
 				// Permission has already been granted
 			}
-			initialize(new NoteCollector(wifi,gallery,user,db), config);
+			//initialize(new NoteCollector(wifi,gallery,user,db,googleHandler), config);
+			initialize(noteCollector, config);
 		}
 		else
 		{
-			initialize(new NoteCollector(wifi,gallery,user,db), config);
+			//initialize(new NoteCollector(wifi,gallery,user,db,googleHandler), config);
+			initialize(noteCollector, config);
 		}
 	}
 
@@ -126,11 +154,51 @@ public class AndroidLauncher extends AndroidApplication
 			Gdx.app.log("Gallery","Image path is " + userImagePath);
 			gallery.setImageResult(userImagePath);
 		}
+		if (requestCode==LoginHandler.RC_SIGN_IN)
+		{
+			//GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+			Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+			try
+			{
+				// Google Sign In was successful, authenticate with Firebase
+				GoogleSignInAccount account = task.getResult(ApiException.class);
+				System.out.println(account.getDisplayName());
+                googleHandler.connect();
+				user.firebaseAuthWithGoogle(account,noteCollector,noteCollector.getStage(),googleHandler.getScore());
+			}
+			catch (ApiException e)
+			{
+				// Google Sign In failed, update UI appropriately
+				Log.w(TAG, "Google sign in failed", e);
+				Toast.makeText(this.getContext(), "Google Sign-In failed.", Toast.LENGTH_SHORT).show();
+				Timer.Task schedule = Timer.schedule(new Timer.Task()
+				{
+					@Override
+					public void run()
+					{
+						noteCollector.getScreen().dispose();
+						noteCollector.setScreen(new SocialSplashScreen(noteCollector, noteCollector.getStage()));
+					}
+				}, 0.4f);
+				// ...
+			}
+		}
 	}
 
 	@Override
 	public void onBackPressed()//Override back button handler to prevent exiting
 	{
 		//super.onBackPressed();
+	}
+
+	@Override
+	public void onDestroy()
+	{
+		user.logOut();//Disconnect user when app closes
+		if(googleHandler.isConnected())//If google account is used then it must be disconnected separately
+		{
+			googleHandler.logout();
+		}
+		super.onDestroy();
 	}
 }

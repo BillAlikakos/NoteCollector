@@ -177,6 +177,7 @@ public class IntroScreen implements Screen {
         //viewport = new ScalingViewport(Scaling.fit, Constants.APP_HEIGHT, Constants.APP_HEIGHT, new OrthographicCamera(Constants.APP_WIDTH, Constants.APP_HEIGHT));
         viewport = new ScalingViewport(Scaling.stretch, Constants.APP_WIDTH, Constants.APP_HEIGHT, new OrthographicCamera(Constants.APP_WIDTH,Constants.APP_HEIGHT));
         stage = new Stage(viewport);
+        noteCollector.setStage(stage);
         stage.getCamera().update();
     }
 

@@ -424,7 +424,7 @@ public class MainMenuScreen implements Screen {
     }
 
     @Override
-    public void dispose()//TODO Change the icon dispose functions (takes too much time on slower phones) reposition gameOver buttons, optimize network discovery , optimize track select
+    public void dispose()
     {
         table.clear();
         //assetsManager.disposeMenuAssets();

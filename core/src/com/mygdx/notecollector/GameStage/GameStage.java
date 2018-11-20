@@ -162,7 +162,8 @@ public class GameStage extends Stage implements ContactListener
 
     }
 
-    public GameStage(NoteCollector noteCollector, float TickPerMsec, ArrayList<MidiNote> notes, int speed, long delay, ServerClass srv, boolean mode,Stage stage) throws IOException, InterruptedException {
+    public GameStage(NoteCollector noteCollector, float TickPerMsec, ArrayList<MidiNote> notes, int speed, long delay, ServerClass srv, boolean mode,Stage stage)
+    {
         super(new ScalingViewport(Scaling.stretch, VIEWPORT_WIDTH, VIEWPORT_HEIGHT, new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)));
         this.stage=stage;
         squarewidth=32f;
@@ -342,7 +343,7 @@ public class GameStage extends Stage implements ContactListener
             String fileName = fullPath.substring(index + 1);
             name= fileName.substring(0, fileName.lastIndexOf('.'));
         }
-        title=createLabel(name);//TODO : Detect long names and fit aprropriately, fix button sizing font etc for responsiveness
+        title=createLabel(name);
         title.setPosition((getCamera().viewportWidth-title.getWidth())/2,(getCamera().viewportHeight)/2 +70f*VIEWPORT_HEIGHT/1080+sizeY/2);
         //title.setVisible(false);
         title.getColor().a=0;
@@ -390,11 +391,6 @@ public class GameStage extends Stage implements ContactListener
         }
         else
         {
-           /* if(VIEWPORT_WIDTH>1080 && VIEWPORT_HEIGHT>720)
-            {
-                //pause.setSize(1520f,56f);
-                pause.setBounds(250f,0f,1500f,100f);
-            }*/
             pause.setSize(800f*VIEWPORT_WIDTH/800,56f*VIEWPORT_HEIGHT/480);
             pause.addListener(new InputListener()
             {
@@ -516,7 +512,7 @@ public class GameStage extends Stage implements ContactListener
         addActor(text);
     }
 
-    private void createX()
+    private void createX()//TODO : Fix collector "hitbox" for 480p
     {
             AssetsManager.LoadX();
             Texture X = AssetsManager.assetManager.get(Constants.X);
@@ -525,6 +521,11 @@ public class GameStage extends Stage implements ContactListener
             x3=new Image(X);
             x4=new Image(X);
             x5=new Image(X);
+            x1.setSize(50*VIEWPORT_WIDTH/1920,50*VIEWPORT_HEIGHT/1080);
+            x2.setSize(50*VIEWPORT_WIDTH/1920,50*VIEWPORT_HEIGHT/1080);
+            x3.setSize(50*VIEWPORT_WIDTH/1920,50*VIEWPORT_HEIGHT/1080);
+            x4.setSize(50*VIEWPORT_WIDTH/1920,50*VIEWPORT_HEIGHT/1080);
+            x5.setSize(50*VIEWPORT_WIDTH/1920,50*VIEWPORT_HEIGHT/1080);
             /*if(VIEWPORT_HEIGHT==480 && VIEWPORT_WIDTH==800)//Set X positions according to resolution so that they don't overlap with the messages
             {
                 x1.setPosition(getCamera().viewportWidth  / 64, getCamera().viewportHeight * 62 / 70-25);
@@ -550,10 +551,10 @@ public class GameStage extends Stage implements ContactListener
                 x5.setPosition(getCamera().viewportWidth  / 64+200, getCamera().viewportHeight * 62 / 70);
             }*/
             x1.setPosition(getCamera().viewportWidth  / 64, getCamera().viewportHeight * 62 / 70-25*VIEWPORT_HEIGHT/480);
-            x2.setPosition(getCamera().viewportWidth  / 64+50, getCamera().viewportHeight * 62 / 70-25*VIEWPORT_HEIGHT/480);
-            x3.setPosition(getCamera().viewportWidth  / 64+100, getCamera().viewportHeight * 62 / 70-25*VIEWPORT_HEIGHT/480);
-            x4.setPosition(getCamera().viewportWidth  / 64+150, getCamera().viewportHeight * 62 / 70-25*VIEWPORT_HEIGHT/480);
-            x5.setPosition(getCamera().viewportWidth  / 64+200, getCamera().viewportHeight * 62 / 70-25*VIEWPORT_HEIGHT/480);
+            x2.setPosition(getCamera().viewportWidth  / 64+50*VIEWPORT_WIDTH/1920, getCamera().viewportHeight * 62 / 70-25*VIEWPORT_HEIGHT/480);
+            x3.setPosition(getCamera().viewportWidth  / 64+100*VIEWPORT_WIDTH/1920, getCamera().viewportHeight * 62 / 70-25*VIEWPORT_HEIGHT/480);
+            x4.setPosition(getCamera().viewportWidth  / 64+150*VIEWPORT_WIDTH/1920, getCamera().viewportHeight * 62 / 70-25*VIEWPORT_HEIGHT/480);
+            x5.setPosition(getCamera().viewportWidth  / 64+200*VIEWPORT_WIDTH/1920, getCamera().viewportHeight * 62 / 70-25*VIEWPORT_HEIGHT/480);
             addActor(x1);
             addActor(x2);
             addActor(x3);
@@ -922,23 +923,8 @@ produce the corresponding square*/
            if (touchPoint.x+ 32f  >getCamera().viewportWidth || touchPoint.y +32f >getCamera().viewportHeight || touchPoint.y+32f < 56f ) {
                return false;
            }
-           else {
-               //System.out.println("Collector X:"+collector.getX()+" Collector Y:"+collector.getY());
-              // System.out.println("Position X:"+collectorPosition.getX()+" Position Y:"+collectorPosition.getY());
-              // dragPoint.set(Gdx.graphics.getWidth()-screenX,screenY,0);
-              // System.out.println("Touch point x: "+touchPoint.x+" Drag point x:"+dragPoint.x);
-               //System.out.println("Touch point y: "+touchPoint.y+" Drag point y:"+dragPoint.y);
-              // float distX=touchPoint.x-dragPoint.x;
-               //float distY=touchPoint.y-dragPoint.y;
-               //System.out.println("Distance from touch to drag x:"+distX);
-               //System.out.println("Distance from touch to drag y:"+distY);
-              // float distanceX = touchPoint.dst(dragPoint);
-               //System.out.println("Sq dist "+distanceX);
-               //collector.move(distX,distY);
-              // collector.changeposition(collector.getX()+distX, collector.getY()+distY);
-              // collectorPosition.set(collector.getXaxis(),collector.getYaxis(),squarewidth,squareheight);
-               //collector.getSprite().setScale(1.5f*VIEWPORT_WIDTH/800,1.5f*VIEWPORT_HEIGHT/480);
-
+           else
+           {
                collectorPosition.set(touchPoint.x,touchPoint.y,squarewidth,squareheight);
                collector.changeposition(touchPoint.x, touchPoint.y+collector.getSprite().getHeight());//Set the collector sprite higher
 

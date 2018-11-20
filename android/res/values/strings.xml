@@ -2,4 +2,5 @@
 <resources>
 
     <string name="app_name">NoteCollector</string>
+    <string name="title_activity_google_sign_in">GoogleSignIn</string>
 </resources>

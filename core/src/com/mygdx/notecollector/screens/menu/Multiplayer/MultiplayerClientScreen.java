@@ -166,7 +166,11 @@ public class MultiplayerClientScreen implements  Screen
         font.dispose();
         fontH.dispose();
         fontList.dispose();
-        t.interrupt();
+        if(t.isAlive())
+        {
+            t.interrupt();
+        }
+
     }
     //create a table for organize buttons and list of tracks
     private void createTable(){
@@ -306,13 +310,27 @@ public class MultiplayerClientScreen implements  Screen
     {
         hosts = new ArrayList<InetAddress>();
         names = new ArrayList<String>();
-
+        t=new Thread()
+        {
+            @Override public void run()//Start a thread to manage host discovery
+            {
+                while(hosts.size()==0 &&!interrupted())
+                {
+                    hosts=client.discoverServers();
+                    if(hosts.size()!=0)
+                    {
+                        this.interrupt();
+                        addToList();
+                    }
+                }
+            }
+        };
             //final ClientClass client= new ClientClass();
             hosts=client.discoverServers();
 
         if(hosts.size()==0)
             {
-                t=new Thread()
+                /*t=new Thread()
                 {
                     @Override public void run()//Start a thread to manage host discovery
                     {
@@ -326,7 +344,7 @@ public class MultiplayerClientScreen implements  Screen
                             }
                         }
                     }
-                };
+                };*/
                 t.start();
 
             }
