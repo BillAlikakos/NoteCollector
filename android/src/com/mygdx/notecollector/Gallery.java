@@ -8,16 +8,15 @@ import com.mygdx.notecollector.IGallery;
 
 public class Gallery implements IGallery//Implementation of gallery interface
 {
-    Activity activity;
+    private Activity activity;
     public static final int SELECT_IMAGE_CODE=1;
     private String currentImagePath;
+    private boolean activityCancelled=false;
 
     public Gallery(Activity activity)
     {
-        //System.out.println("Gallery constructor");
         this.activity=activity;
     }
-
     @Override
     public void getImagePath()//Method that creates an Intent to open image specific application
     {
@@ -44,4 +43,17 @@ public class Gallery implements IGallery//Implementation of gallery interface
     {
         currentImagePath=null;
     }
+
+    @Override
+    public boolean getState()
+    {
+        return activityCancelled;
+    }
+    @Override
+    public void setState(boolean val)
+    {
+        this.activityCancelled=val;
+    }
+
+
 }

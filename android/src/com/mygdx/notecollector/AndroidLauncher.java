@@ -129,25 +129,26 @@ public class AndroidLauncher extends AndroidApplication
 			return uri.getPath();
 		}
 		Cursor cursor = getContentResolver().query(uri, new String[] { MediaStore.Images.Media.DATA } , null, null, null);
-
-		if (cursor == null) {
+		if (cursor == null)
+		{
 			return null;
 		}
-
 		int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
 		cursor.moveToFirst();
-
 		String filePath = cursor.getString(column_index);
-
 		cursor.close();
-
 		return filePath;
 	}
 
 	@Override
 	protected void onActivityResult(int requestCode,int resultCode, Intent data)//Method that returns the uri
 	{
-		if(resultCode== RESULT_OK && requestCode ==Gallery.SELECT_IMAGE_CODE)
+		if(resultCode==RESULT_CANCELED && requestCode == Gallery.SELECT_IMAGE_CODE)
+		{
+			gallery.setState(true);
+			gallery.setImageResult("cancelled");
+		}
+		if(resultCode== RESULT_OK && requestCode == Gallery.SELECT_IMAGE_CODE)
 		{
 			Uri imageUri=data.getData();
 			this.userImagePath=getPath(imageUri);

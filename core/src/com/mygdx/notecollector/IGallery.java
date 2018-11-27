@@ -2,7 +2,9 @@ package com.mygdx.notecollector;
 
 public interface IGallery //Interface for platform-specific code
 {
-    public void getImagePath();
-    public String getSelectedFilePath();
-    public void clearSelectedPath();
+    void getImagePath();
+    String getSelectedFilePath();
+    void clearSelectedPath();
+    boolean getState();
+    void setState(boolean val);
 }

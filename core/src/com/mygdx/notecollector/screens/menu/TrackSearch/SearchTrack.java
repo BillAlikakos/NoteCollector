@@ -149,7 +149,7 @@ public class SearchTrack implements Screen {
         //if textbox is clicked, show the keyboard
         textField.addListener(new ClickListener() {
             public void clicked(InputEvent e, float x, float y) {
-                if (touched == false)
+                if (!touched)
                     touched = true;
                 Gdx.input.setOnscreenKeyboardVisible(true);
 
@@ -192,7 +192,7 @@ public class SearchTrack implements Screen {
         stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
         // if  textfield is not touched hide keyboard
-        if (Gdx.input.isTouched() && touched == true) {
+        if (Gdx.input.isTouched() && touched) {
             Gdx.input.setOnscreenKeyboardVisible(false);
             stage.unfocus(textField);
             touched = false;
@@ -392,11 +392,10 @@ public class SearchTrack implements Screen {
                 }
                 else
                 {
-
                     Element songList=content.getElementsByTag("ul").first();//Get the first list that contains the search result
                     //System.out.println(songList.getAllElements());
                     Elements songItems=songList.getElementsByTag("li");//Get all list items
-                    songs=new ArrayList<SongObj>();
+                    songs=new ArrayList<>();
                     for(int i=0;i<songItems.size();i++)
                     {
                         //System.out.println(songs.get(i));
@@ -440,6 +439,11 @@ public class SearchTrack implements Screen {
             public void failed(Throwable t)
             {
                 Gdx.app.log("WebRequest", "HTTP request failed");
+                float Yaxis=300*VIEWPORT_HEIGHT/1080;
+                noRes=createLabel("HTTP Request failed. Please try again.",Yaxis);
+                noRes.getColor().a=0;
+                noRes.addAction(Actions.fadeIn(0.1f));
+                isResult=false;
             }
 
             @Override

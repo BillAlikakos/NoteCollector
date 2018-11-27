@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -128,6 +129,15 @@ public class MiscOptions implements Screen
         textButtonStyle.font = font;
         return textButtonStyle;
     }
+    private ImageTextButton.ImageTextButtonStyle createBgButtonStyle(TextureRegionDrawable ButtonImage)
+    {
+        ImageTextButton.ImageTextButtonStyle textButtonStyle = new ImageTextButton.ImageTextButtonStyle();
+        textButtonStyle.up = ButtonImage;
+        textButtonStyle.down = ButtonImage;
+        textButtonStyle.over = ButtonImage;
+        textButtonStyle.font = font;
+        return textButtonStyle;
+    }
 
     private Label createLabel(String text)
     {
@@ -156,7 +166,7 @@ public class MiscOptions implements Screen
 
     private void fadeBackground()
     {
-        FileHandle file = Gdx.files.internal(Constants.getBackgroundMenu().toString());
+        FileHandle file = Gdx.files.internal(Constants.getBackgroundMenu());
         Image background=noteCollector.getAssetsManager().scaleBackground(file);
         stage.addActor(background);
         stage.addAction(Actions.sequence(Actions.alpha(0), Actions.fadeIn(2f)));
@@ -181,7 +191,7 @@ public class MiscOptions implements Screen
 
                         @Override
                         public void run() {
-                            FileHandle file = Gdx.files.internal(Constants.getBackgroundMenu().toString());
+                            FileHandle file = Gdx.files.internal(Constants.getBackgroundMenu());
                             Image background=noteCollector.getAssetsManager().scaleBackground(file);
                             stage.addActor(background);
                             dispose();
@@ -203,15 +213,15 @@ public class MiscOptions implements Screen
         Label title = createLabel("Custom Backgrounds:");
         table.row().padTop(20f);
         table.add(title).padRight(5f);
-        ImageTextButton.ImageTextButtonStyle NormalStyle;
-        NormalStyle = createButtonStyle(selectionColor);
+        final ImageTextButton.ImageTextButtonStyle NormalStyle;
+        NormalStyle = createBgButtonStyle(selectionColor);
         menuBg = createButton("Menu", NormalStyle);
         gameBg = createButton("In-Game", NormalStyle);
 
         menuBg.addListener(new ClickListener()
         {
             @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button)
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, final int button)
             {
                 System.out.println("Calling interface");
                 Thread t = new Thread()
@@ -219,59 +229,66 @@ public class MiscOptions implements Screen
                     @Override
                     public void run()
                     {
-                        System.out.println("ssssss");
                         System.out.println(this.isInterrupted());
-                        System.out.println("aaaaaa");
                         gallery=noteCollector.getGallery();
                         gallery.getImagePath();
                         res="";
+                        gallery.setState(false);
                         while (!interrupted())
                         {
                             res=gallery.getSelectedFilePath();
                             if(res!=null)
                             {
-                                System.out.println("Selected img: "+res);
-                                //FileHandle from = Gdx.files.external(res);//Get the path
-                                FileHandle from = Gdx.files.external(res);//Get the path
-                                File f= new File(res);//Get the file from supplied uri
-                                //System.out.println("Got the Path 2 "+f.getPath());
+                                if (res.equals("cancelled"))//If the activity returns 'cancelled' the user has pressed back button thus the result must be cleared and the thread must be interrupted
+                                {
+                                    gallery.clearSelectedPath();
+                                    this.interrupt();
+                                }
+                                else
+                                {
+                                    System.out.println("Selected img: "+res);
+                                    //FileHandle from = Gdx.files.external(res);//Get the path
+                                    FileHandle from = Gdx.files.external(res);//Get the path
+                                    File f= new File(res);//Get the file from supplied uri
+                                    //System.out.println("Got the Path 2 "+f.getPath());
 
-                                byte[] data = new byte[625000];//5MByte array for image
+                                    byte[] data = new byte[625000];//5MByte array for image
 
-                                try
-                                {
-                                    data = readFileToByteArray(f);//Read image as bytes
+                                    try
+                                    {
+                                        data = readFileToByteArray(f);//Read image as bytes
+                                    }
+                                    catch (IOException e)
+                                    {
+                                        e.printStackTrace();
+                                    }
+                                    final File img = new File(Gdx.files.external("Note Collector/Custom Images/menu_image.jpg").file().getAbsolutePath());//Destination file
+                                    String a=Gdx.files.external("Note Collector/Custom Images/menu_image.jpg").file().getAbsolutePath();
+                                    String b=Gdx.files.external("Note Collector/Custom Images/menu_image.jpg").file().toString();
+                                    String c=Gdx.files.external("Note Collector/Custom Images/menu_image.jpg").toString();
+                                    /*System.out.println("The abspath is "+a);
+                                    System.out.println("path is "+b);
+                                    System.out.println("str is "+c);*/
+                                    try
+                                    {
+                                        FileUtils.writeByteArrayToFile(img,data);//Write file from byte array
+                                    } catch (IOException e)
+                                    {
+                                        e.printStackTrace();
+                                    }
+                                    System.out.println("Setting Background Image");
+                                    Constants.setBackgroundMenu("Note Collector/Custom Images/menu_image.jpg");
+                                    System.out.println(Constants.getBackgroundMenu());
+                                    gallery.clearSelectedPath();
+                                    this.interrupt();
                                 }
-                                catch (IOException e)
-                                {
-                                    e.printStackTrace();
-                                }
-                                final File img = new File(Gdx.files.external("Note Collector/Custom Images/menu_image.jpg").file().getAbsolutePath());//Destination file
-                                String a=Gdx.files.external("Note Collector/Custom Images/menu_image.jpg").file().getAbsolutePath();
-                                String b=Gdx.files.external("Note Collector/Custom Images/menu_image.jpg").file().toString();
-                                String c=Gdx.files.external("Note Collector/Custom Images/menu_image.jpg").toString();
-                                System.out.println("The abspath is "+a);
-                                System.out.println("path is "+b);
-                                System.out.println("str is "+c);
-                                try
-                                {
-                                    FileUtils.writeByteArrayToFile(img,data);//Write file from byte array
-                                } catch (IOException e)
-                                {
-                                    e.printStackTrace();
-                                }
-                                System.out.println("Setting Background Image");
-                                Constants.setBackgroundMenu("Note Collector/Custom Images/menu_image.jpg");
-                                System.out.println(Constants.getBackgroundMenu());
-                                gallery.clearSelectedPath();
-                                this.interrupt();
+
                             }
                         }
                     }
                 };
 
                 t.start();
-
                 return true;
             }
 
@@ -279,8 +296,6 @@ public class MiscOptions implements Screen
         });
         gameBg.addListener(new ClickListener()
         {
-
-
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button)
             {
@@ -293,53 +308,59 @@ public class MiscOptions implements Screen
                         gallery=noteCollector.getGallery();
                         gallery.getImagePath();
                         String res;
+                        gallery.setState(false);
                         while (!interrupted())
                         {
                             res=gallery.getSelectedFilePath();
-
                             if(res!=null)
                             {
-                                System.out.println("Selected img: "+res);
-                                //FileHandle from = Gdx.files.external(res);//Get the path
-                                FileHandle from = Gdx.files.external(res);//Get the path
-                                File f= new File(res);//Get the file from supplied uri
-                                //System.out.println("Got the Path 2 "+f.getPath());
+                                if (res.equals("cancelled"))
+                                {
+                                    gallery.clearSelectedPath();
+                                    this.interrupt();
+                                }
+                                else
+                                {
+                                    System.out.println("Selected img: "+res);
+                                    //FileHandle from = Gdx.files.external(res);//Get the path
+                                    FileHandle from = Gdx.files.external(res);//Get the path
+                                    File f= new File(res);//Get the file from supplied uri
+                                    //System.out.println("Got the Path 2 "+f.getPath());
 
-                                byte[] data = new byte[625000];//5MByte array for image
-                                try
-                                {
-                                    data = readFileToByteArray(f);//Read image as bytes
+                                    byte[] data = new byte[625000];//5MByte array for image
+                                    try
+                                    {
+                                        data = readFileToByteArray(f);//Read image as bytes
+                                    }
+                                    catch (IOException e)
+                                    {
+                                        e.printStackTrace();
+                                    }
+                                    final File img = new File(Gdx.files.external("Note Collector/Custom Images/game_image.jpg").file().getAbsolutePath());//Destination file
+                                    String a=Gdx.files.external("Note Collector/Custom Images/game_image.jpg").file().getAbsolutePath();
+                                    String b=Gdx.files.external("Note Collector/Custom Images/game_image.jpg").file().toString();
+                                    String c=Gdx.files.external("Note Collector/Custom Images/game_image.pg").toString();
+                                    System.out.println("The abspath is "+a);
+                                    System.out.println("path is "+b);
+                                    System.out.println("str is "+c);
+                                    try
+                                    {
+                                        FileUtils.writeByteArrayToFile(img,data);//Write file from byte array
+                                    } catch (IOException e)
+                                    {
+                                        e.printStackTrace();
+                                    }
+                                    System.out.println("Setting Background Image");
+                                    Constants.setBackgroundGame("Note Collector/Custom Images/game_image.jpg");
+                                    System.out.println(Constants.getBackgroundGame());
+                                    gallery.clearSelectedPath();
+                                    this.interrupt();
                                 }
-                                catch (IOException e)
-                                {
-                                    e.printStackTrace();
-                                }
-                                final File img = new File(Gdx.files.external("Note Collector/Custom Images/game_image.jpg").file().getAbsolutePath());//Destination file
-                                String a=Gdx.files.external("Note Collector/Custom Images/game_image.jpg").file().getAbsolutePath();
-                                String b=Gdx.files.external("Note Collector/Custom Images/game_image.jpg").file().toString();
-                                String c=Gdx.files.external("Note Collector/Custom Images/game_image.pg").toString();
-                                System.out.println("The abspath is "+a);
-                                System.out.println("path is "+b);
-                                System.out.println("str is "+c);
-                                try
-                                {
-                                    FileUtils.writeByteArrayToFile(img,data);//Write file from byte array
-                                } catch (IOException e)
-                                {
-                                    e.printStackTrace();
-                                }
-                                System.out.println("Setting Background Image");
-                                Constants.setBackgroundGame("Note Collector/Custom Images/game_image.jpg");
-                                System.out.println(Constants.getBackgroundGame());
-                                gallery.clearSelectedPath();
-                                this.interrupt();
                             }
                         }
                     }
                 };
-
                 t.start();
-
                 return true;
             }
 
