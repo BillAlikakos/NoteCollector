@@ -56,7 +56,7 @@ public class AuthUser implements IAuthUser
         System.out.println(userName);
         System.out.println(email);
         System.out.println(password);
-        final AuthUser usr = this;//Reference to use as 'this' connot be used inside anonymous classes
+        final AuthUser usr = this;//Reference to use as 'this' cannot be used inside anonymous classes
         final DataBase db = new DataBase(applicationContext);
         db.getDatabase().getReference().child("users")//Check if the username already exists in users database before registering the user
                 .addListenerForSingleValueEvent(new ValueEventListener()

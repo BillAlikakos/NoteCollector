@@ -67,6 +67,7 @@ public class TrackSelect implements Screen
     private ScrollPane scrollPane;
     private List<Object> list;
     private Skin skin;
+    ProgramChange.MidiProgram[] arr;
     private ArrayList<String> item = null;
     private ArrayList<String> path = null;
     private  ArrayList<MidiTrack> track=null;
@@ -141,6 +142,7 @@ public class TrackSelect implements Screen
     @Override
     public void show()
     {
+        arr = ProgramChange.MidiProgram.values();//Array to hold all used instruments
         Gdx.input.setInputProcessor(stage);
         size=assetsManager.setButtonSize(sizeX,sizeY);
         sizeX=size[0];
@@ -261,16 +263,15 @@ public class TrackSelect implements Screen
                             {
                                 if(isHost)
                                 {
-                                    noteCollector.setScreen(new DifficultyScreen(noteCollector,srv,mode,stage));
+                                    //noteCollector.setScreen(new DifficultyScreen(noteCollector,srv,mode,stage));
+                                    noteCollector.setScreen(new SamplesTrack(noteCollector,speed,delay,srv,mode,difficulty,stage));
                                 }
                                 else
                                 {
-                                    noteCollector.setScreen(new DifficultyScreen(noteCollector,mode,stage));
+                                    noteCollector.setScreen(new SamplesTrack(noteCollector,speed,delay,mode,stage));
                                 }
 
                             }
-
-
 
                         }
                     }, 0.4f);
@@ -316,7 +317,7 @@ public class TrackSelect implements Screen
 
     private void createList()
     {
-        list = new List<Object>(skin);
+        list = new List<>(skin);
         list.getStyle().selection = selectionColorList;
         list.getStyle().font = fontList;
         addListener(list);
@@ -379,11 +380,26 @@ public class TrackSelect implements Screen
 
     }
 
-
+    private String fixCapitalization(String name)//Method to convert all capital track names to properly capitalized strings
+    {
+        System.out.println(name);
+        String[] init=name.split("_");
+        StringBuilder res= new StringBuilder();
+        for(int i=0;i<init.length;i++)
+        {
+            String temp=init[i];
+            System.out.println("init "+temp);
+            init[i]=temp.substring(0,1).toUpperCase()+temp.substring(1).toLowerCase();
+            res.append(init[i]+" ");
+            System.out.println("Res "+res);
+        }
+        return res.toString();
+    }
+//TODO : Change list styling , align to center etc.
     private void getInstruments(File file)//Method that finds all the instruments that are used in each track
     {
-        item = new ArrayList<String>();
-        track = new ArrayList<MidiTrack>();
+        item = new ArrayList<>();
+        track = new ArrayList<>();
         MidiFile midi = null;
         try {
             midi = new MidiFile(file);
@@ -405,9 +421,11 @@ public class TrackSelect implements Screen
                     System.out.println("Track # :" + i);//Get used instruments for each track
                     ProgramChange change = (ProgramChange) E;
                     int pg = change.getProgramNumber();
-                    ProgramChange.MidiProgram[] arr = ProgramChange.MidiProgram.values();//Array to hold all used instruments
                     System.out.println("Instrument :" + arr[pg]);//Get used instrument of track i
-                    String name="Track: "+i+" Instument: "+findInstrument(arr[pg]);//Separate tracks with similar instruments by number
+                    //String name="Track: "+i+" Instument: "+findInstrument(arr[pg]);//Separate tracks with similar instruments by number
+                    String instrument=findInstrument(arr[pg]);
+                    String modified=fixCapitalization(instrument);
+                    String name="Instrument: "+modified;//Separate tracks with similar instruments by number
                     System.out.println(name);
                     item.add(name);
                     track.add(filetracks.get(i));
@@ -415,20 +433,41 @@ public class TrackSelect implements Screen
                 }
             }
         }
-        if(midi.getTracks().size()==1)
+        System.out.println(midiEvents.size());
+        for(int i=0;i<midiEvents.size();i++)//Scan the midiEvent array to detect duplicate tracks
+        {
+            MidiEvent current=midiEvents.get(i);
+            ProgramChange change =(ProgramChange) current;
+            for(int j=1;j<midiEvents.size();j++)
+            {
+                if(i==j)
+                {
+                    continue;
+                }
+                MidiEvent next=midiEvents.get(j);
+                ProgramChange change2 =(ProgramChange) next;
+                if(change.getProgramNumber()==change2.getProgramNumber())
+                {
+                    System.out.println("Tracks "+i+" and "+j+" are duplicate !");
+                    midiEvents.remove(j);
+                    item.remove(j);
+                    track.remove(j);
+                }
+            }
+        }
+        /*if(midi.getTracks().size()==1)
         {
             String name="Track: 1 ";//If file has only one track
             System.out.println(name);
             item.add(name);
             track.add(midi.getTracks().get(0));
-        }
+        }*/
         list.setItems(item.toArray());
     }
 
     private String findInstrument(ProgramChange.MidiProgram program)
     {
-        String name="";
-        name=program.toString();
+        String name = program.toString();
         return name;
     }
 
