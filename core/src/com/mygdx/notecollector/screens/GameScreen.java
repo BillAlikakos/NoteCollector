@@ -200,7 +200,6 @@ public class GameScreen implements  Screen {
             else if(isGuest)
             {
                 c.sendGameOver(gameStage.getScore());
-                System.out.println("yolOOOO");
                 dispose();
                 game.setScreen(new GameOverScreen(game,gameStage.getScore(),filepath,speed,delay,c,mode,stage));
             }
