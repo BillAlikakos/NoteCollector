@@ -305,7 +305,6 @@ public class LoadingScreen implements Screen {
                         /*
                         try
                         {
-                            System.out.println("Sheogorath");
                             noteCollector.setScreen(new GameScreen(noteCollector,TickPerMsec,notes,filepath,speed,delay,mode,stage));
                         }
                         catch (IOException e)
