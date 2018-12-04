@@ -305,21 +305,6 @@ public class LoadingScreen implements Screen {
                     }
                     else//Single player
                     {
-                        //dispose();
-                        /*
-                        try
-                        {
-
-                            noteCollector.setScreen(new GameScreen(noteCollector,TickPerMsec,notes,filepath,speed,delay,mode,stage));
-                        }
-                        catch (IOException e)
-                        {
-                            e.printStackTrace();
-                        }
-                        catch (InterruptedException e)
-                        {
-                            e.printStackTrace();
-                        }*/
                         if(!done)//Avoid loading the screen multiple times
                         {
 
