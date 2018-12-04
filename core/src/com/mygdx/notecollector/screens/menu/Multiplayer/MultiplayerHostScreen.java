@@ -149,6 +149,7 @@ public class MultiplayerHostScreen implements  Screen
         @Override
         public void dispose()
         {
+            assetsManager.disposeMenuAssets();
             stage.getRoot().removeActor(table);
             stage.getRoot().removeActor(btn);
             stage.getRoot().removeActor(verticalGroup);
@@ -222,6 +223,7 @@ public class MultiplayerHostScreen implements  Screen
 
 
         private void LoadAssets(){
+            assetsManager.LoadAssets();
             fontH = assetsManager.createBimapFont(45*VIEWPORT_WIDTH/1920);
             font = assetsManager.createBitmapFont();
             selectionColor =new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.ButtonImage,Texture.class))) ;
@@ -277,7 +279,7 @@ public class MultiplayerHostScreen implements  Screen
     }
 
         private void createBackground(){
-            FileHandle file = Gdx.files.internal(Constants.getBackgroundMenu().toString());
+            FileHandle file = Gdx.files.internal(Constants.getBackgroundMenu());
             Image background=assetsManager.scaleBackground(file);
             stage.addActor(background);
 

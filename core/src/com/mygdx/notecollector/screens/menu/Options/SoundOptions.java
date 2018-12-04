@@ -123,8 +123,7 @@ public class SoundOptions implements Screen
     private Label createLabel(String text)
     {
         Label.LabelStyle labelstyle = new Label.LabelStyle(font, Color.WHITE);
-        Label fileLabel = new Label(text, labelstyle);
-        return  fileLabel;
+        return new Label(text, labelstyle);
     }
 
     private void createBackButton(String text)
@@ -141,8 +140,7 @@ public class SoundOptions implements Screen
 
     private ImageTextButton createButton(String text,ImageTextButton.ImageTextButtonStyle textButtonStyle )
     {
-        ImageTextButton MenuButton = new ImageTextButton(text, textButtonStyle);
-        return MenuButton;
+        return new ImageTextButton(text, textButtonStyle);
     }
 
     private void AddButtonListener(final ImageTextButton MenuButton)
@@ -239,8 +237,8 @@ public class SoundOptions implements Screen
             }
 
         });
-        table.add(MusicOn).colspan( 2 ).left().padRight(10f).size(sizeX,sizeY);;
-        table.add(MusicOff).colspan( 2 ).left().padRight(5f).size(sizeX,sizeY);;
+        table.add(MusicOn).colspan( 2 ).left().padRight(10f).size(sizeX,sizeY);
+        table.add(MusicOff).colspan( 2 ).left().padRight(5f).size(sizeX,sizeY);
     }
 
     private void createButtonSound(){
@@ -346,6 +344,7 @@ public class SoundOptions implements Screen
     public void dispose()
     {
         font.dispose();
+        assetsManager.disposeMenuAssets();
         //stage.dispose();
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(verticalGroup);

@@ -163,14 +163,13 @@ public class Results implements Screen {
     @Override
     public void dispose()
     {
+        assetsManager.disposeListMenuAssets();
         table.clear();
         stage.getRoot().removeActor(verticalGroup);
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(btn);
         font.dispose();
         fontList.dispose();
-
-
     }
 
     //create a table to organize buttons and list of tracks
@@ -237,6 +236,7 @@ public class Results implements Screen {
 
 
     private void LoadAssets() {
+        assetsManager.LoadAssets();
         fontH = assetsManager.createBimapFont(50*VIEWPORT_WIDTH/1920);
         font = assetsManager.createBitmapFont();
         selectionColor = new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.ButtonImage, Texture.class)));
@@ -257,9 +257,10 @@ public class Results implements Screen {
     }
 
     private void createList() {
-        list = new List<Object>(skin);
+        list = new List<>(skin);
         list.getStyle().selection = selectionColorList;
         list.getStyle().font = fontList;
+        list.getStyle().selection.setTopHeight(10*VIEWPORT_HEIGHT/1080);
         addListener(list);
     }
 
@@ -281,6 +282,8 @@ public class Results implements Screen {
                 SongObj s = songs.get(list.getSelectedIndex());//Get the selected track
                 String name = item.get(list.getSelectedIndex());//Get the selected instrument
                 System.out.println("Selected Song: " +name);
+                if(name.contains("/"))
+                    name = name.replace("/", " ");
                 System.out.println("Song Url: " + s.getUrl());
                 downloadFile(s.getUrl(),name);
                 //Hide tables and show message of completion
@@ -330,7 +333,7 @@ public class Results implements Screen {
                 OutputStream os = Gdx.files.external("/Note Collector/Sample Tracks/"+name+".midi").write(false);
                 System.out.println("Writing file");
                 byte[] bytes = new byte[125000];//1,25 Mb buffer
-                int count = -1;
+                int count;
                 long read = 0;
                 try
                 {

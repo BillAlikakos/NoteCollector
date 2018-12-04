@@ -33,12 +33,15 @@ public class Score extends Actor {
 
     public Score(Rectangle bounds, Assets AssetsManager)
     {
+      this.isGuest=false;
+      this.isHost=false;
       setHeight(bounds.height);
       setWidth(bounds.width);
       this.bounds = bounds;
       score = 0;
       //get font type from asset manager
-        font = AssetsManager.createBimapFont(28);
+        //font = AssetsManager.createBimapFont(28);
+        font = AssetsManager.createFont();
         font.setColor(Color.BLACK);
 
     }
@@ -84,7 +87,15 @@ public class Score extends Actor {
         if (score == 0)
             return;
        // font.draw(batch, String.format("%d", getScore()), bounds.x,bounds.y);
-        font.draw(batch, String.format("%d", getScore()), bounds.x,bounds.y);
+        if(isGuest || isHost)
+        {
+            font.draw(batch, String.format("%s", "Opponent: "+getScore()), bounds.x,bounds.y);
+        }
+        else
+        {
+            font.draw(batch, String.format("%s", "Score: "+getScore()), bounds.x,bounds.y);
+        }
+
 
 
     }
@@ -99,6 +110,10 @@ public class Score extends Actor {
             this.score = score ;
     }
 
+    public void dispose()
+    {
+        font.dispose();
+    }
 
 
 

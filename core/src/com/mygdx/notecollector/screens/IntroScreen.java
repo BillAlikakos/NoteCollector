@@ -102,9 +102,12 @@ public class IntroScreen implements Screen {
 
 
     private void createFolders(){
-        try {
+        try
+        {
             getAssetAppFolder("Note Collector/Sample Tracks");
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             e.printStackTrace();
         }
     }
@@ -116,7 +119,7 @@ public class IntroScreen implements Screen {
     }
     private void fadeBackground()
     {
-        FileHandle file = Gdx.files.internal(Constants.getBackgroundMenu().toString());
+        FileHandle file = Gdx.files.internal(Constants.getBackgroundMenu());
         Image background=noteCollector.getAssetsManager().scaleBackground(file);
         stage.addActor(background);
         stage.addAction(Actions.sequence(Actions.alpha(0), Actions.fadeIn(2f)));
@@ -184,36 +187,29 @@ public class IntroScreen implements Screen {
 
 
     //create game folder if it doesn't exist on device
-    private void getAssetAppFolder(String dir) throws Exception{
-
+    private void getAssetAppFolder(String dir)
+    {
+        File f = new File(Constants.root + "/" + dir);
+        if (!f.exists() || !f.isDirectory())
         {
-            File f = new File(Constants.root + "/" + dir);
-
-            if (!f.exists() || !f.isDirectory()) {
-                f.mkdirs();
-
-            }
-
-
+            f.mkdirs();
         }
-
         FileHandle fileHandle = Gdx.files.internal("sample");
         FileHandle [] aplist=fileHandle.list();
-
-        for(FileHandle strf:aplist){
-            try{
+        for(FileHandle strf:aplist)
+        {
+            try
+            {
                 InputStream is=   strf.read();
                 copyToDisk(dir,strf.name(),is);
-            }catch(Exception ex){
 
+            }catch(Exception ex)
+            {
                 getAssetAppFolder(dir+"/"+strf.name());
             }
         }
-
-
-
     }
-    public void copyToDisk(String dir,String name,InputStream is) throws IOException {
+    private void copyToDisk(String dir, String name, InputStream is) throws IOException {
         int size;
         byte[] buffer = new byte[2048];
 

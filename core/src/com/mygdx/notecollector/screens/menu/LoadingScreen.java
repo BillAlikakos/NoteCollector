@@ -255,6 +255,8 @@ public class LoadingScreen implements Screen {
     @Override
     public void dispose()
     {
+        //AssetsManager.disposeMenuAssets();
+        AssetsManager.assetManager.unload(Constants.logo);
         font.dispose();
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(verticalGroup);
@@ -277,15 +279,16 @@ public class LoadingScreen implements Screen {
                 @Override
                 public void run()
                 {
-                    dispose();
+                   // dispose();
                     if(isHost)
                     {
                         //dispose();
                         if(!done)
                         {
+                            dispose();
                             System.out.println("Host entering lobby");
                             noteCollector.setScreen(new MultiplayerPreMatchLobby(noteCollector,TickPerMsec,notes,filepath,speed,delay,srv,mode,stage,f,difficulty));
-                            done=true;//TODO : Sync multiplayer
+                            done=true;
                         }
 
                     }
@@ -294,6 +297,7 @@ public class LoadingScreen implements Screen {
                         // dispose();
                         if(!done)
                         {
+                            dispose();
                             System.out.println("Client entering lobby");
                             noteCollector.setScreen(new MultiplayerPreMatchLobby(noteCollector, TickPerMsec, notes, filepath, speed, delay, c, mode, stage));
                             done=true;
@@ -305,7 +309,7 @@ public class LoadingScreen implements Screen {
                         /*
                         try
                         {
-                            System.out.println("Sheogorath");
+
                             noteCollector.setScreen(new GameScreen(noteCollector,TickPerMsec,notes,filepath,speed,delay,mode,stage));
                         }
                         catch (IOException e)
@@ -318,9 +322,10 @@ public class LoadingScreen implements Screen {
                         }*/
                         if(!done)//Avoid loading the screen multiple times
                         {
-                            dispose();
+
                             try
                             {
+                                dispose();
                                 noteCollector.setScreen(new GameScreen(noteCollector,TickPerMsec,notes,filepath,speed,delay,mode,stage));
                             }
                             catch (IOException | InterruptedException e)
@@ -339,6 +344,9 @@ public class LoadingScreen implements Screen {
 
     }
     private void LoadAssets(){
+        //AssetsManager.LoadAssets();
+        AssetsManager.assetManager.load(Constants.logo,Texture.class);
+        AssetsManager.assetManager.finishLoading();
         font = AssetsManager.createBimapFont(45);
         spinnerImageTexture = AssetsManager.assetManager.get(Constants.spinner);
 
@@ -365,8 +373,9 @@ public class LoadingScreen implements Screen {
     {
         midiManipulator = new MidiManipulator(f);
         TickPerMsec = midiManipulator.getTickPerMsec();
-        ArrayList<MidiNote> trackNotes=midiManipulator.GetNotes(track);
-        notes = trackNotes;
+        //ArrayList<MidiNote> trackNotes=midiManipulator.GetNotes(track);
+        //  notes = trackNotes;
+        notes = midiManipulator.GetNotes(track);
     }
     //In this method manipulate the midi file and get all midi notes in arraylist notes
 

@@ -283,6 +283,7 @@ public class DifficultyScreen implements Screen
     public void dispose()
     {
         font.dispose();
+        assetsManager.disposeMenuAssets();
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(exitBtnTable);
         stage.getRoot().removeActor(verticalGroup);

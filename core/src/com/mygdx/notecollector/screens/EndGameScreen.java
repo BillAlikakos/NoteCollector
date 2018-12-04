@@ -287,6 +287,7 @@ public class EndGameScreen implements Screen {
     @Override
     public void dispose()
     {
+        AssetsManager.disposeMenuAssets();
         if(isHost || isGuest)
         {
             if(t.isAlive())
@@ -323,6 +324,7 @@ public class EndGameScreen implements Screen {
     }
     private void LoadAssets(){
         //font = AssetsManager.createBimapFont(45);
+        AssetsManager.LoadAssets();
         font = AssetsManager.createBitmapFont();
         selectionColor =new TextureRegionDrawable(new TextureRegion(AssetsManager.assetManager.get(Constants.ButtonImage,Texture.class))) ;
         selectionColor.setRightWidth(7f);

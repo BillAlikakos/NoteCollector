@@ -249,6 +249,8 @@ public class SignUpScreen implements Screen
     @Override
     public void dispose()
     {
+        AssetsManager.disposeLogInAssets();
+        AssetsManager.disposeListMenuAssets();
         font.dispose();
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(verticalGroup);
@@ -262,8 +264,7 @@ public class SignUpScreen implements Screen
         //BitmapFont font = AssetsManager.createBimapFont(size);
         BitmapFont font = AssetsManager.createFontH();
         Label.LabelStyle labelstyle = new Label.LabelStyle(font, Color.WHITE);
-        Label label = new Label(text, labelstyle);
-        return label;
+        return new Label(text, labelstyle);
 
     }
 
@@ -280,6 +281,7 @@ public class SignUpScreen implements Screen
     }
     private void LoadAssets()
     {
+        AssetsManager.LoadAssets();
         AssetsManager.LoadListAssets();
         font=AssetsManager.createBitmapFont();
         AssetsManager.LoadLogInAssets();

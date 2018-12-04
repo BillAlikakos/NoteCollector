@@ -129,7 +129,6 @@ public class SocialSplashScreen implements Screen
         selectionColorPressed = new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.ButtonPressed, Texture.class)));
         selectionColorPressed.setRightWidth(5f);
         selectionColorPressed.setBottomHeight(2f);
-
     }
 
     private void createLogo()
@@ -246,6 +245,7 @@ public class SocialSplashScreen implements Screen
     public void dispose()
     {
         font.dispose();
+        assetsManager.disposeMenuAssets();
         verticalGroup.clear();
         stage.getRoot().removeActor(verticalGroup);
         stage.getRoot().removeActor(table);

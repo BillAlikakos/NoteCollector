@@ -101,11 +101,12 @@ public class ScoresScreen implements Screen {
     {
         table = new Table();
         table.setFillParent(true);
-        if(selectMode)
+       /* if(selectMode)
         {
-            createVerticalGroup();
-            createLogo();
-        }
+
+        }*/
+        createVerticalGroup();
+        createLogo();
         /*if(!score.getScore().equals(""))
         {
             Label title=createLabel("Score Submitted",43*VIEWPORT_WIDTH/1920);
@@ -181,9 +182,10 @@ public class ScoresScreen implements Screen {
     @Override
     public void dispose()
     {
+        AssetsManager.disposeMenuAssets();
         font.dispose();
         stage.getRoot().removeActor(table);
-        if(!selectMode)
+        //if(!selectMode)
         stage.getRoot().removeActor(verticalGroup);
         stage.getRoot().removeActor(exitBtnTable);
     }
@@ -338,6 +340,7 @@ public class ScoresScreen implements Screen {
     }
     private void LoadAssets()
     {
+        AssetsManager.LoadAssets();
         font=AssetsManager.createBitmapFont();
        // font = AssetsManager.createBimapFont(45);
         selectionColor =new TextureRegionDrawable(new TextureRegion(AssetsManager.assetManager.get(Constants.ButtonImage,Texture.class))) ;
@@ -346,8 +349,6 @@ public class ScoresScreen implements Screen {
         selectionColorPressed = new TextureRegionDrawable(new TextureRegion(AssetsManager.assetManager.get(Constants.ButtonPressed,Texture.class)));
         selectionColorPressed.setRightWidth(5f);
         selectionColorPressed.setBottomHeight(2f);
-
-
     }
     private void createLogo()
     {
@@ -435,7 +436,7 @@ public class ScoresScreen implements Screen {
                         @Override
                         public void run()
                         {
-                            dispose();
+                            //dispose();
                             switch (text)
                             {
                                 case "Practice":
@@ -445,6 +446,7 @@ public class ScoresScreen implements Screen {
                                     noteCollector.getDb().read(noteCollector.getAuth(),noteCollector,stage,true);
                                     break;
                                 case "Back":
+                                    dispose();
                                     if(!selectMode)
                                     {
                                         noteCollector.setScreen(new ScoresScreen(noteCollector,stage));

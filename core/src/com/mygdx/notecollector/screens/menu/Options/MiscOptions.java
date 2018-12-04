@@ -142,8 +142,7 @@ public class MiscOptions implements Screen
     private Label createLabel(String text)
     {
         Label.LabelStyle labelstyle = new Label.LabelStyle(font, Color.WHITE);
-        Label fileLabel = new Label(text, labelstyle);
-        return  fileLabel;
+        return new Label(text, labelstyle);
     }
 
     private void createBackButton(String text)
@@ -160,8 +159,7 @@ public class MiscOptions implements Screen
 
     private ImageTextButton createButton(String text,ImageTextButton.ImageTextButtonStyle textButtonStyle )
     {
-        ImageTextButton MenuButton = new ImageTextButton(text, textButtonStyle);
-        return MenuButton;
+        return new ImageTextButton(text, textButtonStyle);
     }
 
     private void fadeBackground()
@@ -407,6 +405,7 @@ public class MiscOptions implements Screen
     @Override
     public void dispose()
     {
+        assetsManager.disposeMenuAssets();
         font.dispose();
         //stage.dispose();
         stage.getRoot().removeActor(table);

@@ -75,7 +75,6 @@ public class DataBase implements IDataBase
                     @Override
                     public void run() {
                         noteCollector.getScreen().dispose();
-
                         noteCollector.setScreen(new ScoresScreen(noteCollector,stage,scores,competitive));
 
                     }

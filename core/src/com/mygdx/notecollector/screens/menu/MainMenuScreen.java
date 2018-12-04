@@ -28,6 +28,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.notecollector.NoteCollector;
 import com.mygdx.notecollector.Utils.Assets;
 import com.mygdx.notecollector.Utils.Constants;
+import com.mygdx.notecollector.screens.GameOverScreen;
 import com.mygdx.notecollector.screens.menu.Multiplayer.MultiplayerModeScreen;
 import com.mygdx.notecollector.screens.menu.TrackSearch.SearchTrack;
 import com.mygdx.notecollector.screens.menu.UserArea.ResultScreen;
@@ -46,6 +47,7 @@ public class MainMenuScreen implements Screen {
     private static int VIEWPORT_HEIGHT = Constants.APP_HEIGHT;//Gdx.graphics.getHeight(); //
     private NoteCollector noteCollector;
     private VerticalGroup verticalGroup;
+    private ImageTextButton.ImageTextButtonStyle textButtonStyle;
     private TextureRegionDrawable selectionColor;//Textures for the buttons
     private TextureRegionDrawable selectionColorPressed;
     private TextureRegionDrawable scoreBtn;
@@ -74,7 +76,6 @@ public class MainMenuScreen implements Screen {
         top.setFillParent(true);
         table.setFillParent(true);
         LoadAssets();
-
     }
 
     public MainMenuScreen(NoteCollector noteCollector,Stage stage)
@@ -103,6 +104,7 @@ public class MainMenuScreen implements Screen {
         sizeX=size[0];
         sizeY=size[1];
         createLogo();
+        textButtonStyle = createButtonStyle(selectionColor);
         createButton("Single Player");
         createButton("Multiplayer");
         createButton("Search Tracks");
@@ -163,14 +165,14 @@ public class MainMenuScreen implements Screen {
         assetsManager.setLogoPosition(verticalGroup);
     }
 
-    private  void addVerticalGroup(Actor actor){
+    private  void addVerticalGroup(Actor actor)
+    {
         verticalGroup.addActor(actor);
-
     }
 
     private ImageTextButton createButton(String text)
     {
-        ImageTextButton.ImageTextButtonStyle textButtonStyle = createButtonStyle(selectionColor);
+        //ImageTextButton.ImageTextButtonStyle textButtonStyle = createButtonStyle(selectionColor);
         ImageTextButton MenuButton = new ImageTextButton(text, textButtonStyle);
         MenuButton.setColor(Color.WHITE);
         AddButtonListener(MenuButton,text);
@@ -360,6 +362,7 @@ public class MainMenuScreen implements Screen {
                                       break;
                                   case "Multiplayer":
                                       noteCollector.setScreen(new MultiplayerModeScreen(noteCollector,stage));
+                                      //noteCollector.setScreen(new GameOverScreen(noteCollector,"","",1,10000,false,stage));
                                   break;
                                   case "Search Tracks":
                                       noteCollector.setScreen(new SearchTrack(noteCollector,stage));
@@ -427,6 +430,8 @@ public class MainMenuScreen implements Screen {
     public void dispose()
     {
         table.clear();
+        font.dispose();
+        assetsManager.disposeMainMenuAssets();
         //assetsManager.disposeMenuAssets();
         //font.dispose();
         stage.getRoot().removeActor(table);

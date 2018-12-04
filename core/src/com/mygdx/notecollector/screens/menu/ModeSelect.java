@@ -119,7 +119,6 @@ public class ModeSelect implements Screen
         Label label = new Label(text, labelstyle);
         //label.setPosition((stage.getCamera().viewportWidth-label.getWidth())/2,Yaxis);
         //stage.addActor(label);
-
         table.add(label);
         table.row();
 
@@ -207,6 +206,7 @@ public class ModeSelect implements Screen
                                             noteCollector.setScreen(new DifficultyScreen(noteCollector,srv,true,stage));
                                             break;
                                         case "Back":
+                                            srv.closeServer();
                                             noteCollector.setScreen(new MainMenuScreen(noteCollector));
                                             break;
                                     }
@@ -270,6 +270,7 @@ public class ModeSelect implements Screen
     @Override
     public void dispose()
     {
+        assetsManager.disposeMenuAssets();
         font.dispose();
         verticalGroup.clear();
         stage.getRoot().removeActor(verticalGroup);

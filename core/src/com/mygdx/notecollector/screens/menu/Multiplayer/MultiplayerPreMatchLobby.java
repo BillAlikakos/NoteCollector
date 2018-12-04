@@ -105,7 +105,6 @@ public class MultiplayerPreMatchLobby implements Screen
     @Override
     public void show()
     {
-        System.out.println("Show (PreMatchLobby)");
         table = new Table();
         table.setFillParent(true);
         table.center();
@@ -165,14 +164,8 @@ public class MultiplayerPreMatchLobby implements Screen
                 @Override
                 public void run()
                 {
-                    try
-                    {
-                        dispose();
-                        noteCollector.setScreen(new GameScreen(noteCollector, TickPerMsec, notes, filepath, speed, delay, c, mode, stage));
-                    } catch (IOException | InterruptedException e)
-                    {
-                        e.printStackTrace();
-                    }
+                    dispose();
+                    noteCollector.setScreen(new GameScreen(noteCollector, TickPerMsec, notes, filepath, speed, delay, c, mode, stage));
                 }
             }, 0.4f);//Prev 0.2f
 
@@ -216,23 +209,12 @@ public class MultiplayerPreMatchLobby implements Screen
                                 @Override
                                 public void run()
                                 {
-                                    try
-                                    {
-                                       // t.interrupt();
-                                        dispose();
-                                        noteCollector.setScreen(new GameScreen(noteCollector,TickPerMsec,notes,filepath,speed,delay,srv,mode,stage));//TODO : Sync better between slow and fast phones (Pause state until second player joins ? Fix label ordering in game end screen)
-                                        //t.interrupt();
-                                        //this.wait(1000);
+                                    // t.interrupt();
+                                    dispose();
+                                    noteCollector.setScreen(new GameScreen(noteCollector,TickPerMsec,notes,filepath,speed,delay,srv,mode,stage));//TODO : Sync better between slow and fast phones (Pause state until second player joins ? Fix label ordering in game end screen)
+                                    //t.interrupt();
+                                    //this.wait(1000);
 
-                                    }
-                                    catch (IOException e)
-                                    {
-                                        e.printStackTrace();
-                                    }
-                                    catch (InterruptedException e)
-                                    {
-                                        e.printStackTrace();
-                                    }
                                 }
                             }, 0.4f);//Prev 0.2f
                         }
@@ -316,6 +298,8 @@ public class MultiplayerPreMatchLobby implements Screen
         public void dispose()
         {
             //stage.dispose();
+            //AssetsManager.disposeMenuAssets();
+            AssetsManager.assetManager.unload(Constants.logo);
             stage.getRoot().removeActor(table);
             stage.getRoot().removeActor(verticalGroup);
             font.dispose();
@@ -325,7 +309,9 @@ public class MultiplayerPreMatchLobby implements Screen
         private void LoadAssets()
         {
             font = AssetsManager.createBimapFont(45*VIEWPORT_WIDTH/1920);
-
+            //AssetsManager.LoadAssets();
+            AssetsManager.assetManager.load(Constants.logo,Texture.class);
+            AssetsManager.assetManager.finishLoading();
         }
         private void createLogo()
         {

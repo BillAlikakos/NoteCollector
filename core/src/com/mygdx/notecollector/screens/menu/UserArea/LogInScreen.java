@@ -161,12 +161,12 @@ public class LogInScreen implements Screen
     @Override
     public void dispose()
     {
+        AssetsManager.disposeMenuAssets();
+        AssetsManager.disposeLogInAssets();
         font.dispose();
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(verticalGroup);
         stage.getRoot().removeActor(exitBtnTable);
-
-
     }
 
     private Label createLabel(String text)
@@ -192,7 +192,8 @@ public class LogInScreen implements Screen
     }
     private void LoadAssets()
     {
-        AssetsManager.LoadListAssets();
+       // AssetsManager.LoadListAssets();
+        AssetsManager.LoadAssets();
         AssetsManager.LoadLogInAssets();
         font=AssetsManager.createBitmapFont();
         // font = AssetsManager.createBimapFont(45);

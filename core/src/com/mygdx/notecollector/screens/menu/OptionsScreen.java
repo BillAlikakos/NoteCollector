@@ -83,8 +83,7 @@ public class OptionsScreen implements Screen{
     private Label createLabel(String text){
 
         Label.LabelStyle labelstyle = new Label.LabelStyle(font, Color.WHITE);
-        Label fileLabel = new Label(text, labelstyle);
-        return  fileLabel;
+        return new Label(text, labelstyle);
 
     }
 
@@ -207,6 +206,7 @@ public class OptionsScreen implements Screen{
 
                         @Override
                         public void run() {
+                            dispose();
                             noteCollector.setScreen(new MainMenuScreen(noteCollector,stage));
 
                         }
@@ -263,8 +263,7 @@ public class OptionsScreen implements Screen{
 
     private ImageTextButton createButton(String text,ImageTextButton.ImageTextButtonStyle textButtonStyle )
     {
-        ImageTextButton MenuButton = new ImageTextButton(text, textButtonStyle);
-        return MenuButton;
+        return new ImageTextButton(text, textButtonStyle);
 
     }
 
@@ -313,7 +312,9 @@ public class OptionsScreen implements Screen{
     }
 
     @Override
-    public void dispose() {
+    public void dispose()
+    {
+        assetsManager.disposeMenuAssets();
         font.dispose();
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(verticalGroup);

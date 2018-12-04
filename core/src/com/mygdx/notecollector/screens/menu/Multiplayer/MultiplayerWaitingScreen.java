@@ -185,6 +185,7 @@ public class MultiplayerWaitingScreen implements Screen
     @Override
     public void dispose()
     {
+        AssetsManager.disposeMenuAssets();
         font.dispose();
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(verticalGroup);
@@ -194,7 +195,7 @@ public class MultiplayerWaitingScreen implements Screen
     private void LoadAssets()
     {
         font = AssetsManager.createBimapFont(45*VIEWPORT_WIDTH/1920);
-
+        AssetsManager.LoadAssets();
     }
 
     private void createLogo()

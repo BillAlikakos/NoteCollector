@@ -129,6 +129,7 @@ public class MultiplayerModeScreen implements Screen
     private void LoadAssets()
     {
         assetsManager.LoadWiFiAssets();
+        assetsManager.LoadAssets();
         //font = assetsManager.createBitmapFont();
         font = assetsManager.createFont();
         selectionColor =new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.ButtonImage,Texture.class))) ;
@@ -280,6 +281,8 @@ public class MultiplayerModeScreen implements Screen
     @Override
     public void dispose()
     {
+        assetsManager.disposeMenuAssets();
+        assetsManager.disposeWifiAssets();
         font.dispose();
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(btn);
