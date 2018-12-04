@@ -273,7 +273,9 @@ public class Browse implements Screen {
     }
 
 
-    private void LoadAssets(){
+    private void LoadAssets()
+    {
+        assetsManager.LoadAssets();
         //fontH = assetsManager.createBimapFont(VIEWPORT_WIDTH/30);
         fontH = assetsManager.createFontH();
         font = assetsManager.createBitmapFont();
@@ -295,9 +297,10 @@ public class Browse implements Screen {
     }
 
     private void createList()  {
-        list = new List<Object>(skin);
+        list = new List<>(skin);
         list.getStyle().selection = selectionColorList;
         list.getStyle().font = fontList;
+        list.getStyle().selection.setTopHeight(10*VIEWPORT_HEIGHT/1080);
         addListener(list);
     }
 
@@ -322,8 +325,7 @@ public class Browse implements Screen {
     }
     private Label createLabel(String text){
         Label.LabelStyle labelstyle = new Label.LabelStyle(fontH, Color.WHITE);
-        Label fileLabel = new Label(text, labelstyle);
-        return  fileLabel;
+        return new Label(text, labelstyle);
 
     }
 
@@ -373,8 +375,8 @@ public class Browse implements Screen {
     //set the list content
     private void getDir(String dirPath) {
 
-        path = new ArrayList<String>();
-        item = new ArrayList<String>();
+        path = new ArrayList<>();
+        item = new ArrayList<>();
 
         if (dirPath.equals(method(root)))
             dirPath = root;
@@ -422,6 +424,7 @@ public class Browse implements Screen {
     @Override
     public void dispose()
     {
+        assetsManager.disposeListMenuAssets();
         table.clear();
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(exitBtnTable);

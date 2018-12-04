@@ -76,18 +76,11 @@ public class ResultScreen implements Screen
         size = AssetsManager.setButtonSize(sizeX, sizeY);//Get the dimensions for the button
         sizeX = size[0];
         sizeY = size[1];
-        //label=createLabel("Welcome, "+user.getUserName());
         createLabel("Welcome, "+user.getUserName());
         name=user.getUserName();
-
-
-        //table.top().padTop(VIEWPORT_HEIGHT*0.05f).addActor(label);
-        //table.row();
-        //printScoreList();
-       //createButton("Log Out",(stage.getCamera().viewportWidth - 360*VIEWPORT_WIDTH/1920) / 2,(stage.getCamera().viewportHeight)/2,sizeX,sizeY);
         HighScores=createMenuButton("High Scores",sizeX,sizeY);
         LogOut=createMenuButton("Log Out",sizeX,sizeY);
-        //createButton("High Scores",(stage.getCamera().viewportWidth - 360*VIEWPORT_WIDTH/1920) / 2,(stage.getCamera().viewportHeight)/2,sizeX,sizeY);
+
         createButton("Menu",sizeX,sizeY);
         stage.addActor(verticalGroup);
         stage.addActor(exitBtnTable);
@@ -188,6 +181,7 @@ public class ResultScreen implements Screen
     public void dispose()
     {
         font.dispose();
+        AssetsManager.disposeMenuAssets();
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(verticalGroup);
         stage.getRoot().removeActor(exitBtnTable);
@@ -225,7 +219,8 @@ public class ResultScreen implements Screen
     }
     private void LoadAssets()
     {
-        AssetsManager.LoadListAssets();
+        //AssetsManager.LoadListAssets();
+        AssetsManager.LoadAssets();
         font=AssetsManager.createBitmapFont();
         // font = AssetsManager.createBimapFont(45);
         selectionColor =new TextureRegionDrawable(new TextureRegion(AssetsManager.assetManager.get(Constants.ButtonImage,Texture.class))) ;

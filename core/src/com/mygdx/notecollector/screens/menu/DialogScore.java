@@ -197,6 +197,7 @@ public class DialogScore implements Screen {
     @Override
     public void dispose()
     {
+        AssetsManager.disposeListMenuAssets();
         font.dispose();
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(verticalGroup);
@@ -217,6 +218,7 @@ public class DialogScore implements Screen {
         table.setTouchable(Touchable.enabled);
     }
     private void LoadAssets(){
+        AssetsManager.LoadAssets();
         AssetsManager.LoadListAssets();
         font = AssetsManager.createBitmapFont();
         selectionColor =new TextureRegionDrawable(new TextureRegion(AssetsManager.assetManager.get(Constants.ButtonImage,Texture.class))) ;

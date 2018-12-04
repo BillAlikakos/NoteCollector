@@ -216,6 +216,7 @@ public class TrackSelect implements Screen
     @Override
     public void dispose()
     {
+        assetsManager.disposeListMenuAssets();
         table.clear();
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(verticalGroup);
@@ -296,6 +297,7 @@ public class TrackSelect implements Screen
 
     private void LoadAssets(){
         //fontH = assetsManager.createBimapFont(45);
+        assetsManager.LoadAssets();
         fontH = assetsManager.createBimapFont(VIEWPORT_WIDTH*60/1920);
         font = assetsManager.createBitmapFont();
         selectionColor =new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.ButtonImage,Texture.class))) ;
@@ -304,8 +306,6 @@ public class TrackSelect implements Screen
         selectionColorPressed = new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.ButtonPressed,Texture.class)));
         selectionColorPressed.setRightWidth(5f);
         selectionColorPressed.setBottomHeight(2f);
-
-
     }
 
     private void ListStyle(){
@@ -320,6 +320,7 @@ public class TrackSelect implements Screen
         list = new List<>(skin);
         list.getStyle().selection = selectionColorList;
         list.getStyle().font = fontList;
+        list.getStyle().selection.setTopHeight(10*VIEWPORT_HEIGHT/1080);
         addListener(list);
     }
 
@@ -375,8 +376,7 @@ public class TrackSelect implements Screen
     }
     private Label createLabel(String text){
         Label.LabelStyle labelstyle = new Label.LabelStyle(fontH, Color.WHITE);
-        Label fileLabel = new Label(text, labelstyle);
-        return  fileLabel;
+        return new Label(text, labelstyle);
 
     }
 

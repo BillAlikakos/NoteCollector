@@ -160,6 +160,7 @@ public class MultiplayerClientScreen implements  Screen
     @Override
     public void dispose()
     {
+        assetsManager.disposeListMenuAssets();
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(btn);
         stage.getRoot().removeActor(verticalGroup);
@@ -235,9 +236,11 @@ public class MultiplayerClientScreen implements  Screen
     }
 
 
-    private void LoadAssets(){
+    private void LoadAssets()
+    {
         //fontH = assetsManager.createBimapFont(45*VIEWPORT_WIDTH/1920);
         //font = assetsManager.createBitmapFont();
+        assetsManager.LoadAssets();
         font=assetsManager.createFont();
         fontH=assetsManager.createFontH();
         fontList=assetsManager.createFontList();
@@ -247,8 +250,6 @@ public class MultiplayerClientScreen implements  Screen
         selectionColorPressed = new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.ButtonPressed,Texture.class)));
         selectionColorPressed.setRightWidth(5f);
         selectionColorPressed.setBottomHeight(2f);
-
-
     }
 
     private void ListStyle(){
@@ -259,9 +260,10 @@ public class MultiplayerClientScreen implements  Screen
     }
 
     private void createList()  {
-        list = new List<Object>(skin);
+        list = new List<>(skin);
         list.getStyle().selection = selectionColorList;
         list.getStyle().font = fontList;
+        list.getStyle().selection.setTopHeight(10*VIEWPORT_HEIGHT/1080);
         addListener(list);
     }
 
@@ -302,14 +304,13 @@ public class MultiplayerClientScreen implements  Screen
     }
     private Label createLabel(String text){
         Label.LabelStyle labelstyle = new Label.LabelStyle(fontH, Color.WHITE);
-        Label fileLabel = new Label(text, labelstyle);
-        return  fileLabel;
+        return new Label(text, labelstyle);
 
     }
     private void getHosts()//Method to acquire a list of available servers
     {
-        hosts = new ArrayList<InetAddress>();
-        names = new ArrayList<String>();
+        hosts = new ArrayList<>();
+        names = new ArrayList<>();
         t=new Thread()
         {
             @Override public void run()//Start a thread to manage host discovery

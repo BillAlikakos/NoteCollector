@@ -157,22 +157,9 @@ public class GameOverScreen implements Screen {
         if (isHost || isGuest)//Multiplayer doesn't need restart button
         {
             float Xaxis =300f;
-            /*if (VIEWPORT_WIDTH == 800 && VIEWPORT_HEIGHT == 480)//old dimensions
-            {
-                Xaxis=305f;
-            }
-            if (VIEWPORT_WIDTH == 1080 && VIEWPORT_HEIGHT == 720)
-            {
-                Xaxis=410f;
-            }
-            if (VIEWPORT_WIDTH > 1080 && VIEWPORT_HEIGHT > 720)
-            {
-                Xaxis=(viewport.getScreenWidth() / 2) - sizeX / 2;
-            }*/
             Xaxis=(VIEWPORT_WIDTH / 2) - sizeX / 2;
             System.out.println(Xaxis);
             menu=createButton("Menu",Xaxis);
-
         }
         else
         {
@@ -180,6 +167,10 @@ public class GameOverScreen implements Screen {
             restart=createButton("Restart",Xaxis);
             Xaxis =Xaxis+sizeX;
             menu=createButton("Menu",Xaxis);
+            for(int i=0;i<stage.getActors().size;i++)
+            {
+                System.out.println(stage.getActors().get(i).toString());
+            }
         }
 
     }
@@ -218,6 +209,7 @@ public class GameOverScreen implements Screen {
 
     @Override
     public void dispose() {
+        AssetsManager.disposeGameOverAssets();
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(verticalGroup);
         font.dispose();
@@ -230,18 +222,19 @@ public class GameOverScreen implements Screen {
         stage.addActor(fileLabel);
         fileLabel.getColor().a=0;
         fileLabel.addAction(Actions.sequence(Actions.fadeIn(0.2f)));//Fade label in
-
     }
     private void createTable(){
         table = new Table();
         table.center();
         table.setFillParent(true);
         table.pad(10f,10f,30f,10f);
+        stage.addActor(table);
         //table.setTouchable(Touchable.enabled);
     }
     private void LoadAssets(){
-        AssetsManager .assetManager.load(Constants.GameOver, Texture.class);
-        AssetsManager .assetManager.finishLoading();
+        //AssetsManager .assetManager.load(Constants.GameOver, Texture.class);
+       // AssetsManager .assetManager.finishLoading();
+        AssetsManager.LoadGameOverAssets();
         font = AssetsManager.createBitmapFont();
         selectionColor =new TextureRegionDrawable(new TextureRegion(AssetsManager.assetManager.get(Constants.ButtonImage,Texture.class))) ;
         selectionColor.setRightWidth(5f);
@@ -249,8 +242,6 @@ public class GameOverScreen implements Screen {
         selectionColorPressed = new TextureRegionDrawable(new TextureRegion(AssetsManager.assetManager.get(Constants.ButtonPressed,Texture.class)));
         selectionColorPressed.setRightWidth(5f);
         selectionColorPressed.setBottomHeight(2f);
-
-
     }
     private void createLogo()
     {
@@ -264,8 +255,6 @@ public class GameOverScreen implements Screen {
     }
     private ImageTextButton createButton(String text,float Xaxis)
     {
-
-
         ImageTextButton.ImageTextButtonStyle textButtonStyle = createButtonStyle(selectionColor);
         ImageTextButton MenuButton = new ImageTextButton(text, textButtonStyle);
         AddButtonListener(MenuButton,text);
@@ -287,8 +276,8 @@ public class GameOverScreen implements Screen {
         System.out.println(MenuButton.getWidth());
         MenuButton.setSize(sizeX,sizeY);
         //MenuButton.setPosition(Xaxis,(stage.getCamera().viewportHeight -MenuButton.getHeight() )/4);
-
-        stage.addActor(MenuButton);
+        table.add(MenuButton).size(sizeX,sizeY);
+        //stage.addActor(MenuButton);
         return MenuButton;
         //MenuButton.addAction(Actions.sequence(Actions.fadeIn(0.4f)));
     }
@@ -313,8 +302,6 @@ public class GameOverScreen implements Screen {
                     verticalGroup.addAction(Actions.fadeOut(0.4f));
                     //dispose();
                     Timer.schedule(new Timer.Task() {
-
-
                         @Override
                         public void run() {
                             if(isHost)

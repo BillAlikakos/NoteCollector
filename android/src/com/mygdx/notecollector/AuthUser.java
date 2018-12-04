@@ -177,7 +177,6 @@ public class AuthUser implements IAuthUser
                         public void run()
                         {
                             noteCollector.getScreen().dispose();
-
                             if (score.OnSubmit())
                             {
                                 score.setUserName(user.getDisplayName());

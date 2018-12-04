@@ -223,6 +223,8 @@ public class SearchTrack implements Screen {
     @Override
     public void dispose()
     {
+        AssetsManager.disposeListMenuAssets();
+        AssetsManager.disposeWifiAssets();
         //stage.dispose();
         table.clear();
         if(!networkAccess)
@@ -252,7 +254,9 @@ public class SearchTrack implements Screen {
         //table.setTouchable(Touchable.enabled);
     }
 
-    private void LoadAssets() {
+    private void LoadAssets()
+    {
+        AssetsManager.LoadAssets();
         AssetsManager.LoadListAssets();
         AssetsManager.LoadWiFiAssets();
         font = AssetsManager.createBitmapFont();
@@ -353,7 +357,7 @@ public class SearchTrack implements Screen {
 
     }
 
-    public void sendRequest()
+    private void sendRequest()
     {
         HttpRequestBuilder builder = new HttpRequestBuilder();
         query=textField.getText();

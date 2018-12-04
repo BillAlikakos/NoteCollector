@@ -78,6 +78,7 @@ public class GameStage extends Stage implements ContactListener
     private long msec;
     //Texture for background
     private Texture Background;
+    private Image mazePreview;
     //actor objects
     private SquareNotes squareNotes;
     private Collector collector;
@@ -107,7 +108,6 @@ public class GameStage extends Stage implements ContactListener
     //private  ArrayList<Pair> squarespair;
     private float squarewidth,squareheight;
 
-    private Label resume,quit;
     private Label title;
     private Image BackgroundPause;
     public long pausetime;
@@ -119,7 +119,6 @@ public class GameStage extends Stage implements ContactListener
     private boolean mode;
     private float sizeX,sizeY;
     private float[] size;
-    private Thread t;
     private Image x1;
     private Image x2;
     private Image x3;
@@ -127,7 +126,8 @@ public class GameStage extends Stage implements ContactListener
     private Image x5;
     private Dpad dpad;
 
-    public GameStage(NoteCollector noteCollector, float TickPerMsec, ArrayList<MidiNote> notes, int speed, long delay,boolean mode,Stage stage) throws IOException, InterruptedException {
+    public GameStage(NoteCollector noteCollector, float TickPerMsec, ArrayList<MidiNote> notes, int speed, long delay,boolean mode,Stage stage)
+    {
         super(new ScalingViewport(Scaling.stretch, VIEWPORT_WIDTH, VIEWPORT_HEIGHT, new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)));
         this.stage=stage;
         squarewidth=32f;
@@ -145,11 +145,10 @@ public class GameStage extends Stage implements ContactListener
         prefs= Gdx.app.getPreferences("NoteCollectorPreferences");
         setCollectorSize();
         message ="";
-
-
         GameState ="running";
         redcounts =0;
         fisttime =true;
+        fontbutton = AssetsManager.createFont();
         createObjects();
         createBackground();
         setupWorld();
@@ -185,6 +184,7 @@ public class GameStage extends Stage implements ContactListener
         GameState ="running";
         redcounts =0;
         fisttime =true;
+        fontbutton = AssetsManager.createFont();
         createObjects();
         createBackground();
         setupWorld();
@@ -216,6 +216,7 @@ public class GameStage extends Stage implements ContactListener
         GameState ="running";
         redcounts =0;
         fisttime =true;
+        fontbutton = AssetsManager.createFont();
         createObjects();
         createBackground();
         setupWorld();
@@ -334,7 +335,8 @@ public class GameStage extends Stage implements ContactListener
     }
     private void createPauseLabels()
     {
-        fontbutton = AssetsManager.createBimapFont(45);
+       // fontbutton = AssetsManager.createBimapFont(45);
+        //fontbutton = AssetsManager.createFont();
         String name=  AssetsManager.MusicName;
         if(name.contains("/"))
         {
@@ -360,19 +362,6 @@ public class GameStage extends Stage implements ContactListener
         selectionColor.setRightWidth(5f);
         selectionColor.setBottomHeight(2f);
         BackgroundPause = new Image(selectionColor);
-       /* if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)
-        {
-            BackgroundPause.setSize(200,200);
-        }
-        if(VIEWPORT_WIDTH==1080 && VIEWPORT_HEIGHT==720)
-        {
-            BackgroundPause.setSize(250,300);
-        }
-        if(VIEWPORT_WIDTH>1080 && VIEWPORT_HEIGHT>720)
-        {
-            BackgroundPause.setSize(400,350);
-        }*/
-        //BackgroundPause.setSize(400*VIEWPORT_WIDTH/1920,350*VIEWPORT_HEIGHT/1080);
         BackgroundPause.setSize(title.getWidth()+100*VIEWPORT_WIDTH/1920+sizeX,2*sizeY+100*VIEWPORT_HEIGHT/1080);
         BackgroundPause.setPosition((getCamera().viewportWidth- BackgroundPause.getWidth())/2,(getCamera().viewportHeight  -BackgroundPause.getHeight())/2 );
         BackgroundPause.setVisible(false);
@@ -470,7 +459,7 @@ public class GameStage extends Stage implements ContactListener
     }
     private void createBackground()
     {
-        if (prefs.getString("gameBackground").equals(Constants.BackgroundGameDef))
+        /*if (prefs.getString("gameBackground").equals(Constants.BackgroundGameDef))
         {
             Background = AssetsManager.assetManager.get(Constants.getBackgroundGame());
         }
@@ -478,12 +467,15 @@ public class GameStage extends Stage implements ContactListener
         {
 
             Background=AssetsManager.externalAssets.get(Constants.getBackgroundGame());
-        }
+        }*/
+        FileHandle file = Gdx.files.internal(Constants.getBackgroundGame());
        //AssetsManager.assetManager.load(Constants.getBackgroundGame(),Texture.class);
         //Background = AssetsManager.assetManager.get(Constants.BackgroundGame);
         //Background = AssetsManager.assetManager.get(Constants.getBackgroundGame(),Texture.class);
-        Image mazePreview = new Image(Background);
-        mazePreview.setScaling(Scaling.fit );
+        //Image mazePreview = new Image(Background);
+        //mazePreview = new Image(Background);
+        //mazePreview.setScaling(Scaling.fit );
+        mazePreview=AssetsManager.scaleGameBackground(file);
         addActor(mazePreview);
     }
     private void setUpText() {
@@ -613,8 +605,9 @@ public class GameStage extends Stage implements ContactListener
         addActor(piano);
     }
 
-    private void setUpScore() {
-        Rectangle scoreBounds = new Rectangle(getCamera().viewportWidth * 57 / 64,
+    private void setUpScore()//TODO : Size ui labels accordingly for resolutions add fading to messages.
+    {
+        Rectangle scoreBounds = new Rectangle(getCamera().viewportWidth * 57  / 64 -(60*getCamera().viewportWidth/1920),
                 getCamera().viewportHeight * 62 / 64, getCamera().viewportWidth / 4,
                 getCamera().viewportHeight / 6);
         score = new Score(scoreBounds, AssetsManager);
@@ -698,8 +691,7 @@ produce the corresponding square*/
 
     private Label createLabel(String text){
         Label.LabelStyle labelstyle = new Label.LabelStyle(fontbutton, Color.WHITE);
-        Label fileLabel = new Label(text, labelstyle);
-        return  fileLabel;
+        return new Label(text, labelstyle);
 
     }
 
@@ -800,7 +792,7 @@ produce the corresponding square*/
 
      }
 
-     //check what type of message is; to printintg it
+     //check what type of message is; to print it
     private void checkMessages(){
         if (squareNotes.getSquareColor() == 3 && fisttime && squareNotes.getTypeOfFailure() == 1) {
             createMessage(RED,"Collector disabled for ");
@@ -837,7 +829,7 @@ produce the corresponding square*/
      }
 
      //resume the music to play 
-    public void resumeTimer(){
+     private void resumeTimer(){
         GameState ="running";
         pausetime =  System.currentTimeMillis() - pausetime;
         starttime = pausetime + starttime;
@@ -945,9 +937,9 @@ produce the corresponding square*/
         return false;
 
     }
-    public void fadeToMenu()
+    private void fadeToMenu()
     {
-        FileHandle file = Gdx.files.internal(Constants.getBackgroundMenu().toString());//Pseudo-fade out to menu screen
+        FileHandle file = Gdx.files.internal(Constants.getBackgroundMenu());//Pseudo-fade out to menu screen
         Image background=noteCollector.getAssetsManager().scaleBackground(file);
         addActor(background);
         addAction(Actions.sequence(Actions.alpha(0), Actions.fadeIn(2f)));
@@ -979,7 +971,16 @@ produce the corresponding square*/
     }
 
     @Override
-    public void dispose() {
+    public void dispose()
+    {
+        text.dispose();
+        score.dispose();
+        if(isGuest || isHost)
+        {
+            score2.dispose();
+        }
+        fontbutton.dispose();
+        //Background.dispose();
         timer.clear();
         task.cancel();
         music.stop();
@@ -988,6 +989,8 @@ produce the corresponding square*/
         x3.clear();
         x4.clear();
         x5.clear();
+        AssetsManager.disposeX();
+        AssetsManager.disposeGameAssets();
         //t.interrupt();
         AssetsManager.assetManagerFiles.dispose();
     }

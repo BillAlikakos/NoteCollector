@@ -104,7 +104,6 @@ public class LoginHandler implements IGoogleLogin
                         @Override
                         public void onResult(@NonNull Status status) {
                             if (status.isSuccess()) {
-                                System.out.println("Lolololol");
                                 mGoogleApiClient.disconnect();
                                 //Toast.makeText(context, R.string.logout_succeed, Toast.LENGTH_SHORT).show();
                             }

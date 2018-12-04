@@ -120,7 +120,7 @@ public class SamplesTrack implements Screen {
         createList();
         getDir(root+"/Note Collector/Sample Tracks");
         createLogo();
-        table.add(createLabel("Select a track:")).padTop(VIEWPORT_HEIGHT*0.15f);
+        table.add(createLabel("Select a song:")).padTop(VIEWPORT_HEIGHT*0.15f);
         table.row();
         createScrollPane();
         ImageTextButton back= createButton("Back");
@@ -182,6 +182,7 @@ public class SamplesTrack implements Screen {
     @Override
     public void dispose()
     {
+        assetsManager.disposeListMenuAssets();
         table.clear();
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(verticalGroup);
@@ -278,8 +279,8 @@ public class SamplesTrack implements Screen {
 
     private void LoadAssets(){
        // fontH = assetsManager.createBimapFont(VIEWPORT_WIDTH*64/1920);
+        assetsManager.LoadAssets();
         fontH = assetsManager.createFontH();
-
         font = assetsManager.createBitmapFont();
         selectionColor =new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.ButtonImage,Texture.class))) ;
         selectionColor.setRightWidth(5f);
@@ -291,7 +292,8 @@ public class SamplesTrack implements Screen {
 
     }
 
-    private void ListStyle(){
+    private void ListStyle()
+    {
         assetsManager.LoadListAssets();
         fontList = assetsManager.createBimapFont(VIEWPORT_WIDTH*55/1920);
         selectionColorList = new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.SelectionColor,Texture.class)));
@@ -299,9 +301,10 @@ public class SamplesTrack implements Screen {
     }
 
     private void createList()  {
-        list = new List<Object>(skin);
+        list = new List<>(skin);
         list.getStyle().selection = selectionColorList;
         list.getStyle().font = fontList;
+        list.getStyle().selection.setTopHeight(10*VIEWPORT_HEIGHT/1080);
         addListener(list);
     }
 
@@ -329,6 +332,7 @@ public class SamplesTrack implements Screen {
                         if (!multiplayer)
                         {
                             File file = new File(path.get(list.getSelectedIndex()));
+                            System.out.println(path.size());
                             filepath = file.getAbsolutePath();
                             noteCollector.setScreen(new TrackSelect(noteCollector, speed, delay, file, mode,stage));//
                         }
@@ -366,8 +370,8 @@ public class SamplesTrack implements Screen {
     //get the dir of sample tracks
     private void getDir(String dirPath) {
 
-        path = new ArrayList<String>();
-        item = new ArrayList<String>();
+        path = new ArrayList<>();
+        item = new ArrayList<>();
 
 
         File f = new File(dirPath);

@@ -66,7 +66,8 @@ public class GameScreen implements  Screen {
         Gdx.input.setInputProcessor(gameStage);
     }
 
-    public GameScreen(NoteCollector game, float TickPerMsec, ArrayList<MidiNote> notes, String filepath, int speed, long delay, ClientClass c,boolean mode,Stage stage) throws IOException, InterruptedException {
+    public GameScreen(NoteCollector game, float TickPerMsec, ArrayList<MidiNote> notes, String filepath, int speed, long delay, ClientClass c,boolean mode,Stage stage)
+    {
         gameStage = new GameStage(game,TickPerMsec,notes,speed,delay,c,mode,stage);
         this.stage=stage;
         this.game = game;
@@ -83,7 +84,8 @@ public class GameScreen implements  Screen {
 
     }
 
-    public GameScreen(NoteCollector game, float TickPerMsec, ArrayList<MidiNote> notes, String filepath, int speed, long delay, ServerClass srv,boolean mode,Stage stage) throws IOException, InterruptedException {
+    public GameScreen(NoteCollector game, float TickPerMsec, ArrayList<MidiNote> notes, String filepath, int speed, long delay, ServerClass srv,boolean mode,Stage stage)
+    {
 
         gameStage = new GameStage(game,TickPerMsec,notes,speed,delay,srv,mode,stage);
         this.stage=stage;
@@ -229,8 +231,10 @@ public class GameScreen implements  Screen {
     }
 
     @Override
-    public void dispose() {
+    public void dispose()
+    {
         gameStage.dispose();
+        System.gc();
     }
 
     @Override

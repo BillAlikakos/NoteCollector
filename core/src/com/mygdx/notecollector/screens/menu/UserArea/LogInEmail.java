@@ -235,6 +235,8 @@ public class LogInEmail implements Screen
     @Override
     public void dispose()
     {
+        AssetsManager.disposeListMenuAssets();
+        AssetsManager.disposeLogInAssets();
         font.dispose();
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(verticalGroup);
@@ -266,6 +268,7 @@ public class LogInEmail implements Screen
     private void LoadAssets()
     {
         AssetsManager.LoadListAssets();
+        AssetsManager.LoadAssets();
         AssetsManager.LoadLogInAssets();
         font=AssetsManager.createBitmapFont();
         // font = AssetsManager.createBimapFont(45);

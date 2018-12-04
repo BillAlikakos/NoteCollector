@@ -50,4 +50,8 @@ public class Text extends Actor {
         font.draw(batch, message, bounds.x,bounds.y);
     }
 
+    public void dispose()
+    {
+        font.dispose();
+    }
 }
