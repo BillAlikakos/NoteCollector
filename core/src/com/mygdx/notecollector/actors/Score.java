@@ -56,7 +56,8 @@ public class Score extends Actor {
         this.bounds = bounds;
         score = 0;
         //get font type from asset manager
-        font = AssetsManager.createBimapFont(28);
+        //font = AssetsManager.createBimapFont(28);
+        font = AssetsManager.createFont();
         font.setColor(Color.BLACK);
 
     }
@@ -71,7 +72,8 @@ public class Score extends Actor {
         this.bounds = bounds;
         score = 0;
         //get font type from asset manager
-        font = AssetsManager.createBimapFont(28);
+        //font = AssetsManager.createBimapFont(28);
+        font = AssetsManager.createFont();
         font.setColor(Color.BLACK);
 
     }

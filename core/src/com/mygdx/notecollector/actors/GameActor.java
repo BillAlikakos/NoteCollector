@@ -11,10 +11,10 @@ import com.mygdx.notecollector.Utils.Assets;
  */
 public abstract class GameActor extends Actor {
 
-    protected Body body;
-    protected Array<Rectangle> bubbledrops;
-    protected Array<Rectangle> pianokeys;
-    protected Assets AssetsManager;
+    private Body body;
+    private Array<Rectangle> bubbledrops;
+    private Array<Rectangle> pianokeys;
+    private Assets AssetsManager;
 
     //table with coordinates of keyboard keys (for high resolution)
     public float notepositionHD[][]=
@@ -42,15 +42,15 @@ public abstract class GameActor extends Actor {
                     {456f,467f,470f,481f,484f,498f,509f,512f,523f,526f,537f,540f},
                     {554f,565f,568f,579f,582f,596f,607f,610f,621f,624f,635f,638f},
                     {652f,663f,666f,677f,680f,694f,705f,708f,719f,722f,733f,736f},
-                    {750f,0,0,0,0,0,0,0,0,0,0,0},
+                    {750f,0,0,0,0,0,0,0,0,0f,0f,0f},
             };
 
     public GameActor(Body body,Assets AssetsManager) {
         this.body = body;
         //initialize array of rectangles for piano keys and square grays
 
-        bubbledrops =new Array<Rectangle>();
-        pianokeys = new Array<Rectangle>();
+        bubbledrops = new Array<>();
+        pianokeys = new Array<>();
         this.AssetsManager = AssetsManager;
     }
 

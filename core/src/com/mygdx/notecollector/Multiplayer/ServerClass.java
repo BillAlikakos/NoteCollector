@@ -80,7 +80,7 @@ public class ServerClass
     public void sendLoadedMsg()
     {
         fileLoaded request = new fileLoaded();
-        request.loaded = "Loaded";
+        request.loaded =System.currentTimeMillis();
         //System.out.println("Host Sending");
         //c.setKeepAliveTCP(60000);
         c.sendTCP(request);
@@ -156,7 +156,8 @@ Static classes for communication. All classes must contain zero argument constru
 
     public static  class fileLoaded
     {
-        public String loaded;
+        //public String loaded;
+        public long loaded;
         public fileLoaded()
         {}
 

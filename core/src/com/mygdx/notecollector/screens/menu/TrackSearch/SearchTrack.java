@@ -104,8 +104,11 @@ public class SearchTrack implements Screen {
         createButton("Back", 0f*VIEWPORT_WIDTH/1920, 0f*VIEWPORT_HEIGHT/1080, sizeX, sizeY);
         if(networkAccess)
         {
+            //float Yaxis=300*VIEWPORT_HEIGHT/1080;
+            //noRes=createLabel("",Yaxis);
             createTextField();
             search=createLabel("Search For Track", stage.getCamera().viewportHeight / 2 + 135*VIEWPORT_HEIGHT/1080);
+            stage.addActor(search);
             createButton("Submit", ((stage.getCamera().viewportWidth / 2) - sizeX / 2), 410f*VIEWPORT_HEIGHT/1080, sizeX, sizeY);
             stage.addActor(table);
             table.getColor().a=0;
@@ -117,10 +120,13 @@ public class SearchTrack implements Screen {
         }
         else
         {
+
             stage.addActor(table);
             createImg();
             err1=createLabel("Network Connection Unavailable", (stage.getCamera().viewportHeight / 2 + 100*VIEWPORT_HEIGHT/1080));
             err2=createLabel("Please Connect to a Network", (stage.getCamera().viewportHeight / 2 + 65*VIEWPORT_HEIGHT/1080));
+            stage.addActor(err1);
+            stage.addActor(err2);
             err1.getColor().a=0;
             err2.getColor().a=0;
             table.getColor().a=0;
@@ -231,6 +237,10 @@ public class SearchTrack implements Screen {
         {
             stage.getRoot().removeActor(icon);
         }
+        if(!isResult)
+        {
+            stage.getRoot().removeActor(noRes);
+        }
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(verticalGroup);
         font.dispose();
@@ -242,7 +252,7 @@ public class SearchTrack implements Screen {
         Label.LabelStyle labelstyle = new Label.LabelStyle(font, Color.WHITE);
         Label label = new Label(text, labelstyle);
         label.setPosition(((stage.getCamera().viewportWidth - label.getWidth()) / 2), (Yaxis + 50*VIEWPORT_HEIGHT/1080));
-        stage.addActor(label);
+       // stage.addActor(label);
         return label;
     }
 
@@ -387,12 +397,15 @@ public class SearchTrack implements Screen {
                 String result=page.text();
                 if(result.equalsIgnoreCase("Search result: found nothing!"))
                 {
-                    float Yaxis=300*VIEWPORT_HEIGHT/1080;
-                    noRes=createLabel("No results for your query",Yaxis);
-                    noRes.getColor().a=0;
-                    noRes.addAction(Actions.fadeIn(0.1f));
-                    isResult=false;
-
+                    if(isResult)
+                    {
+                        float Yaxis=300*VIEWPORT_HEIGHT/1080;
+                        noRes=createLabel("No results for your query",Yaxis);
+                        stage.addActor(noRes);
+                        noRes.getColor().a=0;
+                        noRes.addAction(Actions.fadeIn(0.1f));
+                        isResult=false;
+                    }
                 }
                 else
                 {
@@ -442,12 +455,16 @@ public class SearchTrack implements Screen {
             @Override
             public void failed(Throwable t)
             {
-                Gdx.app.log("WebRequest", "HTTP request failed");
-                float Yaxis=300*VIEWPORT_HEIGHT/1080;
-                noRes=createLabel("HTTP Request failed. Please try again.",Yaxis);
-                noRes.getColor().a=0;
-                noRes.addAction(Actions.fadeIn(0.1f));
-                isResult=false;
+                if(isResult)
+                {
+                    Gdx.app.log("WebRequest", "HTTP request failed");
+                    float Yaxis=300*VIEWPORT_HEIGHT/1080;
+                    noRes=createLabel("HTTP Request failed. Please try again.",Yaxis);
+                    stage.addActor(noRes);
+                    noRes.getColor().a=0;
+                    noRes.addAction(Actions.fadeIn(0.1f));
+                    isResult=false;
+                }
             }
 
             @Override

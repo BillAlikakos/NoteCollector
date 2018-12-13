@@ -80,7 +80,7 @@ public class ClientClass extends Listener
 
     public ArrayList<InetAddress> discoverServers()//Get an arraylist of available servers
     {
-        ArrayList<InetAddress> addresses=new ArrayList<>();
+        ArrayList<InetAddress> addresses;
         //addresses= (ArrayList<InetAddress>) client.discoverHosts(udpPort,2000);
         addresses= (ArrayList<InetAddress>) client.discoverHosts(udpPort,500);
         return  addresses;
@@ -147,15 +147,16 @@ public class ClientClass extends Listener
         });
     }
 
-    public String returnScore()
+    private String returnScore()
     {
         return score;
     }
 
-    public void sendLoadedMsg()//Notifies server that the client has loaded the game files
+    public void sendLoadedMsg(long time)//Notifies server that the client has loaded the game files
     {
         fileLoaded request = new fileLoaded();
-        request.loaded = "Loaded";
+        //request.loaded = "Loaded";
+        request.loaded = time;
         client.sendTCP(request);
 
     }
@@ -174,7 +175,6 @@ public class ClientClass extends Listener
         msg.score=score;
         System.out.println("Sending game over: "+score);
         client.sendTCP(msg);
-        System.out.println("LOLOLOL");
     }
 
 
@@ -189,7 +189,8 @@ Static classes for communication. All classes must contain zero argument constru
 */
     public static  class fileLoaded
     {
-        public String loaded;
+        //public String loaded;
+        public long loaded;
         public fileLoaded()
         {}
 

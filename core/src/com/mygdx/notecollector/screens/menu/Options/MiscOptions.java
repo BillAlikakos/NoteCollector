@@ -12,7 +12,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -26,7 +25,6 @@ import com.mygdx.notecollector.IGallery;
 import com.mygdx.notecollector.NoteCollector;
 import com.mygdx.notecollector.Utils.Assets;
 import com.mygdx.notecollector.Utils.Constants;
-import com.mygdx.notecollector.screens.menu.MainMenuScreen;
 import com.mygdx.notecollector.screens.menu.OptionsScreen;
 
 import org.apache.commons.io.FileUtils;
@@ -162,16 +160,6 @@ public class MiscOptions implements Screen
         return new ImageTextButton(text, textButtonStyle);
     }
 
-    private void fadeBackground()
-    {
-        FileHandle file = Gdx.files.internal(Constants.getBackgroundMenu());
-        Image background=noteCollector.getAssetsManager().scaleBackground(file);
-        stage.addActor(background);
-        stage.addAction(Actions.sequence(Actions.alpha(0), Actions.fadeIn(2f)));
-        background.getColor().a=0;
-        background.addAction(Actions.fadeIn(0.2f));
-    }
-
     private void AddButtonListener(final ImageTextButton MenuButton)
     {
         MenuButton.addListener(new ClickListener() {
@@ -189,9 +177,9 @@ public class MiscOptions implements Screen
 
                         @Override
                         public void run() {
-                            FileHandle file = Gdx.files.internal(Constants.getBackgroundMenu());
+                           /* FileHandle file = Gdx.files.internal(Constants.getBackgroundMenu());
                             Image background=noteCollector.getAssetsManager().scaleBackground(file);
-                            stage.addActor(background);
+                            stage.addActor(background);*/
                             dispose();
                             noteCollector.setScreen(new OptionsScreen(noteCollector,stage));
 
@@ -278,6 +266,8 @@ public class MiscOptions implements Screen
                                     Constants.setBackgroundMenu("Note Collector/Custom Images/menu_image.jpg");
                                     System.out.println(Constants.getBackgroundMenu());
                                     gallery.clearSelectedPath();
+                                    //assetsManager.disposeBackground();
+                                    changeImage();
                                     this.interrupt();
                                 }
 
@@ -366,6 +356,19 @@ public class MiscOptions implements Screen
         });
         table.add(menuBg).padRight(0.5f).size(sizeX,sizeY);
         table.add(gameBg).padRight(0.7f).size(sizeX,sizeY);
+    }
+    private void changeImage()
+    {
+        Gdx.app.postRunnable(new Runnable()//Create a synchronized thread to the render() process to maintain GL context
+        {
+            @Override
+            public void run()
+            {
+                assetsManager.disposeBackground();//Unload old background
+                Image background=noteCollector.getAssetsManager().scaleBackground(Gdx.files.internal(Constants.getBackgroundMenu()));//Scale the new one and add it to stage
+                stage.getRoot().addActorAt(2,background);
+            }
+        });
     }
 
     @Override

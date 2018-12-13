@@ -52,17 +52,14 @@ public class Score  {
     public ArrayList<scoreObj> getScore()//Fix sorting and overhaul the display system
     {
         FileHandle file = Gdx.files.local("scores.csv");
-        ArrayList<scoreObj> scores = new ArrayList<scoreObj>();
+        ArrayList<scoreObj> scores = new ArrayList<>();
         if(!file.exists())
         {
             return scores;
         }
         //scoreObj temp=new scoreObj();
         String text = file.readString();
-        //System.out.println(text);
-        String tmp=text;
-        String lines[] = tmp.split("\\r?\\n");//Regex to split string on newlines
-        System.out.println("Length:"+lines.length);
+        String lines[] = text.split("\\r?\\n");//Regex to split string on newlines
 
         for(int i=0;i<lines.length;i++)
         {
@@ -73,7 +70,6 @@ public class Score  {
                 scores.add(score);
                 //System.out.print(" "+fields[j]);
             }
-            System.out.println(" ");
         }
         Collections.sort(scores, new Comparator<scoreObj>()
         {

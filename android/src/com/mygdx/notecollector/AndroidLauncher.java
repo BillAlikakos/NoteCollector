@@ -61,7 +61,6 @@ public class AndroidLauncher extends AndroidApplication
 	{
 		Activity thisActivity = (Activity) this.getContext();
 		super.onCreate(savedInstanceState);
-		//final AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 		config = new AndroidApplicationConfiguration();
 		config.useImmersiveMode = true;//Launch in immersive mode
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);//Keep screen continuously on
@@ -69,11 +68,7 @@ public class AndroidLauncher extends AndroidApplication
 		user=new AuthUser(this.getContext(),this);
 		db=new DataBase(this.getContext());
 		gallery = new Gallery(this);
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-		//OAuth id 455152900263-dtn5ri21rrcaenup2lgr9je2sb6sfum1.apps.googleusercontent.com
 		googleHandler=new LoginHandler(this.getContext());
-		//LoginHandler.getInstance().setContext(this.getContext());
-		//LoginHandler.getInstance().startApiClient();
         noteCollector=new NoteCollector(wifi,gallery,user,db,googleHandler);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)//Check if device is running android version >6
 		{
@@ -86,12 +81,10 @@ public class AndroidLauncher extends AndroidApplication
 			{
 				// Permission has already been granted
 			}
-			//initialize(new NoteCollector(wifi,gallery,user,db,googleHandler), config);
 			initialize(noteCollector, config);
 		}
 		else
 		{
-			//initialize(new NoteCollector(wifi,gallery,user,db,googleHandler), config);
 			initialize(noteCollector, config);
 		}
 	}
@@ -157,7 +150,6 @@ public class AndroidLauncher extends AndroidApplication
 		}
 		if (requestCode==LoginHandler.RC_SIGN_IN)
 		{
-			//GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
 			Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
 			try
 			{
@@ -180,8 +172,7 @@ public class AndroidLauncher extends AndroidApplication
 						noteCollector.getScreen().dispose();
 						noteCollector.setScreen(new SocialSplashScreen(noteCollector, noteCollector.getStage()));
 					}
-				}, 0.4f);
-				// ...
+				}, 0.2f);
 			}
 		}
 	}

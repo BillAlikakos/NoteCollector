@@ -86,6 +86,7 @@ project(":core") {
         implementation "com.esotericsoftware:kryonet:2.22.0-RC1"
         implementation "commons-io:commons-io:2.6"
         implementation 'org.jsoup:jsoup:1.11.1'
+        implementation 'commons-net:commons-net:3.3'
     }
 }
 

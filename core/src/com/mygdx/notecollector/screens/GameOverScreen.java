@@ -42,7 +42,7 @@ public class GameOverScreen implements Screen {
     private Assets AssetsManager;
     private NoteCollector notecollector;
     private Stage stage;
-    private Viewport viewport;
+    //private Viewport viewport;
 
     private static final int VIEWPORT_WIDTH = Constants.APP_WIDTH;
     private static final int VIEWPORT_HEIGHT = Constants.APP_HEIGHT;

@@ -54,6 +54,12 @@ public class Collector extends GameActor {
 
     }
 
+    public void dispose()
+    {
+        img.dispose();
+    }
+
+
     public void setPaused(boolean paused) {
         this.paused = paused;
     }

@@ -88,8 +88,8 @@ public class SquareNotes extends GameActor {
         img = AssetsManager.assetManager.get(Constants.square);
         sprite = new Sprite(img);
         sprite.setScale(1f*VIEWPORT_WIDTH/800,1f*VIEWPORT_HEIGHT/480);
-        itemreove = new ArrayList<Pair>(150);
-        noteflying = new ArrayList<Pair>(150);
+        itemreove = new ArrayList<>(150);
+        noteflying = new ArrayList<>(150);
 
         collector = new Rectangle();
 
@@ -132,6 +132,11 @@ public class SquareNotes extends GameActor {
         score = 0;
         redcounts = 0;
         SquareColor = 1;
+    }
+
+    public void dispose()
+    {
+        img.dispose();
     }
 
     public void setPaused(boolean paused) {
@@ -398,8 +403,8 @@ public class SquareNotes extends GameActor {
 class Pair {
     Color color;
     Rectangle note;
-    float Yaxis = Constants.SquareNoteStartY;
-    float Xaxis;
+    private float Yaxis = Constants.SquareNoteStartY;
+    private float Xaxis;
     int padX;
     int padY;
     private static final int VIEWPORT_WIDTH = Constants.APP_WIDTH;

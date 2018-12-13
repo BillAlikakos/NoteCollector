@@ -24,7 +24,6 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.Timer;
@@ -46,9 +45,13 @@ import com.mygdx.notecollector.actors.Text;
 import com.mygdx.notecollector.midilib.MidiNote;
 import com.mygdx.notecollector.screens.menu.MainMenuScreen;
 
+import org.apache.commons.net.ntp.NTPUDPClient;
+import org.apache.commons.net.ntp.TimeInfo;
+
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Date;
 
 import static com.badlogic.gdx.graphics.Color.RED;
 
@@ -62,7 +65,6 @@ public class GameStage extends Stage implements ContactListener
 
     private World world;
     private Vector3 touchPoint,PuttonPoint,dragPoint;
-
     private Rectangle collectorPosition;
     private BitmapFont font;
 
@@ -77,7 +79,7 @@ public class GameStage extends Stage implements ContactListener
     private float curretnTick;
     private long msec;
     //Texture for background
-    private Texture Background;
+    //private Texture Background;
     private Image mazePreview;
     //actor objects
     private SquareNotes squareNotes;
@@ -154,6 +156,7 @@ public class GameStage extends Stage implements ContactListener
         setupWorld();
         setupCamera();
         setupActros(speed,delay);
+        SetupMusic();
         StartTimer();
         createPauseLabels();
         createBackgroundPause();
@@ -161,40 +164,74 @@ public class GameStage extends Stage implements ContactListener
 
     }
 
-    public GameStage(NoteCollector noteCollector, float TickPerMsec, ArrayList<MidiNote> notes, int speed, long delay, ServerClass srv, boolean mode,Stage stage)
+    public GameStage(NoteCollector noteCollector, float TickPerMsec, ArrayList<MidiNote> notes, int speed, long delay, ServerClass srv, boolean mode,Stage stage,long StartTime,long diff)
     {
         super(new ScalingViewport(Scaling.stretch, VIEWPORT_WIDTH, VIEWPORT_HEIGHT, new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)));
-        this.stage=stage;
-        squarewidth=32f;
-        squareheight=32f;
-        this.AssetsManager =noteCollector.getAssetsManager();
-        this.noteCollector=noteCollector;
-        this.notes =notes;
+        this.stage = stage;
+        squarewidth = 32f;
+        squareheight = 32f;
+        this.AssetsManager = noteCollector.getAssetsManager();
+        this.noteCollector = noteCollector;
+        this.notes = notes;
         this.TickPerMsec = TickPerMsec;
-        this.srv=srv;
-        this.isGuest=false;
-        this.isHost=true;
-        this.mode=mode;
-        prefs= Gdx.app.getPreferences("NoteCollectorPreferences");
+        this.srv = srv;
+        this.isGuest = false;
+        this.isHost = true;
+        this.mode = mode;
+        prefs = Gdx.app.getPreferences("NoteCollectorPreferences");
 
         setCollectorSize();
         addGameOverListener();
-        message ="";
+        message = "";
 
-        GameState ="running";
-        redcounts =0;
-        fisttime =true;
+        GameState = "running";
+        redcounts = 0;
+        fisttime = true;
         fontbutton = AssetsManager.createFont();
         createObjects();
         createBackground();
         setupWorld();
         setupCamera();
-        setupActros(speed,delay);
-        StartTimer();
-
-
+        setupActros(speed, delay);
+        SetupMusic();
+        /*String TIME_SERVER = "0.gr.pool.ntp.org";
+        NTPUDPClient timeClient = new NTPUDPClient();
+        InetAddress inetAddress = null;
+        try
+        {
+            inetAddress = InetAddress.getByName(TIME_SERVER);
+        }
+        catch (UnknownHostException e)
+        {
+            e.printStackTrace();
+        }
+        TimeInfo timeInfo = null;
+        try
+        {
+            timeInfo = timeClient.getTime(inetAddress);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        //long returnTime = timeInfo.getMessage().getTransmitTimeStamp().getTime();
+        long time = timeInfo.getMessage().getTransmitTimeStamp().getTime();
+        long diffTime=time-System.currentTimeMillis();
+        System.out.println("Current time: "+time);
+        System.out.println("Starting time: "+StartTime);
+        long tmp=System.currentTimeMillis()+(diffTime);
+        while(tmp<=StartTime)
+        {
+            if(tmp==StartTime)
+            {
+                System.out.println("Starting time");
+                StartTimer();
+            }
+            tmp=System.currentTimeMillis()+(diffTime);
+        }*/
+        checkTime(StartTime);
     }
-    public GameStage(NoteCollector noteCollector, float TickPerMsec, ArrayList<MidiNote> notes, int speed, long delay, ClientClass c, boolean mode,Stage stage)
+    public GameStage(NoteCollector noteCollector, float TickPerMsec, ArrayList<MidiNote> notes, int speed, long delay, ClientClass c, boolean mode,Stage stage,long StartTime)
     {
         super(new ScalingViewport(Scaling.stretch, VIEWPORT_WIDTH, VIEWPORT_HEIGHT, new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)));
         this.stage=stage;
@@ -222,9 +259,56 @@ public class GameStage extends Stage implements ContactListener
         setupWorld();
         setupCamera();
         setupActros(speed,delay);
-        StartTimer();
+        SetupMusic();
+        checkTime(StartTime);
 
     }
+    private void checkTime(long StartTime)
+    {
+        System.out.println("In CheckTime");
+        String TIME_SERVER = "0.gr.pool.ntp.org";//NTP Server to ping
+        NTPUDPClient timeClient = new NTPUDPClient();
+        InetAddress inetAddress = null;
+        try
+        {
+            inetAddress = InetAddress.getByName(TIME_SERVER);
+        }
+        catch (UnknownHostException e)
+        {
+            e.printStackTrace();
+        }
+        TimeInfo timeInfo = null;
+        try
+        {
+            timeInfo = timeClient.getTime(inetAddress);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        //long returnTime = timeInfo.getMessage().getTransmitTimeStamp().getTime();
+        long time = timeInfo.getMessage().getTransmitTimeStamp().getTime();//Get the NTP Server time
+        long diffTime=time-System.currentTimeMillis();//Get difference between the System time and the NTP time
+        long tmp=System.currentTimeMillis()+(diffTime);
+        while(tmp<=StartTime)
+        {
+
+            //System.out.println("Current time: "+tmp);
+            //System.out.println("Starting time: "+StartTime);
+            if(tmp==StartTime)//When the time equals to the set match time , begin.
+            {
+                System.out.println("Start time: "+tmp);
+                StartTimer();
+            }
+            tmp=System.currentTimeMillis()+(diffTime);
+        }
+        if(tmp>StartTime)
+        {
+            System.out.println("Starting time: "+StartTime);
+            System.out.println("Time now: "+tmp);
+        }
+    }
+
     private void setCollectorSize()//Set the size of the collector according to resolution and preferred size
     {
         if(prefs.getBoolean("normal"))
@@ -330,7 +414,6 @@ public class GameStage extends Stage implements ContactListener
         dragPoint=new Vector3();
         timer = new Timer();
         collectorPosition = new Rectangle(touchPoint.x, touchPoint.y, 36f, 36f);//Touch
-
         //collectorPosition = new Rectangle(VIEWPORT_WIDTH/2, VIEWPORT_HEIGHT/2, 36f, 36f);//Gamepad
     }
     private void createPauseLabels()
@@ -384,7 +467,7 @@ public class GameStage extends Stage implements ContactListener
             pause.addListener(new InputListener()
             {
                 @Override
-                public boolean touchDown(InputEvent event, float x, float y, int pointer, int button)//TODO : Fix other resolutions sizes for gamepad/pause
+                public boolean touchDown(InputEvent event, float x, float y, int pointer, int button)
                 {
                     if(!GameState.equals("paused"))//If already paused resume
                     {
@@ -393,8 +476,8 @@ public class GameStage extends Stage implements ContactListener
                         final ImageTextButton quit = new ImageTextButton("Quit", textButtonStyle);
                         resume.setSize(sizeX,sizeY);
                         quit.setSize(sizeX,sizeY);
-                        resume.setPosition((getCamera().viewportWidth-resume.getWidth())/2,(getCamera().viewportHeight)/3 +100f*VIEWPORT_WIDTH/1080);
-                        quit.setPosition((getCamera().viewportWidth-quit.getWidth())/2,(getCamera().viewportHeight-quit.getHeight())/3 +40f*VIEWPORT_WIDTH/1080);
+                        resume.setPosition((getCamera().viewportWidth-resume.getWidth())/2,(getCamera().viewportHeight)/3 +150f*VIEWPORT_HEIGHT/1080);
+                        quit.setPosition((getCamera().viewportWidth-quit.getWidth())/2,(getCamera().viewportHeight-quit.getHeight())/3 +40f*VIEWPORT_HEIGHT/1080);
                         resume.addListener(new InputListener()
                         {
                             @Override
@@ -413,7 +496,7 @@ public class GameStage extends Stage implements ContactListener
                             @Override
                             public boolean touchDown(InputEvent event,float x , float y,int pointer,int button)
                             {
-                                fadeToMenu();
+                                fadeToMenu();//TODO : Fix memory leak
                                 Timer.schedule(new Timer.Task() {
                                     @Override
                                     public void run() {
@@ -446,10 +529,6 @@ public class GameStage extends Stage implements ContactListener
         if(prefs.getBoolean("pad"))//If dpad is preferred input type
         {
             setupDpad();
-        }
-        else
-        {
-
         }
         setupSquareNotes(speed,delay);
         setupPiano();
@@ -518,30 +597,7 @@ public class GameStage extends Stage implements ContactListener
             x3.setSize(50*VIEWPORT_WIDTH/1920,50*VIEWPORT_HEIGHT/1080);
             x4.setSize(50*VIEWPORT_WIDTH/1920,50*VIEWPORT_HEIGHT/1080);
             x5.setSize(50*VIEWPORT_WIDTH/1920,50*VIEWPORT_HEIGHT/1080);
-            /*if(VIEWPORT_HEIGHT==480 && VIEWPORT_WIDTH==800)//Set X positions according to resolution so that they don't overlap with the messages
-            {
-                x1.setPosition(getCamera().viewportWidth  / 64, getCamera().viewportHeight * 62 / 70-25);
-                x2.setPosition(getCamera().viewportWidth  / 64+50, getCamera().viewportHeight * 62 / 70-25);
-                x3.setPosition(getCamera().viewportWidth  / 64+100, getCamera().viewportHeight * 62 / 70-25);
-                x4.setPosition(getCamera().viewportWidth  / 64+150, getCamera().viewportHeight * 62 / 70-25);
-                x5.setPosition(getCamera().viewportWidth  / 64+200, getCamera().viewportHeight * 62 / 70-25);
-            }
-            else if(VIEWPORT_HEIGHT==720 && VIEWPORT_WIDTH==1080)
-            {
-                x1.setPosition(getCamera().viewportWidth  / 64, getCamera().viewportHeight * 62 / 70-10);
-                x2.setPosition(getCamera().viewportWidth  / 64+50, getCamera().viewportHeight * 62 / 70-10);
-                x3.setPosition(getCamera().viewportWidth  / 64+100, getCamera().viewportHeight * 62 / 70-10);
-                x4.setPosition(getCamera().viewportWidth  / 64+150, getCamera().viewportHeight * 62 / 70-10);
-                x5.setPosition(getCamera().viewportWidth  / 64+200, getCamera().viewportHeight * 62 / 70-10);
-            }
-            else if(VIEWPORT_HEIGHT>720 && VIEWPORT_WIDTH>1080)
-            {
-                x1.setPosition(getCamera().viewportWidth  / 64, getCamera().viewportHeight * 62 / 70);
-                x2.setPosition(getCamera().viewportWidth  / 64+50, getCamera().viewportHeight * 62 / 70);
-                x3.setPosition(getCamera().viewportWidth  / 64+100, getCamera().viewportHeight * 62 / 70);
-                x4.setPosition(getCamera().viewportWidth  / 64+150, getCamera().viewportHeight * 62 / 70);
-                x5.setPosition(getCamera().viewportWidth  / 64+200, getCamera().viewportHeight * 62 / 70);
-            }*/
+
             x1.setPosition(getCamera().viewportWidth  / 64, getCamera().viewportHeight * 62 / 70-25*VIEWPORT_HEIGHT/480);
             x2.setPosition(getCamera().viewportWidth  / 64+50*VIEWPORT_WIDTH/1920, getCamera().viewportHeight * 62 / 70-25*VIEWPORT_HEIGHT/480);
             x3.setPosition(getCamera().viewportWidth  / 64+100*VIEWPORT_WIDTH/1920, getCamera().viewportHeight * 62 / 70-25*VIEWPORT_HEIGHT/480);
@@ -605,7 +661,7 @@ public class GameStage extends Stage implements ContactListener
         addActor(piano);
     }
 
-    private void setUpScore()//TODO : Size ui labels accordingly for resolutions add fading to messages.
+    private void setUpScore()
     {
         Rectangle scoreBounds = new Rectangle(getCamera().viewportWidth * 57  / 64 -(60*getCamera().viewportWidth/1920),
                 getCamera().viewportHeight * 62 / 64, getCamera().viewportWidth / 4,
@@ -613,7 +669,7 @@ public class GameStage extends Stage implements ContactListener
         score = new Score(scoreBounds, AssetsManager);
         if(this.isHost || this.isGuest)
         {
-            Rectangle scoreBounds2 = new Rectangle(getCamera().viewportWidth * 57 / 64,
+            Rectangle scoreBounds2 = new Rectangle(getCamera().viewportWidth * 57  / 64 -(145*getCamera().viewportWidth/1920),
                     getCamera().viewportHeight * 52 / 64, getCamera().viewportWidth / 4,
                     getCamera().viewportHeight / 6);
             if(isHost)
@@ -640,7 +696,7 @@ public class GameStage extends Stage implements ContactListener
 
     private void StartTimer(){
         createTimer();
-        SetupMusic();//With this method create the object of music class for play the music track
+        //SetupMusic();//With this method create the object of music class to play the music track
 /*Check if the player have select to play without sound*/
         if (prefs.getBoolean("music")) music.setVolume(100f);
         else music.setVolume(0f);
@@ -715,7 +771,6 @@ produce the corresponding square*/
         squareNotes.setPaused(paused);
         collector.setPaused(paused);
         piano.setPaused(true);
-
     }
 
 
@@ -766,7 +821,7 @@ produce the corresponding square*/
          {
              if(isHost)//Send score to host/guest
              {
-                 Integer s=score.getScore();
+                 Integer s=score.getScore();//TODO : Move to parameters
                  srv.sendScore(s.toString());
              }
              else if(isGuest)
@@ -917,7 +972,8 @@ produce the corresponding square*/
            }
            else
            {
-               collectorPosition.set(touchPoint.x,touchPoint.y,squarewidth,squareheight);
+               //collectorPosition.set(touchPoint.x,touchPoint.y,squarewidth,squareheight);
+               collectorPosition.set(touchPoint.x,touchPoint.y+collector.getSprite().getHeight(),squarewidth,squareheight);
                collector.changeposition(touchPoint.x, touchPoint.y+collector.getSprite().getHeight());//Set the collector sprite higher
 
            }
@@ -939,12 +995,10 @@ produce the corresponding square*/
     }
     private void fadeToMenu()
     {
-        FileHandle file = Gdx.files.internal(Constants.getBackgroundMenu());//Pseudo-fade out to menu screen
-        Image background=noteCollector.getAssetsManager().scaleBackground(file);
+        Image background=AssetsManager.getBackground();
         addActor(background);
-        addAction(Actions.sequence(Actions.alpha(0), Actions.fadeIn(2f)));
         background.getColor().a=0;
-        background.addAction(Actions.fadeIn(0.2f));
+        background.addAction(Actions.fadeIn(2f));
     }
 
     private void translateScreenToWorldCoordinates(int x, int y){
@@ -973,6 +1027,12 @@ produce the corresponding square*/
     @Override
     public void dispose()
     {
+        clear();
+        System.out.println("Disposing gameStage");
+        piano.dispose();
+        world.dispose();
+        collector.dispose();
+        //font.dispose();
         text.dispose();
         score.dispose();
         if(isGuest || isHost)
@@ -984,6 +1044,7 @@ produce the corresponding square*/
         timer.clear();
         task.cancel();
         music.stop();
+        music.dispose();
         x1.clear();
         x2.clear();
         x3.clear();
@@ -993,6 +1054,7 @@ produce the corresponding square*/
         AssetsManager.disposeGameAssets();
         //t.interrupt();
         AssetsManager.assetManagerFiles.dispose();
+        music.dispose();
     }
 
 
