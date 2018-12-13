@@ -19,14 +19,14 @@ public class Piano extends  GameActor {
     private static final int VIEWPORT_HEIGHT = Constants.APP_HEIGHT;
     private Sprite spritewhite, spriteblack;
     private SquareNotes squareNotes;
-    private Texture textureWhite, textureBlack, textureWhitepressed, textureBlackpressed,whiteBig,blackBig,whitePBig,blackPBig;
+    private Texture textureWhite, textureBlack, textureWhitepressed, textureBlackpressed;
     private boolean pressed;
     private int octave, notescale,octave2, notescale2;
     private float[] MultipleNotes = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     private ArrayList<MidiNote> notes;
     private Batch batch;
     private int i = 0, j = 0;
-    private Sprite spriteblackPressed,spritewhitePressed,blackPressed,whitePressed,white,black;
+    private Sprite spriteblackPressed,spritewhitePressed;
 
     private int lastIndex,notesize;
     private int startTime,endTime,nextNote;
@@ -55,18 +55,31 @@ public class Piano extends  GameActor {
 
         spritewhite = new Sprite(textureWhite);
         sub=0;
-        System.out.println(spriteblack.getScaleX());
-        System.out.println(spriteblack.getScaleY());
-        spriteblack.setScale(1f*VIEWPORT_WIDTH/800,1f*VIEWPORT_HEIGHT/480);
-        spriteblackPressed.setScale(1f*VIEWPORT_WIDTH/800,1f*VIEWPORT_HEIGHT/480);
+        System.out.println(spritewhite.getScaleX());
+        spriteblack.setScale(spriteblack.getScaleX()*VIEWPORT_WIDTH/800,spriteblack.getScaleY()*VIEWPORT_HEIGHT/480);
+        spriteblackPressed.setScale(spriteblackPressed.getScaleX()*VIEWPORT_WIDTH/800,spriteblackPressed.getScaleY()*VIEWPORT_HEIGHT/480);
+        spritewhitePressed.setScale(spritewhitePressed.getScaleX()*VIEWPORT_WIDTH/800,spritewhitePressed.getScaleY()*VIEWPORT_HEIGHT/480);
+        spritewhite.setScale(spritewhite.getScaleX()*VIEWPORT_WIDTH/800,spritewhite.getScaleY()*VIEWPORT_HEIGHT/480);
+        System.out.println("White "+spritewhite.getScaleY());
+        System.out.println("Black "+spriteblack.getScaleY());
+        System.out.println("White Dimensions: "+spritewhite.getHeight()*spritewhite.getScaleY());
+        System.out.println("Black Dimensions: "+spriteblack.getHeight()*spriteblack.getScaleY());
+        /*spriteblackPressed.setScale(1f*VIEWPORT_WIDTH/800,1f*VIEWPORT_HEIGHT/480);
         spritewhitePressed.setScale(1f*VIEWPORT_WIDTH/800,1f*VIEWPORT_HEIGHT/480);
-        spritewhite.setScale(1f*VIEWPORT_WIDTH/800,1f*VIEWPORT_HEIGHT/480);
+        spritewhite.setScale(1f*VIEWPORT_WIDTH/800,1f*VIEWPORT_HEIGHT/480);*/
         // boolean value for pause detection
         paused =false;
 
     }
 
-
+    public void dispose()
+    {
+        textureBlack.dispose();
+        textureBlackpressed.dispose();
+        textureWhite.dispose();
+        textureWhitepressed.dispose();
+        batch.dispose();
+    }
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
@@ -84,7 +97,7 @@ public class Piano extends  GameActor {
 
            //With notescale and octave of note check if is not black key  and draw it.     
             if(!checkBlackPosition(i))
-                createwhitekeys(pad);
+                createwhitekeys();
 
             i++;
         }
@@ -96,7 +109,7 @@ public class Piano extends  GameActor {
            //With notescale and octave of note check if is not white key  and draw it.     
 
             if(checkBlackPosition(i))
-                createblackkeys(pad-sub);
+                createblackkeys();
             i++;
         }
 
@@ -110,34 +123,35 @@ public class Piano extends  GameActor {
         this.paused = paused;
     }
 
-    private void createblackkeys(int pad)
+    private void createblackkeys()//TODO: Fix keyboard positioning according to button scaling (Xaxis black buttons)
     {
-
-        //check if the key pressed draw pressed key else draw normal key. Also check if key have pressede before  
-        if (noteposition[octave][notescale] == MultipleNotes[j] && pressed == true)
+        float y=(spriteblack.getHeight()*spriteblack.getScaleY())-5/spriteblack.getScaleY();
+        //check if the key pressed draw pressed key else draw normal key. Also check if key have pressed before
+        if (noteposition[octave][notescale] == MultipleNotes[j] && pressed)
         {
-            float y=20f*VIEWPORT_HEIGHT/480;
+            //float y=20f*VIEWPORT_HEIGHT/480;
+
             spriteblackPressed.setPosition(MultipleNotes[j]*VIEWPORT_WIDTH/800, y);
 
             spriteblackPressed.draw(batch);
                 squareNotes.StartNote(noteposition[octave][notescale]*VIEWPORT_WIDTH/800);
 
             j++;
-        } else
+        }
+        else
         {
-            float y=20f*VIEWPORT_HEIGHT/480;
+            //float y=20f*VIEWPORT_HEIGHT/480;
             spriteblack.setPosition(noteposition[octave][notescale]*VIEWPORT_WIDTH/800, y);
             spriteblack.draw(batch);
-
-
         }
 
     }
-    private void createwhitekeys(int pad)
+    private void createwhitekeys()
     {
-        float y=5f*VIEWPORT_HEIGHT/480;
-        //the same function of method createblackkeys in this method 
-        if (noteposition[octave][notescale] == MultipleNotes[j] && pressed == true)
+        //float y=5f*VIEWPORT_HEIGHT/480;
+        float y=spritewhite.getHeight()*spritewhite.getScaleY()/5*spritewhite.getScaleY();
+        //the same function of method createblackkeys in this method
+        if (noteposition[octave][notescale] == MultipleNotes[j] && pressed)
         {
             spritewhitePressed.setPosition( MultipleNotes[j]*VIEWPORT_WIDTH/800, y);
             spritewhitePressed.draw(batch);

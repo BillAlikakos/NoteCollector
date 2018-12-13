@@ -47,7 +47,7 @@ public class LoadingScreen implements Screen {
     private NoteCollector noteCollector;
     private  Assets AssetsManager;
     private Stage stage;
-    private Viewport viewport;
+    //private Viewport viewport;
     private static final int VIEWPORT_WIDTH = Constants.APP_WIDTH;
     private static final int VIEWPORT_HEIGHT = Constants.APP_HEIGHT;
     private int speed;
@@ -73,7 +73,7 @@ public class LoadingScreen implements Screen {
     private boolean isHost;
     private boolean isGuest;
     private boolean mode;
-    private boolean flag ;
+   // private boolean flag ;
     private String difficulty;
     private boolean done=false;
 
@@ -126,7 +126,7 @@ public class LoadingScreen implements Screen {
     {
         this.stage=stage;
         this.difficulty=difficulty;
-        this.flag=false;
+        //this.flag=false;
         this.track=track;
         this.noteCollector = noteCollector;
         this.srv=srv;
@@ -257,17 +257,18 @@ public class LoadingScreen implements Screen {
     {
         //AssetsManager.disposeMenuAssets();
         AssetsManager.assetManager.unload(Constants.logo);
+        spinnerImageTexture.dispose();//NEW
         font.dispose();
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(verticalGroup);
         stage.getRoot().removeActor(spinnerImage);
-        //AssetsManager.assetManager.unload(Constants.spinner);
+        AssetsManager.assetManager.unload(Constants.spinner);
        // t.interrupt();
     }
 
 
     //if the method setupmidi isn't running show the game screen  
-    private void showLoadProgress()
+    private void showLoadProgress()//TODO : Try to do loading in a while loop in show() instead of render()
     {
         if ( !t.isAlive() && AssetsManager.assetManager.update() && AssetsManager.assetManagerFiles.update())
         {
@@ -308,15 +309,8 @@ public class LoadingScreen implements Screen {
                         if(!done)//Avoid loading the screen multiple times
                         {
 
-                            try
-                            {
-                                dispose();
-                                noteCollector.setScreen(new GameScreen(noteCollector,TickPerMsec,notes,filepath,speed,delay,mode,stage));
-                            }
-                            catch (IOException | InterruptedException e)
-                            {
-                                e.printStackTrace();
-                            }
+                            dispose();
+                            noteCollector.setScreen(new GameScreen(noteCollector,TickPerMsec,notes,filepath,speed,delay,mode,stage));
                             done=true;
                         }
                     }
@@ -336,11 +330,16 @@ public class LoadingScreen implements Screen {
         spinnerImageTexture = AssetsManager.assetManager.get(Constants.spinner);
 
     }
-    private void createLogo()
+    /*private void createLogo()
     {
         Texture img =  AssetsManager.assetManager.get(Constants.logo);
         Image background = new Image(img);
         addVerticalGroup(background);
+    }*/
+    private void createLogo()
+    {
+        Image logo=AssetsManager.scaleLogo(Gdx.files.internal(Constants.logo));
+        addVerticalGroup(logo);
     }
     private void createVerticalGroup()
     {

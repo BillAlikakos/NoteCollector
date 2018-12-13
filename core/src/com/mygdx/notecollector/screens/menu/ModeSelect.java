@@ -38,7 +38,7 @@ public class ModeSelect implements Screen
     private Stage stage;
     private BitmapFont font;
     private Assets assetsManager;
-    private Viewport viewport;
+    //private Viewport viewport;
     private static final int VIEWPORT_WIDTH = Constants.APP_WIDTH;
     private static final int VIEWPORT_HEIGHT = Constants.APP_HEIGHT;
     private NoteCollector noteCollector;
@@ -207,7 +207,7 @@ public class ModeSelect implements Screen
                                             break;
                                         case "Back":
                                             srv.closeServer();
-                                            noteCollector.setScreen(new MainMenuScreen(noteCollector));
+                                            noteCollector.setScreen(new MainMenuScreen(noteCollector,stage));
                                             break;
                                     }
                                 }

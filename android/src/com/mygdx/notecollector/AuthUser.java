@@ -69,7 +69,6 @@ public class AuthUser implements IAuthUser
                             final String regUser = snapshot.getValue(String.class);
                             if (!userExists && userName.equals(regUser))
                             {
-                                System.out.println(userName);
                                 Toast.makeText(applicationContext, "Username Is Taken", Toast.LENGTH_SHORT).show();
                                 userExists = true;
                             }

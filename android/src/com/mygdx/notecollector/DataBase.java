@@ -52,8 +52,8 @@ public class DataBase implements IDataBase
         }
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                //System.out.println(score+" "+songName+" "+difficulty+" "+userName);
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
                 final ArrayList <ScoreClass> scores=new ArrayList<>();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren())
                 {

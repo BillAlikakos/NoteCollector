@@ -11,8 +11,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
-import com.badlogic.gdx.scenes.scene2d.actions.RotateByAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -30,13 +28,15 @@ import com.mygdx.notecollector.Utils.Assets;
 import com.mygdx.notecollector.Utils.Constants;
 import com.mygdx.notecollector.midilib.MidiNote;
 import com.mygdx.notecollector.screens.GameScreen;
-import com.mygdx.notecollector.screens.menu.LoadingScreen;
-import com.mygdx.notecollector.screens.menu.TrackSelect;
 
-import org.apache.commons.io.FileUtils;
+
+import org.apache.commons.net.ntp.NTPUDPClient;
+import org.apache.commons.net.ntp.TimeInfo;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import static org.apache.commons.io.FileUtils.readFileToByteArray;
@@ -117,7 +117,7 @@ public class MultiplayerPreMatchLobby implements Screen
         }
         else
         {
-         send();
+            send();
         }
 
         stage.addActor(table);
@@ -158,14 +158,46 @@ public class MultiplayerPreMatchLobby implements Screen
                 }
             };
             t.start();*/
-            c.sendLoadedMsg();
+            System.out.println("Setting time server");
+            String TIME_SERVER = "0.gr.pool.ntp.org";//NTP Server to ping
+            NTPUDPClient timeClient = new NTPUDPClient();
+            timeClient.setDefaultTimeout(2500);
+            System.out.println("Sending request");
+            InetAddress inetAddress = null;
+            try
+            {
+                inetAddress = InetAddress.getByName(TIME_SERVER);
+            }
+            catch (UnknownHostException e)//TODO: Handle errors
+            {
+                e.printStackTrace();
+            }
+            TimeInfo timeInfo = null;
+            try
+            {
+                timeInfo = timeClient.getTime(inetAddress);
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+            System.out.println("Got time ?");
+            timeClient.close();
+            //long returnTime = timeInfo.getMessage().getTransmitTimeStamp().getTime();
+            final long time = timeInfo.getMessage().getTransmitTimeStamp().getTime();
+            final long startTime=time+4500;
+            //System.out.println("NTP time: "+time);
+            //System.out.println("DEV time: "+System.currentTimeMillis());
+            //Date time = new Date(returnTime);
+            //final long time=System.currentTimeMillis()+4500;
+            c.sendLoadedMsg(startTime);
             Timer.schedule(new Timer.Task()
             {
                 @Override
                 public void run()
                 {
                     dispose();
-                    noteCollector.setScreen(new GameScreen(noteCollector, TickPerMsec, notes, filepath, speed, delay, c, mode, stage));
+                    noteCollector.setScreen(new GameScreen(noteCollector, TickPerMsec, notes, filepath, speed, delay, c, mode, stage,startTime));
                 }
             }, 0.4f);//Prev 0.2f
 
@@ -200,8 +232,13 @@ public class MultiplayerPreMatchLobby implements Screen
                         if (object instanceof ServerClass.fileLoaded)//When client responds start the game
                         {
                             System.out.println("Host received");
-                            ServerClass.fileLoaded request = (ServerClass.fileLoaded)object;
-                            System.out.println(request.loaded);
+                            final ServerClass.fileLoaded request = (ServerClass.fileLoaded)object;
+                            //System.out.println("Starting time is:"+request.loaded);
+                            //System.out.println("Time now is :"+System.currentTimeMillis());
+                            //long OG=request.loaded-4500;
+                            //System.out.println("Clients OG time is  :"+OG);
+                            final long diff=System.currentTimeMillis();
+                            //System.out.println("Diff in time  :"+diff);
                             srv.getServer().removeListener(this);
                             table.addAction(Actions.fadeOut(0.4f));
                             Timer.schedule(new Timer.Task()
@@ -211,7 +248,7 @@ public class MultiplayerPreMatchLobby implements Screen
                                 {
                                     // t.interrupt();
                                     dispose();
-                                    noteCollector.setScreen(new GameScreen(noteCollector,TickPerMsec,notes,filepath,speed,delay,srv,mode,stage));//TODO : Sync better between slow and fast phones (Pause state until second player joins ? Fix label ordering in game end screen)
+                                    noteCollector.setScreen(new GameScreen(noteCollector,TickPerMsec,notes,filepath,speed,delay,srv,mode,stage,request.loaded,diff));//TODO : Sync better between slow and fast phones (Pause state until second player joins ? Fix label ordering in game end screen)
                                     //t.interrupt();
                                     //this.wait(1000);
 
@@ -297,7 +334,6 @@ public class MultiplayerPreMatchLobby implements Screen
         @Override
         public void dispose()
         {
-            //stage.dispose();
             //AssetsManager.disposeMenuAssets();
             AssetsManager.assetManager.unload(Constants.logo);
             stage.getRoot().removeActor(table);
@@ -323,25 +359,13 @@ public class MultiplayerPreMatchLobby implements Screen
             noteCollector.getAssetsManager().setLogoPosition(verticalGroup);
             stage.addActor(verticalGroup);
         }
-        private void createBackground()
-        {
-            System.out.println("Width:"+VIEWPORT_WIDTH+" Height:"+VIEWPORT_HEIGHT);
-            FileHandle file = Gdx.files.internal(Constants.getBackgroundMenu().toString());
-            Image background=AssetsManager.scaleBackground(file);
-            stage.addActor(background);
-        }
+
         private void createVerticalGroup()
         {
             verticalGroup  = new VerticalGroup();
             verticalGroup.setFillParent(true);
             AssetsManager.setLogoPosition(verticalGroup);
         }
-
-        private  void addVerticalGroup(Actor actor){
-            verticalGroup.addActor(actor);
-
-        }
-
 
         private void createLabel(String text){
             Label.LabelStyle labelstyle = new Label.LabelStyle(font, Color.WHITE);

@@ -51,10 +51,10 @@ import static org.apache.commons.io.FileUtils.readFileToByteArray;
 
 public class TrackSelect implements Screen
 {
-    private Viewport viewport;
+    //private Viewport viewport;
     private Stage stage;
-    private BitmapFont font,fontList,fontH,fontBtn;
-    private Texture img;
+    private BitmapFont font,fontList,fontH;
+    //private Texture img;
 
     private static final int VIEWPORT_WIDTH = Constants.APP_WIDTH;
     private static final int VIEWPORT_HEIGHT = Constants.APP_HEIGHT;
@@ -67,12 +67,12 @@ public class TrackSelect implements Screen
     private ScrollPane scrollPane;
     private List<Object> list;
     private Skin skin;
-    ProgramChange.MidiProgram[] arr;
+    private ProgramChange.MidiProgram[] arr;
     private ArrayList<String> item = null;
-    private ArrayList<String> path = null;
+    //private ArrayList<String> path = null;
     private  ArrayList<MidiTrack> track=null;
     private  String filepath;
-    private String root = Constants.root;
+    //private String root = Constants.root;
     private Table btn;
     private int speed;
     private long delay;
@@ -352,20 +352,21 @@ public class TrackSelect implements Screen
                     @Override
                     public void run()
                     {
+                        dispose();
                         if(isHost)
                         {
-                            dispose();
+                            //dispose();
                             noteCollector.setScreen((new LoadingScreen(noteCollector,filepath,speed,delay,t,srv,mode,stage,difficulty)));
                         }
                         else if(isGuest)
                         {
                             System.out.println("Guest");
-                            dispose();
+                            //dispose();
                             noteCollector.setScreen((new LoadingScreen(noteCollector,filepath,speed,delay,t,c,mode,stage)));
                         }
                         else
                         {
-                            dispose();
+                            //dispose();
                             noteCollector.setScreen(new LoadingScreen(noteCollector,filepath,speed,delay,t,mode,stage));
                         }
                     }
@@ -467,8 +468,7 @@ public class TrackSelect implements Screen
 
     private String findInstrument(ProgramChange.MidiProgram program)
     {
-        String name = program.toString();
-        return name;
+        return program.toString();
     }
 
     //if the type of files is midi return true else return false.

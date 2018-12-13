@@ -50,9 +50,9 @@ public class GameScreen implements  Screen {
     private String gameMode;
 
     private Stage stage;
-    private boolean upPressed, downPressed, leftPressed, rightPressed;
 
-    public GameScreen(NoteCollector game, float TickPerMsec, ArrayList<MidiNote> notes, String filepath,int speed,long delay,boolean mode,Stage stage) throws IOException, InterruptedException {
+    public GameScreen(NoteCollector game, float TickPerMsec, ArrayList<MidiNote> notes, String filepath,int speed,long delay,boolean mode,Stage stage)
+    {
 
         gameStage = new GameStage(game,TickPerMsec,notes,speed,delay,mode,stage);
         this.stage=stage;
@@ -66,9 +66,9 @@ public class GameScreen implements  Screen {
         Gdx.input.setInputProcessor(gameStage);
     }
 
-    public GameScreen(NoteCollector game, float TickPerMsec, ArrayList<MidiNote> notes, String filepath, int speed, long delay, ClientClass c,boolean mode,Stage stage)
+    public GameScreen(NoteCollector game, float TickPerMsec, ArrayList<MidiNote> notes, String filepath, int speed, long delay, ClientClass c,boolean mode,Stage stage,long StartTime)
     {
-        gameStage = new GameStage(game,TickPerMsec,notes,speed,delay,c,mode,stage);
+        gameStage = new GameStage(game,TickPerMsec,notes,speed,delay,c,mode,stage,StartTime);
         this.stage=stage;
         this.game = game;
         this.filepath = filepath;
@@ -84,10 +84,10 @@ public class GameScreen implements  Screen {
 
     }
 
-    public GameScreen(NoteCollector game, float TickPerMsec, ArrayList<MidiNote> notes, String filepath, int speed, long delay, ServerClass srv,boolean mode,Stage stage)
+    public GameScreen(NoteCollector game, float TickPerMsec, ArrayList<MidiNote> notes, String filepath, int speed, long delay, ServerClass srv,boolean mode,Stage stage,long StartTime,long diff)
     {
 
-        gameStage = new GameStage(game,TickPerMsec,notes,speed,delay,srv,mode,stage);
+        gameStage = new GameStage(game,TickPerMsec,notes,speed,delay,srv,mode,stage,StartTime,diff);
         this.stage=stage;
         this.game = game;
         this.filepath = filepath;
@@ -238,7 +238,7 @@ public class GameScreen implements  Screen {
     }
 
     @Override
-    public void pause()
+    public void pause()//TODO : Add a method to dispose when ewxiting from pause
     {
         //Pause must be disabled in multiplayer
         pausetime  =  System.currentTimeMillis();

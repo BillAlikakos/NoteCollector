@@ -277,20 +277,6 @@ public class MultiplayerHostScreen implements  Screen
                 }
                 });
     }
-
-        private void createBackground(){
-            FileHandle file = Gdx.files.internal(Constants.getBackgroundMenu());
-            Image background=assetsManager.scaleBackground(file);
-            stage.addActor(background);
-
-        }
-
-        private void setupCamera(){
-            viewport = new ScalingViewport(Scaling.stretch, VIEWPORT_WIDTH, VIEWPORT_HEIGHT, new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT));
-            stage = new Stage(viewport);
-            stage.getCamera().update();
-        }
-
-    }
+}
 
 

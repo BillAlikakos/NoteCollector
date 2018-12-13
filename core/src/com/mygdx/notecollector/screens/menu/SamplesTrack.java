@@ -46,10 +46,10 @@ import static org.apache.commons.io.FileUtils.readFileToByteArray;
 public class SamplesTrack implements Screen {
 
 
-    private Viewport viewport;
+    //private Viewport viewport;
     private Stage stage;
     private BitmapFont font,fontList,fontH;
-    private Texture img;
+    //private Texture img;
 
     private static final int VIEWPORT_WIDTH = Constants.APP_WIDTH;
     private static final int VIEWPORT_HEIGHT = Constants.APP_HEIGHT;
@@ -64,7 +64,7 @@ public class SamplesTrack implements Screen {
     private Skin skin;
     private ArrayList<String> item = null;
     private ArrayList<String> path = null;
-    private  String filepath;
+    //private  String filepath;
     private String root = Constants.root;
     private Table btn;
     private int speed;
@@ -85,7 +85,7 @@ public class SamplesTrack implements Screen {
         assetsManager = noteCollector.getAssetsManager();
         this.delay = delay;
         this.speed = speed;
-        filepath="";
+        //filepath="";
         LoadAssets();
         ListStyle();
         this.multiplayer=false;
@@ -99,7 +99,7 @@ public class SamplesTrack implements Screen {
         assetsManager = noteCollector.getAssetsManager();
         this.delay = delay;
         this.speed = speed;
-        filepath="";
+        //filepath="";
         LoadAssets();
         ListStyle();
         this.multiplayer=true;
@@ -333,7 +333,7 @@ public class SamplesTrack implements Screen {
                         {
                             File file = new File(path.get(list.getSelectedIndex()));
                             System.out.println(path.size());
-                            filepath = file.getAbsolutePath();
+                            //filepath = file.getAbsolutePath();
                             noteCollector.setScreen(new TrackSelect(noteCollector, speed, delay, file, mode,stage));//
                         }
                         else
@@ -363,8 +363,7 @@ public class SamplesTrack implements Screen {
 
     private Label createLabel(String text){
         Label.LabelStyle labelstyle = new Label.LabelStyle(fontH, Color.WHITE);
-        Label fileLabel = new Label(text, labelstyle);
-        return  fileLabel;
+        return new Label(text, labelstyle);
 
     }
     //get the dir of sample tracks

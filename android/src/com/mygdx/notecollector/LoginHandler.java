@@ -61,7 +61,6 @@ public class LoginHandler implements IGoogleLogin
                     .addOnConnectionFailedListener(playServiceListener)
                     .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                     .build();
-            System.out.println("All set ?");
         }
     }
     @Override
@@ -79,10 +78,6 @@ public class LoginHandler implements IGoogleLogin
             }
             Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
             ((AndroidLauncher) context).startActivityForResult(signInIntent, RC_SIGN_IN);
-            /*if (context instanceof AndroidLauncher) {
-                System.out.println("Starting acivity...");
-                ((AndroidLauncher) context).startActivityForResult(signInIntent, RC_SIGN_IN);
-            }*/
         }
         else
         {
@@ -93,7 +88,6 @@ public class LoginHandler implements IGoogleLogin
             Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
             ((AndroidLauncher) context).startActivityForResult(signInIntent, RC_SIGN_IN);
             //Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-            System.out.println("???");
         }
     }
     @Override

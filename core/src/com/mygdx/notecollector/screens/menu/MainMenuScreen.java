@@ -42,7 +42,7 @@ public class MainMenuScreen implements Screen {
     private Stage stage;
     private BitmapFont font;
     private Assets assetsManager;
-    private Viewport viewport;
+    //private Viewport viewport;
     private static int VIEWPORT_WIDTH = Constants.APP_WIDTH;//Gdx.graphics.getWidth();//
     private static int VIEWPORT_HEIGHT = Constants.APP_HEIGHT;//Gdx.graphics.getHeight(); //
     private NoteCollector noteCollector;
@@ -121,13 +121,14 @@ public class MainMenuScreen implements Screen {
         System.out.println(font.toString());
     }
 
-    private void setupCamera(){
+    /*private void setupCamera(){
         viewport = new ScalingViewport(Scaling.stretch, VIEWPORT_WIDTH, VIEWPORT_HEIGHT, new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT));
        // stage = new Stage(viewport);
         stage.getCamera().update();
-    }
+    }*/
     private void LoadAssets(){
 
+        System.gc();
         assetsManager.LoadMenuAssets();
 
         //font = assetsManager.createBitmapFont();

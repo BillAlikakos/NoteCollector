@@ -30,7 +30,7 @@ public  class Assets
     private  AbsoluteFileHandleResolver fileHandleResolver;
     public AssetManager assetManager;
     public AssetManager assetManagerFiles;
-    public AssetManager externalAssets;
+    private AssetManager externalAssets;
     public String MusicName;
     private FreetypeFontLoader.FreeTypeFontLoaderParameter parameter;
     private Preferences prefs;
@@ -59,14 +59,10 @@ public  class Assets
     {
         if(!prefs.getString("menuBackground").equals("data/ui/images/new1080.png"))
         {
-            //System.out.println("External Asset");
-            //AssetManager manager = new AssetManager(new ExternalFileHandleResolver());
             externalAssets = new AssetManager(new ExternalFileHandleResolver());
             File  bg = new File(prefs.getString("menuBackground"));
-            //System.out.println(bg.getPath());
             externalAssets.load(bg.getPath(),Texture.class);
             externalAssets.finishLoading();
-            //externalAssets.dispose();
         }
         else
         {
@@ -128,7 +124,7 @@ public  class Assets
         LoadTexture(Constants.ButtonPressed);
         assetManager.finishLoading();
     }
-    public void disposeMenuAssets()
+    public void disposeMenuAssets()//Method that disposes all fonts/textures from standard menu screens
     {
         this.font.dispose();
         this.fontH.dispose();
@@ -138,7 +134,7 @@ public  class Assets
         assetManager.unload(Constants.logo);
         assetManager.unload(Constants.ButtonPressed);
     }
-    public void disposeListMenuAssets()
+    public void disposeListMenuAssets()//Method that disposes all fonts/textures from menu screens that use lists
     {
         this.logo.dispose();
         assetManager.unload(Constants.ButtonImage);
@@ -148,30 +144,29 @@ public  class Assets
         assetManager.unload(Constants.skinAtlas);
         assetManager.unload(Constants.Skin);
     }
-    public void disposeGameOverAssets()
+    public void disposeGameOverAssets()//Method that disposes all fonts/textures from GameOver screen
     {
         this.logo.dispose();
         assetManager.unload(Constants.ButtonImage);
         assetManager.unload(Constants.GameOver);
         assetManager.unload(Constants.ButtonPressed);
     }
-    public void disposeWifiAssets()
+    public void disposeWifiAssets()//Method that disposes all textures from screens that require network connections
     {
         assetManager.unload(Constants.noConn);
     }
-    public void disposeLogInAssets()
+    public void disposeLogInAssets()//Method that disposes all textures from log in screens
     {
         assetManager.unload(Constants.showPasswordImage);
         assetManager.unload(Constants.showPasswordImageP);
     }
 
-    public void disposeMainMenuAssets()
+    public void disposeMainMenuAssets()//Method that disposes all fonts/textures from MainMenu screen
     {
-      System.out.println("Disposing icons");
-        this.font.dispose();
-        this.fontH.dispose();
-        this.fontList.dispose();
-        this.logo.dispose();
+      this.font.dispose();
+      this.fontH.dispose();
+      this.fontList.dispose();
+      this.logo.dispose();
       assetManager.unload(Constants.ButtonImage);
       assetManager.unload(Constants.logo);
       assetManager.unload(Constants.text);
@@ -241,21 +236,15 @@ public  class Assets
         //LoadTexture(Constants.BackgroundGame);
         if(!prefs.getString("gameBackground").equals("data/Game Images/backgrounGame.jpg"))
         {
-            //System.out.println("External Asset");
             externalAssets = new AssetManager(new ExternalFileHandleResolver());
-
             File  bg = new File(prefs.getString("gameBackground"));
-            //System.out.println(bg.getPath());
             externalAssets.load(bg.getPath(),Texture.class);
-            //System.out.println("BG Loaded");
             System.out.println(bg.getAbsolutePath());
             externalAssets.finishLoading();
         }
         else
         {
-            System.out.println("Internal Asset");
             LoadTexture(prefs.getString("gameBackground"));
-            System.out.println("BG Loaded");
         }
         LoadTexture(Constants.square);
         if(prefs.getBoolean("normal")) {
@@ -308,6 +297,7 @@ public  class Assets
         assetManager.unload(Constants.BlackPressedKey);
         assetManager.unload(Constants.ButtonImage);
         assetManager.unload(Constants.ButtonPressed);
+        backgroundGame.dispose();
     }
     public BitmapFont createBimapFont(int size ){
 
@@ -461,11 +451,21 @@ public  class Assets
         return new Image(background);
     }
 
+    public Image getBackground()
+    {
+        return new Image(background);
+    }
+
+    public void disposeBackground()
+    {
+        background.dispose();
+    }
     public Image scaleGameBackground(FileHandle file)
     {
         Pixmap pixmap200;
-        if(!prefs.getString("menuBackground").equals("data/Game Images/backgrounGame.jpg"))//If a custom image is defined use external file loader
+        if(!prefs.getString("gameBackground").equals("data/Game Images/backgrounGame.jpg"))//If a custom image is defined use external file loader
         {
+
             pixmap200 = new Pixmap(Gdx.files.external(file.path()));
             //Pixmap pixmap200 = new Pixmap(Gdx.files.internal("data/ui/images/new1080.png"));
 
