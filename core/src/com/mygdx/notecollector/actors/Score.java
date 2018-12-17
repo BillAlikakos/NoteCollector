@@ -41,8 +41,10 @@ public class Score extends Actor {
       score = 0;
       //get font type from asset manager
         //font = AssetsManager.createBimapFont(28);
-        font = AssetsManager.createFont();
-        font.setColor(Color.BLACK);
+        //font = AssetsManager.createFont();
+        font = AssetsManager.getFont();
+        //font.setColor(Color.BLACK);
+        font.setColor(Color.WHITE);
 
     }
 
@@ -57,8 +59,8 @@ public class Score extends Actor {
         score = 0;
         //get font type from asset manager
         //font = AssetsManager.createBimapFont(28);
-        font = AssetsManager.createFont();
-        font.setColor(Color.BLACK);
+        font = AssetsManager.getFont();
+        font.setColor(Color.WHITE);
 
     }
 
@@ -73,8 +75,8 @@ public class Score extends Actor {
         score = 0;
         //get font type from asset manager
         //font = AssetsManager.createBimapFont(28);
-        font = AssetsManager.createFont();
-        font.setColor(Color.BLACK);
+        font = AssetsManager.getFont();
+        font.setColor(Color.WHITE);
 
     }
 

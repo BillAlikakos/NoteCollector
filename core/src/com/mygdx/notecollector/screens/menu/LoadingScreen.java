@@ -62,7 +62,7 @@ public class LoadingScreen implements Screen {
 
     private float TickPerMsec;
 
-    private BitmapFont font;
+    //private BitmapFont font;
     private Thread t = null;
     private Texture spinnerImageTexture;
     private Image spinnerImage;
@@ -151,10 +151,6 @@ public class LoadingScreen implements Screen {
         createLogo();
         createLabel("Please Wait ....");
         createSpinner();
-        if(isGuest || isHost)//Only add the listeners if the user is host/guest
-        {
-           // addListeners();
-        }
         if(track==null)//Load all notes
         {
             setupMidiManipulator();
@@ -258,7 +254,7 @@ public class LoadingScreen implements Screen {
         //AssetsManager.disposeMenuAssets();
         AssetsManager.assetManager.unload(Constants.logo);
         spinnerImageTexture.dispose();//NEW
-        font.dispose();
+        //font.dispose();
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(verticalGroup);
         stage.getRoot().removeActor(spinnerImage);
@@ -326,7 +322,7 @@ public class LoadingScreen implements Screen {
         //AssetsManager.LoadAssets();
         AssetsManager.assetManager.load(Constants.logo,Texture.class);
         AssetsManager.assetManager.finishLoading();
-        font = AssetsManager.createBimapFont(45);
+        //font = AssetsManager.createBimapFont(45);
         spinnerImageTexture = AssetsManager.assetManager.get(Constants.spinner);
 
     }
@@ -372,7 +368,7 @@ public class LoadingScreen implements Screen {
     }
 
     private void createLabel(String text){
-        Label.LabelStyle labelstyle = new Label.LabelStyle(font, Color.WHITE);
+        Label.LabelStyle labelstyle = new Label.LabelStyle(AssetsManager.getFont(), Color.WHITE);
         Label label = new Label(text, labelstyle);
         table.add(label).colspan(2).padTop(100f);
         //label.setPosition((stage.getCamera().viewportWidth-label.getWidth())/2,100f);

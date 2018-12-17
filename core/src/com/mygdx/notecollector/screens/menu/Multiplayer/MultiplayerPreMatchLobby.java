@@ -2,13 +2,11 @@ package com.mygdx.notecollector.screens.menu.Multiplayer;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -51,7 +49,7 @@ public class MultiplayerPreMatchLobby implements Screen
     private static final int VIEWPORT_HEIGHT = Constants.APP_HEIGHT;
     private Table table;
     private VerticalGroup verticalGroup;
-    private BitmapFont font;
+   // private BitmapFont font;
     private Thread t = null;
     private ClientClass c;
     private ServerClass srv;
@@ -338,13 +336,13 @@ public class MultiplayerPreMatchLobby implements Screen
             AssetsManager.assetManager.unload(Constants.logo);
             stage.getRoot().removeActor(table);
             stage.getRoot().removeActor(verticalGroup);
-            font.dispose();
+            //font.dispose();
             //AssetsManager.assetManager.unload(Constants.spinner);
         }
 
         private void LoadAssets()
         {
-            font = AssetsManager.createBimapFont(45*VIEWPORT_WIDTH/1920);
+            //font = AssetsManager.createBimapFont(45*VIEWPORT_WIDTH/1920);
             //AssetsManager.LoadAssets();
             AssetsManager.assetManager.load(Constants.logo,Texture.class);
             AssetsManager.assetManager.finishLoading();
@@ -368,7 +366,7 @@ public class MultiplayerPreMatchLobby implements Screen
         }
 
         private void createLabel(String text){
-            Label.LabelStyle labelstyle = new Label.LabelStyle(font, Color.WHITE);
+            Label.LabelStyle labelstyle = new Label.LabelStyle(AssetsManager.getFont(), Color.WHITE);
             Label label = new Label(text, labelstyle);
             table.add(label).colspan(2).padTop(250f*VIEWPORT_HEIGHT/1080).padLeft(50f*VIEWPORT_WIDTH/1920);
             //stage.addActor(label);

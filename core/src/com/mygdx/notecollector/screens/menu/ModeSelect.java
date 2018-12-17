@@ -36,7 +36,7 @@ public class ModeSelect implements Screen
 {
 
     private Stage stage;
-    private BitmapFont font;
+    //private BitmapFont font;
     private Assets assetsManager;
     //private Viewport viewport;
     private static final int VIEWPORT_WIDTH = Constants.APP_WIDTH;
@@ -113,9 +113,9 @@ public class ModeSelect implements Screen
         int fontSize=VIEWPORT_WIDTH/30;
         //fontSize = 45;
         //BitmapFont font = assetsManager.createBimapFont(fontSize);
-        BitmapFont font = assetsManager.createFontH();
+        //BitmapFont font = assetsManager.createFontH();
 
-        Label.LabelStyle labelstyle = new Label.LabelStyle(font, Color.WHITE);
+        Label.LabelStyle labelstyle = new Label.LabelStyle(assetsManager.getFontH(), Color.WHITE);
         Label label = new Label(text, labelstyle);
         //label.setPosition((stage.getCamera().viewportWidth-label.getWidth())/2,Yaxis);
         //stage.addActor(label);
@@ -128,7 +128,7 @@ public class ModeSelect implements Screen
     private void LoadAssets()
     {
         assetsManager.LoadAssets();
-        font = assetsManager.createBitmapFont();
+        //font = assetsManager.createBitmapFont();
         selectionColor = new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.ButtonImage, Texture.class)));
         selectionColor.setRightWidth(9f);
         selectionColor.setBottomHeight(2f);
@@ -229,7 +229,7 @@ public class ModeSelect implements Screen
         textButtonStyle.up = ButtonImage;
         textButtonStyle.down = selectionColorPressed;
         textButtonStyle.over = ButtonImage;
-        textButtonStyle.font = font;
+        textButtonStyle.font = assetsManager.getFont();
         return textButtonStyle;
     }
 
@@ -271,7 +271,7 @@ public class ModeSelect implements Screen
     public void dispose()
     {
         assetsManager.disposeMenuAssets();
-        font.dispose();
+        //font.dispose();
         verticalGroup.clear();
         stage.getRoot().removeActor(verticalGroup);
         stage.getRoot().removeActor(table);

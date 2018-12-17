@@ -25,7 +25,9 @@ public class Text extends Actor {
         setWidth(bounds.width);
         this.bounds = bounds;
         //font = AssetsManager.createBimapFont(21);
-        font = AssetsManager.createBitmapFont();
+        //font = AssetsManager.createBitmapFont();
+
+        font =AssetsManager.createMessageFont();
     }
 
     @Override

@@ -37,7 +37,7 @@ import com.mygdx.notecollector.Utils.Constants;
 public class DifficultyScreen implements Screen
 {
     private Stage stage;
-    private BitmapFont font;
+    //private BitmapFont font;
     private Assets assetsManager;
     private static final int VIEWPORT_WIDTH = Constants.APP_WIDTH;
     private static final int VIEWPORT_HEIGHT = Constants.APP_HEIGHT;
@@ -120,9 +120,9 @@ public class DifficultyScreen implements Screen
         //int fontSize;
         //fontSize=VIEWPORT_WIDTH/30;//64 in 1080p
         //BitmapFont font = assetsManager.createBimapFont(fontSize);
-        BitmapFont font = assetsManager.createFontH();
+        //BitmapFont font = assetsManager.createFontH();
 
-        Label.LabelStyle labelstyle = new Label.LabelStyle(font, Color.WHITE);
+        Label.LabelStyle labelstyle = new Label.LabelStyle(assetsManager.getFontH(), Color.WHITE);
         Label label = new Label(text, labelstyle);
 
         table.add(label);
@@ -132,7 +132,7 @@ public class DifficultyScreen implements Screen
     private void LoadAssets()
     {
         assetsManager.LoadAssets();
-        font=assetsManager.createBitmapFont();
+        //font=assetsManager.createBitmapFont();
         selectionColor =new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.ButtonImage,Texture.class))) ;
         selectionColor.setRightWidth(9f);
         selectionColor.setBottomHeight(2f);
@@ -242,7 +242,7 @@ public class DifficultyScreen implements Screen
         textButtonStyle.up = ButtonImage;
         textButtonStyle.down = selectionColorPressed;
         textButtonStyle.over = ButtonImage;
-        textButtonStyle.font = font;
+        textButtonStyle.font = assetsManager.getFont();
         return textButtonStyle;
     }
 
@@ -282,7 +282,7 @@ public class DifficultyScreen implements Screen
     @Override
     public void dispose()
     {
-        font.dispose();
+        //font.dispose();
         assetsManager.disposeMenuAssets();
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(exitBtnTable);

@@ -40,7 +40,7 @@ import static com.badlogic.gdx.scenes.scene2d.actions.Actions.fadeOut;
 public class MainMenuScreen implements Screen {
 
     private Stage stage;
-    private BitmapFont font;
+    //private BitmapFont font;
     private Assets assetsManager;
     //private Viewport viewport;
     private static int VIEWPORT_WIDTH = Constants.APP_WIDTH;//Gdx.graphics.getWidth();//
@@ -118,7 +118,6 @@ public class MainMenuScreen implements Screen {
         top.getColor().a=0;
         table.addAction(Actions.sequence(Actions.fadeIn(0.2f)));
         top.addAction(Actions.sequence(Actions.fadeIn(0.2f)));
-        System.out.println(font.toString());
     }
 
     /*private void setupCamera(){
@@ -132,7 +131,8 @@ public class MainMenuScreen implements Screen {
         assetsManager.LoadMenuAssets();
 
         //font = assetsManager.createBitmapFont();
-        font = assetsManager.createFont();
+        //font = assetsManager.createFont();
+        //font = assetsManager.getFont();
         scoreBtn=new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.scoresImage,Texture.class)));
         logInBtn=new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.logInImage,Texture.class)));
         helpBtn=new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.helpImage,Texture.class)));
@@ -388,7 +388,7 @@ public class MainMenuScreen implements Screen {
         textButtonStyle.up = ButtonImage;
         textButtonStyle.down = selectionColorPressed;
         textButtonStyle.over = ButtonImage;
-        textButtonStyle.font = font;
+        textButtonStyle.font = assetsManager.getFont();
         return textButtonStyle;
     }
 
@@ -431,7 +431,7 @@ public class MainMenuScreen implements Screen {
     public void dispose()
     {
         table.clear();
-        font.dispose();
+        //font.dispose();
         assetsManager.disposeMainMenuAssets();
         //assetsManager.disposeMenuAssets();
         //font.dispose();

@@ -54,7 +54,7 @@ public class GameOverScreen implements Screen {
     private Label fileLabel;
     private ImageTextButton restart;
     private ImageTextButton menu;
-    private BitmapFont font;
+    //private BitmapFont font;
     private String Score;
     private String filepath;
     private VerticalGroup verticalGroup;
@@ -156,7 +156,7 @@ public class GameOverScreen implements Screen {
     {
         if (isHost || isGuest)//Multiplayer doesn't need restart button
         {
-            float Xaxis =300f;
+            float Xaxis;
             Xaxis=(VIEWPORT_WIDTH / 2) - sizeX / 2;
             System.out.println(Xaxis);
             menu=createButton("Menu",Xaxis);
@@ -212,11 +212,11 @@ public class GameOverScreen implements Screen {
         AssetsManager.disposeGameOverAssets();
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(verticalGroup);
-        font.dispose();
+        //font.dispose();
     }
 
     private void createLabel(String text){
-        Label.LabelStyle labelstyle = new Label.LabelStyle(font, Color.WHITE);
+        Label.LabelStyle labelstyle = new Label.LabelStyle(AssetsManager.getFont(), Color.WHITE);
         fileLabel = new Label(text, labelstyle);
         fileLabel.setPosition((stage.getCamera().viewportWidth-fileLabel.getWidth())/2,stage.getCamera().viewportHeight/2+sizeY);
         stage.addActor(fileLabel);
@@ -235,7 +235,7 @@ public class GameOverScreen implements Screen {
         //AssetsManager .assetManager.load(Constants.GameOver, Texture.class);
        // AssetsManager .assetManager.finishLoading();
         AssetsManager.LoadGameOverAssets();
-        font = AssetsManager.createBitmapFont();
+        //font = AssetsManager.createBitmapFont();
         selectionColor =new TextureRegionDrawable(new TextureRegion(AssetsManager.assetManager.get(Constants.ButtonImage,Texture.class))) ;
         selectionColor.setRightWidth(5f);
         selectionColor.setBottomHeight(2f);
@@ -335,7 +335,7 @@ public class GameOverScreen implements Screen {
         textButtonStyle.up = ButtonImage;
         textButtonStyle.down = selectionColorPressed;
         textButtonStyle.over = ButtonImage;
-        textButtonStyle.font = font;
+        textButtonStyle.font = AssetsManager.getFont();
         return textButtonStyle;
     }
 

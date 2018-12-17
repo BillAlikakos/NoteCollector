@@ -39,7 +39,7 @@ public class LogInEmail implements Screen
 
     private TextureRegionDrawable selectionColor;
     private TextureRegionDrawable selectionColorPressed;
-    private BitmapFont font;
+    //private BitmapFont font;
     private VerticalGroup verticalGroup;
     private VerticalGroup verticalGroupLogo;
     private Table exitBtnTable;
@@ -193,9 +193,9 @@ public class LogInEmail implements Screen
         TextField.TextFieldStyle textFieldStyle = new TextField.TextFieldStyle();
         selectionColorList = new TextureRegionDrawable(new TextureRegion(AssetsManager.assetManager.get(Constants.SelectionColor, Texture.class)));
         textFieldStyle.background = selectionColorList;
-        textFieldStyle.font = font;
+        textFieldStyle.font = AssetsManager.getFont();
         textFieldStyle.fontColor = Color.WHITE;
-        textFieldStyle.messageFont = font;
+        textFieldStyle.messageFont = AssetsManager.getFont();
         textFieldStyle.messageFontColor = Color.WHITE;
 
         return textFieldStyle;
@@ -237,7 +237,7 @@ public class LogInEmail implements Screen
     {
         AssetsManager.disposeListMenuAssets();
         AssetsManager.disposeLogInAssets();
-        font.dispose();
+        //font.dispose();
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(verticalGroup);
         stage.getRoot().removeActor(exitBtnTable);
@@ -248,8 +248,8 @@ public class LogInEmail implements Screen
     private Label createLabel(String text)
     {
         //BitmapFont font = AssetsManager.createBimapFont(size);
-        BitmapFont font = AssetsManager.createFontH();
-        Label.LabelStyle labelstyle = new Label.LabelStyle(font, Color.WHITE);
+        //BitmapFont font = AssetsManager.createFontH();
+        Label.LabelStyle labelstyle = new Label.LabelStyle(AssetsManager.getFontH(), Color.WHITE);
         return new Label(text, labelstyle);
 
     }
@@ -270,7 +270,7 @@ public class LogInEmail implements Screen
         AssetsManager.LoadListAssets();
         AssetsManager.LoadAssets();
         AssetsManager.LoadLogInAssets();
-        font=AssetsManager.createBitmapFont();
+        //font=AssetsManager.createBitmapFont();
         // font = AssetsManager.createBimapFont(45);
         showPasswordBtn=new TextureRegionDrawable(new TextureRegion(AssetsManager.assetManager.get(Constants.showPasswordImage,Texture.class)));
         showPasswordBtnP=new TextureRegionDrawable(new TextureRegion(AssetsManager.assetManager.get(Constants.showPasswordImageP,Texture.class)));
@@ -365,7 +365,7 @@ public class LogInEmail implements Screen
         textButtonStyle.up = ButtonImage;
         textButtonStyle.down = selectionColorPressed;
         textButtonStyle.over = ButtonImage;
-        textButtonStyle.font = font;
+        textButtonStyle.font = AssetsManager.getFont();
         return textButtonStyle;
     }
 }

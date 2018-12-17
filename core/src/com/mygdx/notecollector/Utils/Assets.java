@@ -27,7 +27,7 @@ import java.nio.ByteBuffer;
 public  class Assets
 {
     //class for managing assets
-    private  AbsoluteFileHandleResolver fileHandleResolver;
+    private AbsoluteFileHandleResolver fileHandleResolver;
     public AssetManager assetManager;
     public AssetManager assetManagerFiles;
     private AssetManager externalAssets;
@@ -48,23 +48,23 @@ public  class Assets
     private static final int VIEWPORT_HEIGHT = Constants.APP_HEIGHT;//Gdx.graphics.getHeight(); //
     private boolean isDark;
 
-    public Assets() {
-         fileHandleResolver = new AbsoluteFileHandleResolver();
-         assetManager = new AssetManager();
-         assetManagerFiles = new AssetManager(fileHandleResolver);
+    public Assets()
+    {
+        fileHandleResolver = new AbsoluteFileHandleResolver();
+        assetManager = new AssetManager();
+        assetManagerFiles = new AssetManager(fileHandleResolver);
         prefs = Gdx.app.getPreferences("NoteCollectorPreferences");
     }
 
     public void loadMenuBackground()//Must be called whenever the menu background is loaded
     {
-        if(!prefs.getString("menuBackground").equals("data/ui/images/new1080.png"))
+        if (!prefs.getString("menuBackground").equals("data/ui/images/new1080.png"))
         {
             externalAssets = new AssetManager(new ExternalFileHandleResolver());
-            File  bg = new File(prefs.getString("menuBackground"));
-            externalAssets.load(bg.getPath(),Texture.class);
+            File bg = new File(prefs.getString("menuBackground"));
+            externalAssets.load(bg.getPath(), Texture.class);
             externalAssets.finishLoading();
-        }
-        else
+        } else
         {
             LoadTexture(prefs.getString("menuBackground"));
             assetManager.finishLoading();
@@ -89,6 +89,7 @@ public  class Assets
         LoadTexture(Constants.settingsImageP);
         assetManager.finishLoading();
     }
+
     public void LoadLogInAssets()
     {
         LoadTexture(Constants.showPasswordImage);
@@ -117,6 +118,7 @@ public  class Assets
         assetManager.load(Constants.Skin, Skin.class);
         assetManager.finishLoading();
     }
+
     public void LoadGameOverAssets()
     {
         LoadTexture(Constants.ButtonImage);
@@ -124,16 +126,18 @@ public  class Assets
         LoadTexture(Constants.ButtonPressed);
         assetManager.finishLoading();
     }
+
     public void disposeMenuAssets()//Method that disposes all fonts/textures from standard menu screens
     {
-        this.font.dispose();
+        /*this.font.dispose();
         this.fontH.dispose();
-        this.fontList.dispose();
+        this.fontList.dispose();*/
         this.logo.dispose();
         assetManager.unload(Constants.ButtonImage);
         assetManager.unload(Constants.logo);
         assetManager.unload(Constants.ButtonPressed);
     }
+
     public void disposeListMenuAssets()//Method that disposes all fonts/textures from menu screens that use lists
     {
         this.logo.dispose();
@@ -144,6 +148,7 @@ public  class Assets
         assetManager.unload(Constants.skinAtlas);
         assetManager.unload(Constants.Skin);
     }
+
     public void disposeGameOverAssets()//Method that disposes all fonts/textures from GameOver screen
     {
         this.logo.dispose();
@@ -151,10 +156,12 @@ public  class Assets
         assetManager.unload(Constants.GameOver);
         assetManager.unload(Constants.ButtonPressed);
     }
+
     public void disposeWifiAssets()//Method that disposes all textures from screens that require network connections
     {
         assetManager.unload(Constants.noConn);
     }
+
     public void disposeLogInAssets()//Method that disposes all textures from log in screens
     {
         assetManager.unload(Constants.showPasswordImage);
@@ -163,26 +170,27 @@ public  class Assets
 
     public void disposeMainMenuAssets()//Method that disposes all fonts/textures from MainMenu screen
     {
-      this.font.dispose();
-      this.fontH.dispose();
-      this.fontList.dispose();
-      this.logo.dispose();
-      assetManager.unload(Constants.ButtonImage);
-      assetManager.unload(Constants.logo);
-      assetManager.unload(Constants.text);
-      assetManager.unload(Constants.ButtonPressed);
-      assetManager.unload(Constants.exitImage);
-      assetManager.unload(Constants.scoresImage);
-      assetManager.unload(Constants.helpImage);
-      assetManager.unload(Constants.settingsImage);
-      assetManager.unload(Constants.exitImageP);
-      assetManager.unload(Constants.scoresImageP);
-      assetManager.unload(Constants.helpImageP);
-      assetManager.unload(Constants.settingsImageP);
+        //this.font.dispose();
+        // this.fontH.dispose();
+        //this.fontList.dispose();
+        this.logo.dispose();
+        assetManager.unload(Constants.ButtonImage);
+        assetManager.unload(Constants.logo);
+        assetManager.unload(Constants.text);
+        assetManager.unload(Constants.ButtonPressed);
+        assetManager.unload(Constants.exitImage);
+        assetManager.unload(Constants.scoresImage);
+        assetManager.unload(Constants.helpImage);
+        assetManager.unload(Constants.settingsImage);
+        assetManager.unload(Constants.exitImageP);
+        assetManager.unload(Constants.scoresImageP);
+        assetManager.unload(Constants.helpImageP);
+        assetManager.unload(Constants.settingsImageP);
     }
+
     public void createFonts()//Generate font from ttf file
     {
-        FileHandle fontFile = Gdx.files.internal("data/ui/fonts/helvetica.ttf");
+        /*FileHandle fontFile = Gdx.files.internal("data/ui/fonts/helvetica.ttf");
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(fontFile);
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = 45;
@@ -191,20 +199,24 @@ public  class Assets
         this.fontMid = generator.generateFont(parameter);
         parameter.size=12;
         this.fontSm = generator.generateFont(parameter);
-        generator.dispose();
+        generator.dispose();*/
+        this.font = createFreetypeFont(48 * VIEWPORT_WIDTH / 1920);
+        this.fontH = createFreetypeFont(55 * VIEWPORT_WIDTH / 1920);
     }
 
-    public BitmapFont getFontBig()
+    public BitmapFont createMessageFont()
     {
-        return fontBig;
+        return createFreetypeFont(48*VIEWPORT_WIDTH/1920);
     }
-    public BitmapFont getFontMid()
+
+
+    public BitmapFont getFont()
     {
-        return fontMid;
+        return font;
     }
-    public BitmapFont getFontSm()
+    public BitmapFont getFontH()
     {
-        return fontSm;
+        return fontH;
     }
 
     public void LoadLoadingAssets(String filepath)
@@ -299,9 +311,10 @@ public  class Assets
         assetManager.unload(Constants.ButtonPressed);
         backgroundGame.dispose();
     }
-    public BitmapFont createBimapFont(int size ){
-
+    /*public BitmapFont createBimapFont(int size )//TODO : Try the freeType font gen and handle custom background exceptions (e.g. file not found)
+    {
         com.mygdx.notecollector.fonts.SmartFontGenerator fontGen = new com.mygdx.notecollector.fonts.SmartFontGenerator();
+
         //FileHandle exoFile = Gdx.files.internal("data/ui/fonts/Ubuntu-I.ttf");
         FileHandle exoFile = Gdx.files.internal("data/ui/fonts/helvetica.ttf");
         //font=createFreetypeFont(size,true);
@@ -339,9 +352,9 @@ public  class Assets
         fontList = this.createBimapFont(fontSize);
         //fontList=createFreetypeFont(fontSize,true);
         return fontList;
-    }
+    }*/
 
-    public BitmapFont createFreetypeFont(int size)
+    private BitmapFont createFreetypeFont(int size)
     {
         //System.out.println("Creating font");
         FileHandle fontFile = Gdx.files.internal("data/ui/fonts/helvetica.ttf");
@@ -351,11 +364,12 @@ public  class Assets
         //if(shadow)
         {
             //System.out.println("shadow");
-            parameter.shadowColor = Color.BLACK;
-            parameter.shadowOffsetX = 3;
-            parameter.shadowOffsetY = 3;
+            //parameter.shadowColor = Color.BLACK;
+            parameter.shadowColor = Color.DARK_GRAY;
+            parameter.shadowOffsetX = 3*VIEWPORT_WIDTH/1920;
+            parameter.shadowOffsetY = 3*VIEWPORT_HEIGHT/1080;
         }
-        this.font = generator.generateFont(parameter);
+        BitmapFont font = generator.generateFont(parameter);
         generator.dispose();
         return  font;
     }

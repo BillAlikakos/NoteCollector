@@ -45,7 +45,7 @@ public class LogInScreen implements Screen
 
     private TextureRegionDrawable selectionColor;
     private TextureRegionDrawable selectionColorPressed;
-    private BitmapFont font;
+    //private BitmapFont font;
     private VerticalGroup verticalGroup;
     private VerticalGroup verticalGroupLogo;
     private Table exitBtnTable;
@@ -163,7 +163,7 @@ public class LogInScreen implements Screen
     {
         AssetsManager.disposeMenuAssets();
         AssetsManager.disposeLogInAssets();
-        font.dispose();
+        //font.dispose();
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(verticalGroup);
         stage.getRoot().removeActor(exitBtnTable);
@@ -172,10 +172,9 @@ public class LogInScreen implements Screen
     private Label createLabel(String text)
     {
         //BitmapFont font = AssetsManager.createBimapFont(size);
-        BitmapFont font = AssetsManager.createFontH();
-        Label.LabelStyle labelstyle = new Label.LabelStyle(font, Color.WHITE);
-        Label label = new Label(text, labelstyle);
-        return label;
+        //BitmapFont font = AssetsManager.createFontH();
+        Label.LabelStyle labelstyle = new Label.LabelStyle(AssetsManager.getFontH(), Color.WHITE);
+        return new Label(text, labelstyle);
 
     }
 
@@ -195,7 +194,7 @@ public class LogInScreen implements Screen
        // AssetsManager.LoadListAssets();
         AssetsManager.LoadAssets();
         AssetsManager.LoadLogInAssets();
-        font=AssetsManager.createBitmapFont();
+        //font=AssetsManager.createBitmapFont();
         // font = AssetsManager.createBimapFont(45);
         showPasswordBtn=new TextureRegionDrawable(new TextureRegion(AssetsManager.assetManager.get(Constants.showPasswordImage,Texture.class)));
         showPasswordBtnP=new TextureRegionDrawable(new TextureRegion(AssetsManager.assetManager.get(Constants.showPasswordImageP,Texture.class)));
@@ -296,7 +295,7 @@ public class LogInScreen implements Screen
         textButtonStyle.up = ButtonImage;
         textButtonStyle.down = selectionColorPressed;
         textButtonStyle.over = ButtonImage;
-        textButtonStyle.font = font;
+        textButtonStyle.font = AssetsManager.getFont();
         return textButtonStyle;
     }
 }

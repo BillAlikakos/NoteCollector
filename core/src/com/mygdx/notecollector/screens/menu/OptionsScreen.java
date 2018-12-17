@@ -51,7 +51,7 @@ public class OptionsScreen implements Screen{
 
 
     private Stage stage;
-    private BitmapFont font;
+    //private BitmapFont font;
     private Assets assetsManager;
     private Viewport viewport;
     private static final int VIEWPORT_WIDTH = Constants.APP_WIDTH;
@@ -73,7 +73,7 @@ public class OptionsScreen implements Screen{
         this.noteCollector = noteCollector;
         this.stage=stage;
         assetsManager = noteCollector.getAssetsManager();
-        font = assetsManager.createBitmapFont();
+        //font = assetsManager.createBitmapFont();
         table = new Table();
         exitBtnTable=new Table();
         LoadAssets();
@@ -82,7 +82,7 @@ public class OptionsScreen implements Screen{
 
     private Label createLabel(String text){
 
-        Label.LabelStyle labelstyle = new Label.LabelStyle(font, Color.WHITE);
+        Label.LabelStyle labelstyle = new Label.LabelStyle(assetsManager.getFont(), Color.WHITE);
         return new Label(text, labelstyle);
 
     }
@@ -240,7 +240,7 @@ public class OptionsScreen implements Screen{
 
     private void LoadAssets(){
         assetsManager.LoadAssets();
-        font=assetsManager.createBitmapFont();
+        //font=assetsManager.createBitmapFont();
         //font = assetsManager.createBimapFont(45);
         selectionColor =new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.ButtonImage,Texture.class))) ;
         selectionColor.setRightWidth(5f);
@@ -274,7 +274,7 @@ public class OptionsScreen implements Screen{
         textButtonStyle.up = ButtonImage;
         textButtonStyle.down = selectionColorPressed;
         textButtonStyle.over = ButtonImage;
-        textButtonStyle.font = font;
+        textButtonStyle.font = assetsManager.getFont();
         return textButtonStyle;
     }
 
@@ -315,7 +315,7 @@ public class OptionsScreen implements Screen{
     public void dispose()
     {
         assetsManager.disposeMenuAssets();
-        font.dispose();
+        //font.dispose();
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(verticalGroup);
         stage.getRoot().removeActor(exitBtnTable);

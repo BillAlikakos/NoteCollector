@@ -49,9 +49,10 @@ public class IntroScreen implements Screen {
         //noteCollector.getAssetsManager().createFonts();
         setupCamera();
         createBackground();
-        noteCollector.getAssetsManager().createFont();//Generate fonts
+        /*noteCollector.getAssetsManager().createFont();//Generate fonts
         noteCollector.getAssetsManager().createFontH();
-        noteCollector.getAssetsManager().createFontList();
+        noteCollector.getAssetsManager().createFontList();*/
+        noteCollector.getAssetsManager().createFonts();
         stage.addAction(Actions.sequence(Actions.alpha(0), Actions.fadeIn(2f)));
         background.getColor().a=0;
         background.addAction(Actions.fadeIn(0.2f));

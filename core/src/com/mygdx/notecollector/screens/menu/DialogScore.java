@@ -47,7 +47,7 @@ public class DialogScore implements Screen {
     private TextureRegionDrawable selectionColor;
     private TextureRegionDrawable selectionColorPressed;
     private Label label;
-    private BitmapFont font;
+    //private BitmapFont font;
     //private Score score;
     private String ScoreNumber;
     private String Difficulty;
@@ -150,9 +150,9 @@ public class DialogScore implements Screen {
         TextField.TextFieldStyle textFieldStyle = new TextField.TextFieldStyle();
         selectionColorList = new TextureRegionDrawable(new TextureRegion(AssetsManager.assetManager.get(Constants.SelectionColor,Texture.class)));
         textFieldStyle.background = selectionColorList;
-        textFieldStyle.font=font;
+        textFieldStyle.font=AssetsManager.getFont();
         textFieldStyle.fontColor = Color.WHITE;
-        textFieldStyle.messageFont =font;
+        textFieldStyle.messageFont =AssetsManager.getFont();
         textFieldStyle.messageFontColor = Color.WHITE;
 
         return textFieldStyle;
@@ -198,13 +198,13 @@ public class DialogScore implements Screen {
     public void dispose()
     {
         AssetsManager.disposeListMenuAssets();
-        font.dispose();
+        //font.dispose();
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(verticalGroup);
     }
 
     private void createLabel(String text,float Yaxis){
-        Label.LabelStyle labelstyle = new Label.LabelStyle(font, Color.WHITE);
+        Label.LabelStyle labelstyle = new Label.LabelStyle(AssetsManager.getFont(), Color.WHITE);
         label = new Label(text, labelstyle);
         label.setPosition((stage.getCamera().viewportWidth-label.getWidth())/2,Yaxis+50*VIEWPORT_HEIGHT/1080);
         stage.addActor(label);
@@ -220,7 +220,7 @@ public class DialogScore implements Screen {
     private void LoadAssets(){
         AssetsManager.LoadAssets();
         AssetsManager.LoadListAssets();
-        font = AssetsManager.createBitmapFont();
+        //font = AssetsManager.createBitmapFont();
         selectionColor =new TextureRegionDrawable(new TextureRegion(AssetsManager.assetManager.get(Constants.ButtonImage,Texture.class))) ;
         selectionColor.setRightWidth(7f);
         selectionColor.setBottomHeight(2f);
@@ -311,7 +311,7 @@ public class DialogScore implements Screen {
         textButtonStyle.up = ButtonImage;
         textButtonStyle.down = selectionColorPressed;
         textButtonStyle.over = ButtonImage;
-        textButtonStyle.font = font;
+        textButtonStyle.font = AssetsManager.getFont();
         return textButtonStyle;
     }
 }

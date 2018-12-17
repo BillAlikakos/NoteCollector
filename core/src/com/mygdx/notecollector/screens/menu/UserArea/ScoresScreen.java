@@ -19,6 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.notecollector.NoteCollector;
@@ -50,7 +51,7 @@ public class ScoresScreen implements Screen {
 
     private TextureRegionDrawable selectionColor;
     private TextureRegionDrawable selectionColorPressed;
-    private BitmapFont font;
+    //private BitmapFont font;
     private VerticalGroup verticalGroup;
     private VerticalGroup verticalGroupLogo;
     private Table exitBtnTable;
@@ -183,7 +184,7 @@ public class ScoresScreen implements Screen {
     public void dispose()
     {
         AssetsManager.disposeMenuAssets();
-        font.dispose();
+        //font.dispose();
         stage.getRoot().removeActor(table);
         //if(!selectMode)
         stage.getRoot().removeActor(verticalGroup);
@@ -214,27 +215,36 @@ public class ScoresScreen implements Screen {
             Label nameLabel=createLabel("Name", fontSize+5);
             Label trackLabel=createLabel("Song",fontSize+5);
             Label diffLabel=createLabel("Difficulty",fontSize+5);
+            scoreLabel.setAlignment(Align.center);
+            nameLabel.setAlignment(Align.center);
+            trackLabel.setAlignment(Align.center);
+            diffLabel.setAlignment(Align.center);
             //table = new Table();
             table.setFillParent(true);
             //stage.addActor(table);
             table.add(title).center().colspan(4);
             table.row();
-            table.add(nameLabel).width(250f*VIEWPORT_WIDTH/1920).uniform();
-            table.add(scoreLabel).width(250f*VIEWPORT_WIDTH/1920).uniform();
-            table.add(trackLabel).width(250f*VIEWPORT_WIDTH/1920).uniform();
-            table.add(diffLabel).width(250f*VIEWPORT_WIDTH/1920).uniform();
+            table.add(nameLabel).width(400f*VIEWPORT_WIDTH/1920).uniform();
+            table.add(scoreLabel).width(400f*VIEWPORT_WIDTH/1920).uniform();
+            table.add(trackLabel).width(400f*VIEWPORT_WIDTH/1920).uniform();
+            table.add(diffLabel).width(400f*VIEWPORT_WIDTH/1920).uniform();
             for(int i=0;i<scores.size();i++)
             {
                 Label score = createLabel(scores.get(i).getScore(), fontSize);
                 Label name=createLabel(scores.get(i).getUserName(), fontSize);
                 Label track=createLabel(scores.get(i).getSongName(),fontSize);
                 Label difficulty=createLabel(scores.get(i).getDifficulty(),fontSize);
-
+                score.setAlignment(Align.center);
+                name.setAlignment(Align.center);
+                track.setAlignment(Align.center);
+                difficulty.setAlignment(Align.center);
+                name.setWrap(true);
+                track.setWrap(true);
                 table.row();
-                table.add(name).width(250f*VIEWPORT_WIDTH/1920).uniform();
-                table.add(score).width(250f*VIEWPORT_WIDTH/1920).uniform();
-                table.add(track).width(250f*VIEWPORT_WIDTH/1920).uniform();
-                table.add(difficulty).width(250f*VIEWPORT_WIDTH/1920).uniform();
+                table.add(name).width(400f*VIEWPORT_WIDTH/1920).uniform();
+                table.add(score).width(400f*VIEWPORT_WIDTH/1920).uniform();
+                table.add(track).width(400f*VIEWPORT_WIDTH/1920).uniform();
+                table.add(difficulty).width(400f*VIEWPORT_WIDTH/1920).uniform();
             }
         }
 
@@ -320,8 +330,8 @@ public class ScoresScreen implements Screen {
     }
     private Label createLabel(String text, int size)
     {
-        BitmapFont font = AssetsManager.createBimapFont(size);
-        Label.LabelStyle labelstyle = new Label.LabelStyle(font, Color.WHITE);
+        //BitmapFont font = AssetsManager.createBimapFont(size);
+        Label.LabelStyle labelstyle = new Label.LabelStyle(AssetsManager.getFont(), Color.WHITE);
         Label label = new Label(text, labelstyle);
         return label;
 
@@ -341,7 +351,7 @@ public class ScoresScreen implements Screen {
     private void LoadAssets()
     {
         AssetsManager.LoadAssets();
-        font=AssetsManager.createBitmapFont();
+        //font=AssetsManager.createBitmapFont();
        // font = AssetsManager.createBimapFont(45);
         selectionColor =new TextureRegionDrawable(new TextureRegion(AssetsManager.assetManager.get(Constants.ButtonImage,Texture.class))) ;
         selectionColor.setRightWidth(5f);
@@ -474,7 +484,7 @@ public class ScoresScreen implements Screen {
         textButtonStyle.up = ButtonImage;
         textButtonStyle.down = selectionColorPressed;
         textButtonStyle.over = ButtonImage;
-        textButtonStyle.font = font;
+        textButtonStyle.font = AssetsManager.getFont();
         return textButtonStyle;
     }
 }
