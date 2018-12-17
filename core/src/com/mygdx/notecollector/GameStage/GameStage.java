@@ -47,6 +47,7 @@ import com.mygdx.notecollector.screens.menu.MainMenuScreen;
 
 import org.apache.commons.net.ntp.NTPUDPClient;
 import org.apache.commons.net.ntp.TimeInfo;
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -119,6 +120,7 @@ public class GameStage extends Stage implements ContactListener
     private boolean isHost;
     private boolean isGuest;
     private boolean mode;
+    private boolean pauseEngaged;//Boolean to check if the user has paused the game to prevent the game from resuming after focus loss
     private float sizeX,sizeY;
     private float[] size;
     private Image x1;
@@ -131,6 +133,7 @@ public class GameStage extends Stage implements ContactListener
     public GameStage(NoteCollector noteCollector, float TickPerMsec, ArrayList<MidiNote> notes, int speed, long delay,boolean mode,Stage stage)
     {
         super(new ScalingViewport(Scaling.stretch, VIEWPORT_WIDTH, VIEWPORT_HEIGHT, new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)));
+        noteCollector.setInGame(true);
         this.stage=stage;
         squarewidth=32f;
         squareheight=32f;
@@ -141,6 +144,7 @@ public class GameStage extends Stage implements ContactListener
         this.isGuest=false;
         this.isHost=false;
         this.mode=mode;
+        this.pauseEngaged=false;
         size=noteCollector.getAssetsManager().setButtonSize(sizeX,sizeY);
         sizeX=size[0];
         sizeY=size[1];
@@ -167,6 +171,7 @@ public class GameStage extends Stage implements ContactListener
     public GameStage(NoteCollector noteCollector, float TickPerMsec, ArrayList<MidiNote> notes, int speed, long delay, ServerClass srv, boolean mode,Stage stage,long StartTime,long diff)
     {
         super(new ScalingViewport(Scaling.stretch, VIEWPORT_WIDTH, VIEWPORT_HEIGHT, new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)));
+        noteCollector.setInGame(true);
         this.stage = stage;
         squarewidth = 32f;
         squareheight = 32f;
@@ -234,6 +239,7 @@ public class GameStage extends Stage implements ContactListener
     public GameStage(NoteCollector noteCollector, float TickPerMsec, ArrayList<MidiNote> notes, int speed, long delay, ClientClass c, boolean mode,Stage stage,long StartTime)
     {
         super(new ScalingViewport(Scaling.stretch, VIEWPORT_WIDTH, VIEWPORT_HEIGHT, new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)));
+        noteCollector.setInGame(true);
         this.stage=stage;
         squarewidth=32f;
         squareheight=32f;
@@ -472,6 +478,7 @@ public class GameStage extends Stage implements ContactListener
                     if(!GameState.equals("paused"))//If already paused resume
                     {
                         GameState = "paused";
+                        setPauseEngaged(true);
                         final ImageTextButton resume = new ImageTextButton("Resume", textButtonStyle);
                         final ImageTextButton quit = new ImageTextButton("Quit", textButtonStyle);
                         resume.setSize(sizeX,sizeY);
@@ -486,6 +493,7 @@ public class GameStage extends Stage implements ContactListener
                                 GameStage.super.getRoot().removeActor(resume);
                                 GameStage.super.getRoot().removeActor(quit);
                                 title.addAction(Actions.fadeOut(0.2f));
+                                setPauseEngaged(false);
                                 GameState ="resume";
                                 BackgroundPause.addAction(Actions.sequence(Actions.fadeOut(0.2f)));
                                 return true;
@@ -496,7 +504,8 @@ public class GameStage extends Stage implements ContactListener
                             @Override
                             public boolean touchDown(InputEvent event,float x , float y,int pointer,int button)
                             {
-                                fadeToMenu();//TODO : Fix memory leak
+                                fadeToMenu();
+                                noteCollector.setInGame(false);
                                 Timer.schedule(new Timer.Task() {
                                     @Override
                                     public void run() {
@@ -741,7 +750,8 @@ produce the corresponding square*/
     }
 
 
-    public void setGameState(String gameState) {
+    public void setGameState(String gameState)
+    {
         GameState = gameState;
     }
 
@@ -965,7 +975,10 @@ produce the corresponding square*/
        {
            translateScreenToWorldCoordinates(screenX,screenY);
 
-
+           if (GameState.equals("paused"))
+           {
+               return false;
+           }
            //set bound on collector and change position when drag the square
            if (touchPoint.x+ 32f  >getCamera().viewportWidth || touchPoint.y +32f >getCamera().viewportHeight || touchPoint.y+32f < 56f ) {
                return false;
@@ -1004,6 +1017,17 @@ produce the corresponding square*/
     private void translateScreenToWorldCoordinates(int x, int y){
         getCamera().unproject(touchPoint.set(x, y, 0));
     }
+
+    public boolean isPauseEngaged()
+    {
+        return pauseEngaged;
+    }
+
+    public void setPauseEngaged(boolean pauseEngaged)
+    {
+        this.pauseEngaged = pauseEngaged;
+    }
+
     @Override
     public void beginContact(Contact contact) {
 

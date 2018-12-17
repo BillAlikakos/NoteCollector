@@ -71,13 +71,15 @@ public class EndGameScreen implements Screen {
     private Thread t;
     private ScoreClass score;
 
-    public EndGameScreen(NoteCollector notecollector,String Score,String Difficulty,Stage stage,String gameMode) {
+    public EndGameScreen(NoteCollector notecollector,String Score,String Difficulty,Stage stage,String gameMode)
+    {
         this.notecollector = notecollector;
         this.stage=stage;
         this.Score = Score;
         this.Difficulty=Difficulty;
         this.gameMode=gameMode;
         AssetsManager = notecollector.getAssetsManager();
+        notecollector.setInGame(false);
         LoadAssets();
     }
 
@@ -92,6 +94,7 @@ public class EndGameScreen implements Screen {
         isHost=true;
         isGuest=false;
         AssetsManager = notecollector.getAssetsManager();
+        notecollector.setInGame(false);
         LoadAssets();
     }
 
@@ -106,6 +109,7 @@ public class EndGameScreen implements Screen {
         AssetsManager = notecollector.getAssetsManager();
         isHost=false;
         isGuest=true;
+        notecollector.setInGame(false);
         LoadAssets();
     }
     @Override

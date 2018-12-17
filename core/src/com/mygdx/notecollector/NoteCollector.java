@@ -9,6 +9,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.mygdx.notecollector.Utils.Assets;
 import com.mygdx.notecollector.Utils.Constants;
+import com.mygdx.notecollector.screens.GameScreen;
 import com.mygdx.notecollector.screens.IntroScreen;
 
 public class NoteCollector extends Game {
@@ -22,6 +23,8 @@ public class NoteCollector extends Game {
 	private IDataBase db;
 	private IGoogleLogin login;
 	private Stage stage;
+	private boolean inGame;
+	private GameScreen gameScreen;
 	public NoteCollector(){}
 	public NoteCollector(IWiFi wiFi, IGallery gallery,IAuthUser authUser,IDataBase dbRef,IGoogleLogin logIn)
 	{
@@ -30,9 +33,20 @@ public class NoteCollector extends Game {
 		auth=authUser;
 		db=dbRef;
 		login=logIn;
+		inGame=false;
 	}
 
-    public Stage getStage()
+	public boolean isInGame()
+	{
+		return inGame;
+	}
+
+	public void setInGame(boolean inGame)
+	{
+		this.inGame = inGame;
+	}
+
+	public Stage getStage()
     {
         return stage;
     }

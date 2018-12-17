@@ -53,7 +53,6 @@ public class GameScreen implements  Screen {
 
     public GameScreen(NoteCollector game, float TickPerMsec, ArrayList<MidiNote> notes, String filepath,int speed,long delay,boolean mode,Stage stage)
     {
-
         gameStage = new GameStage(game,TickPerMsec,notes,speed,delay,mode,stage);
         this.stage=stage;
         this.game = game;
@@ -100,7 +99,6 @@ public class GameScreen implements  Screen {
         isGuest=false;
         gameStage.setGameState("running");
         Gdx.input.setInputProcessor(gameStage);
-
     }
 
     @Override
@@ -220,8 +218,11 @@ public class GameScreen implements  Screen {
 
     @Override
     public void resume() {
-        gameStage.setGameState("paused");
-        gameStage.pausetime = pausetime;
+        if(!gameStage.isPauseEngaged())
+        {
+            gameStage.setGameState("resume");
+            gameStage.pausetime = pausetime;
+        }
     }
 
     @Override
