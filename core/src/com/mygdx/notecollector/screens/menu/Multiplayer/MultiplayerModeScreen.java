@@ -34,7 +34,7 @@ import com.mygdx.notecollector.screens.menu.MainMenuScreen;
 public class MultiplayerModeScreen implements Screen
 {
     private Stage stage;
-    private BitmapFont font;
+    //private BitmapFont font;
     private Assets assetsManager;
     private Viewport viewport;
     private Texture img;
@@ -103,7 +103,7 @@ public class MultiplayerModeScreen implements Screen
 
     private void createLabel(String text, float Yaxis) //Method for label creation
     {
-        Label.LabelStyle labelstyle = new Label.LabelStyle(font, Color.WHITE);
+        Label.LabelStyle labelstyle = new Label.LabelStyle(assetsManager.getFont(), Color.WHITE);
         Label label = new Label(text, labelstyle);
         label.setPosition((stage.getCamera().viewportWidth - label.getWidth()) / 2, Yaxis + 50*VIEWPORT_HEIGHT/1080);
         table.addActor(label);
@@ -131,7 +131,7 @@ public class MultiplayerModeScreen implements Screen
         assetsManager.LoadWiFiAssets();
         assetsManager.LoadAssets();
         //font = assetsManager.createBitmapFont();
-        font = assetsManager.createFont();
+        //font = assetsManager.createFont();
         selectionColor =new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.ButtonImage,Texture.class))) ;
 
         selectionColor.setRightWidth(5f);
@@ -237,7 +237,7 @@ public class MultiplayerModeScreen implements Screen
         textButtonStyle.up = ButtonImage;
         textButtonStyle.down = selectionColorPressed;
         textButtonStyle.over = ButtonImage;
-        textButtonStyle.font = font;
+        textButtonStyle.font = assetsManager.getFont();
         return textButtonStyle;
     }
 
@@ -283,7 +283,7 @@ public class MultiplayerModeScreen implements Screen
     {
         assetsManager.disposeMenuAssets();
         assetsManager.disposeWifiAssets();
-        font.dispose();
+        //font.dispose();
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(btn);
         stage.getRoot().removeActor(verticalGroup);

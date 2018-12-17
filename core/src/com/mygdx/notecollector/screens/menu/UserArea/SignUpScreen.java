@@ -46,7 +46,7 @@ public class SignUpScreen implements Screen
 
     private TextureRegionDrawable selectionColor;
     private TextureRegionDrawable selectionColorPressed;
-    private BitmapFont font;
+    //private BitmapFont font;
     private Label error;
     private VerticalGroup verticalGroup;
     private VerticalGroup verticalGroupLogo;
@@ -207,9 +207,9 @@ public class SignUpScreen implements Screen
         TextField.TextFieldStyle textFieldStyle = new TextField.TextFieldStyle();
         selectionColorList = new TextureRegionDrawable(new TextureRegion(AssetsManager.assetManager.get(Constants.SelectionColor, Texture.class)));
         textFieldStyle.background = selectionColorList;
-        textFieldStyle.font = font;
+        textFieldStyle.font = AssetsManager.getFont();
         textFieldStyle.fontColor = Color.WHITE;
-        textFieldStyle.messageFont = font;
+        textFieldStyle.messageFont = AssetsManager.getFont();
         textFieldStyle.messageFontColor = Color.WHITE;
 
         return textFieldStyle;
@@ -251,7 +251,7 @@ public class SignUpScreen implements Screen
     {
         AssetsManager.disposeLogInAssets();
         AssetsManager.disposeListMenuAssets();
-        font.dispose();
+        //font.dispose();
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(verticalGroup);
         stage.getRoot().removeActor(exitBtnTable);
@@ -262,8 +262,8 @@ public class SignUpScreen implements Screen
     private Label createLabel(String text)
     {
         //BitmapFont font = AssetsManager.createBimapFont(size);
-        BitmapFont font = AssetsManager.createFontH();
-        Label.LabelStyle labelstyle = new Label.LabelStyle(font, Color.WHITE);
+        //BitmapFont font = AssetsManager.createFontH();
+        Label.LabelStyle labelstyle = new Label.LabelStyle(AssetsManager.getFontH(), Color.WHITE);
         return new Label(text, labelstyle);
 
     }
@@ -283,7 +283,7 @@ public class SignUpScreen implements Screen
     {
         AssetsManager.LoadAssets();
         AssetsManager.LoadListAssets();
-        font=AssetsManager.createBitmapFont();
+        //font=AssetsManager.createBitmapFont();
         AssetsManager.LoadLogInAssets();
         showPasswordBtn=new TextureRegionDrawable(new TextureRegion(AssetsManager.assetManager.get(Constants.showPasswordImage,Texture.class)));
         showPasswordBtnP=new TextureRegionDrawable(new TextureRegion(AssetsManager.assetManager.get(Constants.showPasswordImageP,Texture.class)));
@@ -396,7 +396,7 @@ public class SignUpScreen implements Screen
         textButtonStyle.up = ButtonImage;
         textButtonStyle.down = selectionColorPressed;
         textButtonStyle.over = ButtonImage;
-        textButtonStyle.font = font;
+        textButtonStyle.font = AssetsManager.getFont();
         return textButtonStyle;
     }
 }

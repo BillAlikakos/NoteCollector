@@ -42,7 +42,7 @@ public class HelpScreen implements Screen {
     private static final int VIEWPORT_WIDTH = Constants.APP_WIDTH;
     private static final int VIEWPORT_HEIGHT = Constants.APP_HEIGHT;
 
-    private BitmapFont font;
+    //private BitmapFont font;
     private TextureRegionDrawable selectionColor;
     private TextureRegionDrawable selectionColorPressed;
     private Table exitBtnTable;
@@ -57,7 +57,7 @@ public class HelpScreen implements Screen {
         this.noteCollector = noteCollector;
         this.stage=stage;
         assetsManager = noteCollector.getAssetsManager();
-        font = assetsManager.createBimapFont(25);
+        //font = assetsManager.createBimapFont(25);
 
 
     }
@@ -161,14 +161,14 @@ public class HelpScreen implements Screen {
     }
     private ImageTextButton.ImageTextButtonStyle createButtonStyle(TextureRegionDrawable ButtonImage){
 
-        BitmapFont  font = assetsManager.createBitmapFont();
+        //BitmapFont  font = assetsManager.createBitmapFont();
         //BitmapFont  font = assetsManager.createBimapFont(45);
 
         ImageTextButton.ImageTextButtonStyle textButtonStyle = new ImageTextButton.ImageTextButtonStyle();
         textButtonStyle.up = ButtonImage;
         textButtonStyle.down = selectionColorPressed;
         textButtonStyle.over = ButtonImage;
-        textButtonStyle.font = font;
+        textButtonStyle.font = assetsManager.getFont();
         return textButtonStyle;
     }
     private void createLogo()
@@ -195,9 +195,8 @@ public class HelpScreen implements Screen {
 
     private Label createLabel(String text){
 
-        Label.LabelStyle labelstyle = new Label.LabelStyle(font, Color.WHITE);
-        Label fileLabel = new Label(text, labelstyle);
-        return  fileLabel;
+        Label.LabelStyle labelstyle = new Label.LabelStyle(assetsManager.getFont(), Color.WHITE);
+        return new Label(text, labelstyle);
 
     }
 }

@@ -66,7 +66,7 @@ public class GameStage extends Stage implements ContactListener
     private World world;
     private Vector3 touchPoint,PuttonPoint,dragPoint;
     private Rectangle collectorPosition;
-    private BitmapFont font;
+    //private BitmapFont font;
 
     //Variables for time loop
     private long starttime;
@@ -106,7 +106,7 @@ public class GameStage extends Stage implements ContactListener
 
     private NoteCollector noteCollector;
     private TextureRegionDrawable selectionColor;
-    private BitmapFont fontbutton;
+    //private BitmapFont fontbutton;
     //private  ArrayList<Pair> squarespair;
     private float squarewidth,squareheight;
 
@@ -150,7 +150,7 @@ public class GameStage extends Stage implements ContactListener
         GameState ="running";
         redcounts =0;
         fisttime =true;
-        fontbutton = AssetsManager.createFont();
+        //fontbutton = AssetsManager.createFont();
         createObjects();
         createBackground();
         setupWorld();
@@ -187,7 +187,7 @@ public class GameStage extends Stage implements ContactListener
         GameState = "running";
         redcounts = 0;
         fisttime = true;
-        fontbutton = AssetsManager.createFont();
+        //fontbutton = AssetsManager.createFont();
         createObjects();
         createBackground();
         setupWorld();
@@ -253,7 +253,7 @@ public class GameStage extends Stage implements ContactListener
         GameState ="running";
         redcounts =0;
         fisttime =true;
-        fontbutton = AssetsManager.createFont();
+        //fontbutton = AssetsManager.createFont();
         createObjects();
         createBackground();
         setupWorld();
@@ -449,12 +449,12 @@ public class GameStage extends Stage implements ContactListener
         BackgroundPause.setPosition((getCamera().viewportWidth- BackgroundPause.getWidth())/2,(getCamera().viewportHeight  -BackgroundPause.getHeight())/2 );
         BackgroundPause.setVisible(false);
         //Button pause=new Button();
-        font = noteCollector.getAssetsManager().createBitmapFont();
+        //font = noteCollector.getAssetsManager().createBitmapFont();
         final ImageTextButton.ImageTextButtonStyle textButtonStyle = new ImageTextButton.ImageTextButtonStyle();
         textButtonStyle.up = selectionColor;
         textButtonStyle.down = selectionColor;
         textButtonStyle.over = selectionColor;
-        textButtonStyle.font = font;
+        textButtonStyle.font = AssetsManager.getFont();
         ImageTextButton pause = new ImageTextButton("PAUSE", textButtonStyle);
         //pause.setDebug(true);
         if(isGuest || isHost) //disable pause for multiplayer
@@ -746,7 +746,7 @@ produce the corresponding square*/
     }
 
     private Label createLabel(String text){
-        Label.LabelStyle labelstyle = new Label.LabelStyle(fontbutton, Color.WHITE);
+        Label.LabelStyle labelstyle = new Label.LabelStyle(AssetsManager.getFont(), Color.WHITE);
         return new Label(text, labelstyle);
 
     }
@@ -1034,12 +1034,12 @@ produce the corresponding square*/
         collector.dispose();
         //font.dispose();
         text.dispose();
-        score.dispose();
+        //score.dispose();
         if(isGuest || isHost)
         {
-            score2.dispose();
+            //score2.dispose();
         }
-        fontbutton.dispose();
+        //fontbutton.dispose();
         //Background.dispose();
         timer.clear();
         task.cancel();

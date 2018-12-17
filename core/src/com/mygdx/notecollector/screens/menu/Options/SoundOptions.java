@@ -29,7 +29,7 @@ import com.mygdx.notecollector.screens.menu.OptionsScreen;
 public class SoundOptions implements Screen
 {
     private Stage stage;
-    private BitmapFont font;
+    //private BitmapFont font;
     private Assets assetsManager;
     private Viewport viewport;
     private static final int VIEWPORT_WIDTH = Constants.APP_WIDTH;
@@ -52,7 +52,7 @@ public class SoundOptions implements Screen
         this.noteCollector=noteCollector;
         this.stage=stage;
         assetsManager = noteCollector.getAssetsManager();
-        font = assetsManager.createBitmapFont();
+        //font = assetsManager.createBitmapFont();
         table = new Table();
         exitBtnTable=new Table();
         LoadAssets();
@@ -62,7 +62,7 @@ public class SoundOptions implements Screen
     private void LoadAssets()
     {
         assetsManager.LoadAssets();
-        font=assetsManager.createBitmapFont();
+        //font=assetsManager.createBitmapFont();
         selectionColor =new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.ButtonImage,Texture.class))) ;
         selectionColor.setRightWidth(5f);
         selectionColor.setBottomHeight(2f);
@@ -116,13 +116,13 @@ public class SoundOptions implements Screen
         textButtonStyle.up = ButtonImage;
         textButtonStyle.down = selectionColorPressed;
         textButtonStyle.over = ButtonImage;
-        textButtonStyle.font = font;
+        textButtonStyle.font = assetsManager.getFont();
         return textButtonStyle;
     }
 
     private Label createLabel(String text)
     {
-        Label.LabelStyle labelstyle = new Label.LabelStyle(font, Color.WHITE);
+        Label.LabelStyle labelstyle = new Label.LabelStyle(assetsManager.getFont(), Color.WHITE);
         return new Label(text, labelstyle);
     }
 
@@ -343,7 +343,7 @@ public class SoundOptions implements Screen
     @Override
     public void dispose()
     {
-        font.dispose();
+        //font.dispose();
         assetsManager.disposeMenuAssets();
         //stage.dispose();
         stage.getRoot().removeActor(table);

@@ -37,7 +37,7 @@ import static org.apache.commons.io.FileUtils.readFileToByteArray;
 public class MiscOptions implements Screen
 {
     private Stage stage;
-    private BitmapFont font;
+    //private BitmapFont font;
     private Assets assetsManager;
     private Viewport viewport;
     private static final int VIEWPORT_WIDTH = Constants.APP_WIDTH;
@@ -61,7 +61,7 @@ public class MiscOptions implements Screen
         this.noteCollector=noteCollector;
         this.stage=stage;
         assetsManager = noteCollector.getAssetsManager();
-        font = assetsManager.createBitmapFont();
+        //font = assetsManager.createBitmapFont();
         table = new Table();
         exitBtnTable=new Table();
         LoadAssets();
@@ -71,7 +71,7 @@ public class MiscOptions implements Screen
     private void LoadAssets()
     {
         assetsManager.LoadAssets();
-        font=assetsManager.createBitmapFont();
+        //font=assetsManager.createBitmapFont();
         selectionColor =new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.ButtonImage,Texture.class))) ;
         selectionColor.setRightWidth(5f);
         selectionColor.setBottomHeight(2f);
@@ -124,7 +124,7 @@ public class MiscOptions implements Screen
         textButtonStyle.up = ButtonImage;
         textButtonStyle.down = selectionColorPressed;
         textButtonStyle.over = ButtonImage;
-        textButtonStyle.font = font;
+        textButtonStyle.font = assetsManager.getFont();
         return textButtonStyle;
     }
     private ImageTextButton.ImageTextButtonStyle createBgButtonStyle(TextureRegionDrawable ButtonImage)
@@ -133,13 +133,13 @@ public class MiscOptions implements Screen
         textButtonStyle.up = ButtonImage;
         textButtonStyle.down = ButtonImage;
         textButtonStyle.over = ButtonImage;
-        textButtonStyle.font = font;
+        textButtonStyle.font = assetsManager.getFont();
         return textButtonStyle;
     }
 
     private Label createLabel(String text)
     {
-        Label.LabelStyle labelstyle = new Label.LabelStyle(font, Color.WHITE);
+        Label.LabelStyle labelstyle = new Label.LabelStyle(assetsManager.getFont(), Color.WHITE);
         return new Label(text, labelstyle);
     }
 
@@ -409,7 +409,7 @@ public class MiscOptions implements Screen
     public void dispose()
     {
         assetsManager.disposeMenuAssets();
-        font.dispose();
+        //font.dispose();
         //stage.dispose();
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(verticalGroup);

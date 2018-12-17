@@ -56,7 +56,7 @@ public class EndGameScreen implements Screen {
 
     private TextureRegionDrawable selectionColor;
     private TextureRegionDrawable selectionColorPressed;
-    private BitmapFont font;
+   // private BitmapFont font;
     private String Score;
     private String Score2;
     private String Difficulty;
@@ -298,13 +298,13 @@ public class EndGameScreen implements Screen {
         }
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(verticalGroup);
-        font.dispose();
+        //font.dispose();
     }
 
 
 
     private void createLabel(String text,float Yaxis){
-        Label.LabelStyle labelstyle = new Label.LabelStyle(font, Color.WHITE);
+        Label.LabelStyle labelstyle = new Label.LabelStyle(AssetsManager.getFont(), Color.WHITE);
         Label label = new Label(text, labelstyle);
         //label.setPosition((stage.getCamera().viewportWidth-label.getWidth())/2,Yaxis);
         label.setPosition((stage.getCamera().viewportWidth)/2-label.getWidth(),Yaxis);
@@ -326,7 +326,7 @@ public class EndGameScreen implements Screen {
     private void LoadAssets(){
         //font = AssetsManager.createBimapFont(45);
         AssetsManager.LoadAssets();
-        font = AssetsManager.createBitmapFont();
+        //font = AssetsManager.createBitmapFont();
         selectionColor =new TextureRegionDrawable(new TextureRegion(AssetsManager.assetManager.get(Constants.ButtonImage,Texture.class))) ;
         selectionColor.setRightWidth(7f);
         selectionColor.setBottomHeight(2f);
@@ -427,7 +427,7 @@ public class EndGameScreen implements Screen {
         textButtonStyle.up = ButtonImage;
         textButtonStyle.down = selectionColorPressed;
         textButtonStyle.over = ButtonImage;
-        textButtonStyle.font = font;
+        textButtonStyle.font = AssetsManager.getFont();
         return textButtonStyle;
     }
 

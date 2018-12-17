@@ -43,7 +43,7 @@ public class ResultScreen implements Screen
     private TextureRegionDrawable selectionColorPressed;
     private ImageTextButton HighScores;
     private ImageTextButton LogOut;
-    private BitmapFont font;
+   //private BitmapFont font;
     private VerticalGroup verticalGroup;
     private Table exitBtnTable;
     private float sizeX;
@@ -138,9 +138,9 @@ public class ResultScreen implements Screen
         TextField.TextFieldStyle textFieldStyle = new TextField.TextFieldStyle();
         selectionColorList = new TextureRegionDrawable(new TextureRegion(AssetsManager.assetManager.get(Constants.SelectionColor, Texture.class)));
         textFieldStyle.background = selectionColorList;
-        textFieldStyle.font = font;
+        textFieldStyle.font = AssetsManager.getFont();
         textFieldStyle.fontColor = Color.WHITE;
-        textFieldStyle.messageFont = font;
+        textFieldStyle.messageFont = AssetsManager.getFont();
         textFieldStyle.messageFontColor = Color.WHITE;
 
         return textFieldStyle;
@@ -180,7 +180,7 @@ public class ResultScreen implements Screen
     @Override
     public void dispose()
     {
-        font.dispose();
+        //font.dispose();
         AssetsManager.disposeMenuAssets();
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(verticalGroup);
@@ -196,8 +196,8 @@ public class ResultScreen implements Screen
         Label.LabelStyle labelstyle = new Label.LabelStyle(font, Color.WHITE);
         Label label = new Label(text, labelstyle);
         label.setPosition(VIEWPORT_WIDTH/2-label.getWidth()/2,VIEWPORT_HEIGHT/2);*/
-        BitmapFont font = AssetsManager.createFontH();
-        Label.LabelStyle labelstyle = new Label.LabelStyle(font, Color.WHITE);
+        //BitmapFont font = AssetsManager.createFontH();
+        Label.LabelStyle labelstyle = new Label.LabelStyle(AssetsManager.getFontH(), Color.WHITE);
         label = new Label(text, labelstyle);
         //label.setPosition((stage.getCamera().viewportWidth-label.getWidth())/2,Yaxis);
         //stage.addActor(label);
@@ -221,7 +221,7 @@ public class ResultScreen implements Screen
     {
         //AssetsManager.LoadListAssets();
         AssetsManager.LoadAssets();
-        font=AssetsManager.createBitmapFont();
+        //font=AssetsManager.createBitmapFont();
         // font = AssetsManager.createBimapFont(45);
         selectionColor =new TextureRegionDrawable(new TextureRegion(AssetsManager.assetManager.get(Constants.ButtonImage,Texture.class))) ;
         selectionColor.setRightWidth(5f);
@@ -340,7 +340,7 @@ public class ResultScreen implements Screen
         textButtonStyle.up = ButtonImage;
         textButtonStyle.down = selectionColorPressed;
         textButtonStyle.over = ButtonImage;
-        textButtonStyle.font = font;
+        textButtonStyle.font = AssetsManager.getFont();
         return textButtonStyle;
     }
 }

@@ -53,7 +53,7 @@ public class TrackSelect implements Screen
 {
     //private Viewport viewport;
     private Stage stage;
-    private BitmapFont font,fontList,fontH;
+    //private BitmapFont font,fontList,fontH;
     //private Texture img;
 
     private static final int VIEWPORT_WIDTH = Constants.APP_WIDTH;
@@ -220,8 +220,8 @@ public class TrackSelect implements Screen
         table.clear();
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(verticalGroup);
-        font.dispose();
-        fontList.dispose();
+        //font.dispose();
+       // fontList.dispose();
         if(!isGuest)
         {
             stage.getRoot().removeActor(btn);
@@ -290,7 +290,7 @@ public class TrackSelect implements Screen
         textButtonStyle.up = ButtonImage;
         textButtonStyle.down = selectionColorPressed;
         textButtonStyle.over = ButtonImage;
-        textButtonStyle.font = font;
+        textButtonStyle.font = assetsManager.getFont();
         return textButtonStyle;
     }
 
@@ -298,8 +298,8 @@ public class TrackSelect implements Screen
     private void LoadAssets(){
         //fontH = assetsManager.createBimapFont(45);
         assetsManager.LoadAssets();
-        fontH = assetsManager.createBimapFont(VIEWPORT_WIDTH*60/1920);
-        font = assetsManager.createBitmapFont();
+        //fontH = assetsManager.createBimapFont(VIEWPORT_WIDTH*60/1920);
+        //font = assetsManager.createBitmapFont();
         selectionColor =new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.ButtonImage,Texture.class))) ;
         selectionColor.setRightWidth(5f);
         selectionColor.setBottomHeight(2f);
@@ -310,7 +310,7 @@ public class TrackSelect implements Screen
 
     private void ListStyle(){
         assetsManager.LoadListAssets();
-        fontList = assetsManager.createBitmapFont();
+        //fontList = assetsManager.createBitmapFont();
         selectionColorList = new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.SelectionColor,Texture.class)));
         skin = assetsManager.assetManager.get(Constants.Skin,Skin.class);
     }
@@ -319,7 +319,7 @@ public class TrackSelect implements Screen
     {
         list = new List<>(skin);
         list.getStyle().selection = selectionColorList;
-        list.getStyle().font = fontList;
+        list.getStyle().font = assetsManager.getFontH();
         list.getStyle().selection.setTopHeight(10*VIEWPORT_HEIGHT/1080);
         addListener(list);
     }
@@ -376,7 +376,7 @@ public class TrackSelect implements Screen
         });
     }
     private Label createLabel(String text){
-        Label.LabelStyle labelstyle = new Label.LabelStyle(fontH, Color.WHITE);
+        Label.LabelStyle labelstyle = new Label.LabelStyle(assetsManager.getFontH(), Color.WHITE);
         return new Label(text, labelstyle);
 
     }
@@ -391,7 +391,7 @@ public class TrackSelect implements Screen
             String temp=init[i];
             System.out.println("init "+temp);
             init[i]=temp.substring(0,1).toUpperCase()+temp.substring(1).toLowerCase();
-            res.append(init[i]+" ");
+            res.append(init[i]).append(" ");
             System.out.println("Res "+res);
         }
         return res.toString();

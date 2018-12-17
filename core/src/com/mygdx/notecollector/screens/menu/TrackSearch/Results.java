@@ -49,7 +49,7 @@ public class Results implements Screen {
 
     private Viewport viewport;
     private Stage stage;
-    private BitmapFont font, fontList, fontH;
+    //private BitmapFont font, fontList, fontH;
     private Texture img;
 
     private static final int VIEWPORT_WIDTH = Constants.APP_WIDTH;
@@ -168,8 +168,8 @@ public class Results implements Screen {
         stage.getRoot().removeActor(verticalGroup);
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(btn);
-        font.dispose();
-        fontList.dispose();
+        //font.dispose();
+        //fontList.dispose();
     }
 
     //create a table to organize buttons and list of tracks
@@ -230,15 +230,15 @@ public class Results implements Screen {
         textButtonStyle.up = ButtonImage;
         textButtonStyle.down = selectionColorPressed;
         textButtonStyle.over = ButtonImage;
-        textButtonStyle.font = font;
+        textButtonStyle.font = assetsManager.getFont();
         return textButtonStyle;
     }
 
 
     private void LoadAssets() {
         assetsManager.LoadAssets();
-        fontH = assetsManager.createBimapFont(50*VIEWPORT_WIDTH/1920);
-        font = assetsManager.createBitmapFont();
+       // fontH = assetsManager.createBimapFont(50*VIEWPORT_WIDTH/1920);
+        //font = assetsManager.createBitmapFont();
         selectionColor = new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.ButtonImage, Texture.class)));
         selectionColor.setRightWidth(5f);
         selectionColor.setBottomHeight(2f);
@@ -251,7 +251,7 @@ public class Results implements Screen {
 
     private void ListStyle() {
         assetsManager.LoadListAssets();
-        fontList = assetsManager.createBitmapFont();
+        //fontList = assetsManager.createBitmapFont();
         selectionColorList = new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.SelectionColor, Texture.class)));
         skin = assetsManager.assetManager.get(Constants.Skin, Skin.class);
     }
@@ -259,7 +259,7 @@ public class Results implements Screen {
     private void createList() {
         list = new List<>(skin);
         list.getStyle().selection = selectionColorList;
-        list.getStyle().font = fontList;
+        list.getStyle().font = assetsManager.getFontH();
         list.getStyle().selection.setTopHeight(10*VIEWPORT_HEIGHT/1080);
         addListener(list);
     }
@@ -365,7 +365,7 @@ public class Results implements Screen {
 
     private Label createLabel(String text)
     {
-        Label.LabelStyle labelstyle = new Label.LabelStyle(fontH, Color.WHITE);
+        Label.LabelStyle labelstyle = new Label.LabelStyle(assetsManager.getFontH(), Color.WHITE);
         Label fileLabel = new Label(text, labelstyle);
         fileLabel.setPosition((stage.getCamera().viewportWidth/2)-fileLabel.getWidth()/2,stage.getCamera().viewportHeight/2);
         return fileLabel;

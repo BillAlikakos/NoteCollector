@@ -48,7 +48,7 @@ public class MultiplayerHostScreen implements  Screen
 {
     private Viewport viewport;
     private Stage stage;
-    private BitmapFont font, fontH;
+    //private BitmapFont font, fontH;
     private Texture img;
     private Image logo;
 
@@ -153,8 +153,8 @@ public class MultiplayerHostScreen implements  Screen
             stage.getRoot().removeActor(table);
             stage.getRoot().removeActor(btn);
             stage.getRoot().removeActor(verticalGroup);
-            font.dispose();
-            fontH.dispose();
+            //font.dispose();
+            //fontH.dispose();
         }
         //create a table to organize the buttons and the list of tracks
         private void createTable(){
@@ -217,15 +217,15 @@ public class MultiplayerHostScreen implements  Screen
             textButtonStyle.up = ButtonImage;
             textButtonStyle.down = selectionColorPressed;
             textButtonStyle.over = ButtonImage;
-            textButtonStyle.font = font;
+            textButtonStyle.font = assetsManager.getFont();
             return textButtonStyle;
         }
 
 
         private void LoadAssets(){
             assetsManager.LoadAssets();
-            fontH = assetsManager.createBimapFont(45*VIEWPORT_WIDTH/1920);
-            font = assetsManager.createBitmapFont();
+            /*fontH = assetsManager.createBimapFont(45*VIEWPORT_WIDTH/1920);
+            font = assetsManager.createBitmapFont();*/
             selectionColor =new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.ButtonImage,Texture.class))) ;
             selectionColor.setRightWidth(5f);
             selectionColor.setBottomHeight(2f);
@@ -238,7 +238,7 @@ public class MultiplayerHostScreen implements  Screen
 
 
         private Label createLabel(String text){
-            Label.LabelStyle labelstyle = new Label.LabelStyle(fontH, Color.WHITE);
+            Label.LabelStyle labelstyle = new Label.LabelStyle(assetsManager.getFontH(), Color.WHITE);
             Label fileLabel = new Label(text, labelstyle);
             fileLabel.setPosition(VIEWPORT_WIDTH/2-fileLabel.getWidth(),VIEWPORT_HEIGHT/2);
             return  fileLabel;

@@ -48,7 +48,7 @@ import static org.apache.commons.io.FileUtils.readFileToByteArray;
 public class Browse implements Screen {
     private Viewport viewport;
     private Stage stage;
-    private BitmapFont font,fontList,fontH;
+    //private BitmapFont font,fontList,fontH;
 
     private static final int VIEWPORT_WIDTH = Constants.APP_WIDTH;
     private static final int VIEWPORT_HEIGHT = Constants.APP_HEIGHT;
@@ -268,7 +268,7 @@ public class Browse implements Screen {
         textButtonStyle.up = ButtonImage;
         textButtonStyle.down = selectionColorPressed;
         textButtonStyle.over = ButtonImage;
-        textButtonStyle.font = font;
+        textButtonStyle.font = assetsManager.getFont();
         return textButtonStyle;
     }
 
@@ -277,8 +277,8 @@ public class Browse implements Screen {
     {
         assetsManager.LoadAssets();
         //fontH = assetsManager.createBimapFont(VIEWPORT_WIDTH/30);
-        fontH = assetsManager.createFontH();
-        font = assetsManager.createBitmapFont();
+        //fontH = assetsManager.createFontH();
+        //font = assetsManager.createBitmapFont();
         selectionColor =new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.ButtonImage,Texture.class))) ;
         selectionColor.setRightWidth(5f);
         selectionColor.setBottomHeight(2f);
@@ -291,7 +291,7 @@ public class Browse implements Screen {
 
     private void ListStyle(){
         assetsManager.LoadListAssets();
-        fontList = assetsManager.createBitmapFont();
+        //fontList = assetsManager.createBitmapFont();
         selectionColorList = new TextureRegionDrawable(new TextureRegion(assetsManager.assetManager.get(Constants.SelectionColor,Texture.class)));
         skin = assetsManager.assetManager.get(Constants.Skin,Skin.class);
     }
@@ -299,7 +299,7 @@ public class Browse implements Screen {
     private void createList()  {
         list = new List<>(skin);
         list.getStyle().selection = selectionColorList;
-        list.getStyle().font = fontList;
+        list.getStyle().font = assetsManager.getFontH();
         list.getStyle().selection.setTopHeight(10*VIEWPORT_HEIGHT/1080);
         addListener(list);
     }
@@ -324,7 +324,7 @@ public class Browse implements Screen {
         });
     }
     private Label createLabel(String text){
-        Label.LabelStyle labelstyle = new Label.LabelStyle(fontH, Color.WHITE);
+        Label.LabelStyle labelstyle = new Label.LabelStyle(assetsManager.getFontH(), Color.WHITE);
         return new Label(text, labelstyle);
 
     }
@@ -429,8 +429,8 @@ public class Browse implements Screen {
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(exitBtnTable);
         stage.getRoot().removeActor(verticalGroupLogo);
-        font.dispose();
-        fontList.dispose();
+        //font.dispose();
+        //fontList.dispose();
 
     }
 

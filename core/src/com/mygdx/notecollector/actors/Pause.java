@@ -42,7 +42,7 @@ public class Pause extends Stage  {
     public Pause(NoteCollector noteCollector) {
         //constructor of pause screen
         this.AssetsManager = noteCollector.getAssetsManager();
-        font = AssetsManager.createBimapFont(45);
+        //font = AssetsManager.createBimapFont(45);
         selectionColor =new TextureRegionDrawable(new TextureRegion(AssetsManager.assetManager.get(Constants.ButtonImage,Texture.class))) ;
         selectionColor.setRightWidth(5f);
         selectionColor.setBottomHeight(2f);

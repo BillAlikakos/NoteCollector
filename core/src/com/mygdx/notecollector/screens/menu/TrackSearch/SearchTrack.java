@@ -60,7 +60,7 @@ public class SearchTrack implements Screen {
 
     private TextureRegionDrawable selectionColor;
     private TextureRegionDrawable selectionColorPressed;
-    private BitmapFont font;
+    //private BitmapFont font;
     private Image icon;
     private Label err1;
     private Label err2;
@@ -181,9 +181,9 @@ public class SearchTrack implements Screen {
         TextField.TextFieldStyle textFieldStyle = new TextField.TextFieldStyle();
         selectionColorList = new TextureRegionDrawable(new TextureRegion(AssetsManager.assetManager.get(Constants.SelectionColor, Texture.class)));
         textFieldStyle.background = selectionColorList;
-        textFieldStyle.font = font;
+        textFieldStyle.font = AssetsManager.getFont();
         textFieldStyle.fontColor = Color.WHITE;
-        textFieldStyle.messageFont = font;
+        textFieldStyle.messageFont = AssetsManager.getFont();
         textFieldStyle.messageFontColor = Color.WHITE;
 
         return textFieldStyle;
@@ -243,13 +243,13 @@ public class SearchTrack implements Screen {
         }
         stage.getRoot().removeActor(table);
         stage.getRoot().removeActor(verticalGroup);
-        font.dispose();
+        //font.dispose();
 
     }
 
     private Label createLabel(String text, float Yaxis) //Method for label creation
     {
-        Label.LabelStyle labelstyle = new Label.LabelStyle(font, Color.WHITE);
+        Label.LabelStyle labelstyle = new Label.LabelStyle(AssetsManager.getFont(), Color.WHITE);
         Label label = new Label(text, labelstyle);
         label.setPosition(((stage.getCamera().viewportWidth - label.getWidth()) / 2), (Yaxis + 50*VIEWPORT_HEIGHT/1080));
        // stage.addActor(label);
@@ -269,7 +269,7 @@ public class SearchTrack implements Screen {
         AssetsManager.LoadAssets();
         AssetsManager.LoadListAssets();
         AssetsManager.LoadWiFiAssets();
-        font = AssetsManager.createBitmapFont();
+        //font = AssetsManager.createBitmapFont();
         selectionColor = new TextureRegionDrawable(new TextureRegion(AssetsManager.assetManager.get(Constants.ButtonImage, Texture.class)));
         selectionColor.setRightWidth(7f);
         selectionColor.setBottomHeight(2f);
@@ -480,7 +480,7 @@ public class SearchTrack implements Screen {
         textButtonStyle.up = ButtonImage;
         textButtonStyle.down = selectionColorPressed;
         textButtonStyle.over = ButtonImage;
-        textButtonStyle.font = font;
+        textButtonStyle.font = AssetsManager.getFont();
         return textButtonStyle;
     }
 
