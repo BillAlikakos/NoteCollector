@@ -79,6 +79,7 @@ public class GameOverScreen implements Screen {
         this.delay = delay;
         this.mode=mode;
         AssetsManager = notecollector.getAssetsManager();
+        notecollector.setInGame(false);
         LoadAssets();
 
     }
@@ -97,6 +98,7 @@ public class GameOverScreen implements Screen {
         this.delay = delay;
         this.mode=mode;
         AssetsManager = notecollector.getAssetsManager();
+        notecollector.setInGame(false);
         LoadAssets();
 
     }
@@ -114,6 +116,7 @@ public class GameOverScreen implements Screen {
         this.delay = delay;
         this.mode=mode;
         AssetsManager = notecollector.getAssetsManager();
+        notecollector.setInGame(false);
         LoadAssets();
 
     }

@@ -1,22 +1,17 @@
 package com.mygdx.notecollector;
 
 import android.Manifest;
-import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
-import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
-import android.view.OrientationEventListener;
 import android.view.WindowManager;
 import android.widget.Toast;
 
@@ -24,24 +19,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.badlogic.gdx.utils.Timer;
-import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.FirebaseDatabase;
-import com.mygdx.notecollector.Utils.ScoreClass;
-import com.mygdx.notecollector.screens.menu.UserArea.ResultScreen;
-import com.mygdx.notecollector.screens.menu.UserArea.ScoresScreen;
 import com.mygdx.notecollector.screens.menu.UserArea.SocialSplashScreen;
-
-import static android.content.ContentValues.TAG;
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.show;
 
 public class AndroidLauncher extends AndroidApplication
 {
@@ -182,6 +164,7 @@ public class AndroidLauncher extends AndroidApplication
 	{
 		//super.onBackPressed();
 	}
+
 
 	@Override
 	public void onDestroy()
