@@ -166,7 +166,7 @@ public class MultiplayerPreMatchLobby implements Screen
             {
                 inetAddress = InetAddress.getByName(TIME_SERVER);
             }
-            catch (UnknownHostException e)//TODO: Handle errors
+            catch (UnknownHostException e)
             {
                 e.printStackTrace();
             }

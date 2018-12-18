@@ -182,12 +182,14 @@ public class GameScreen implements  Screen {
             }
         }
 
+        if(!isHost && !isGuest)
+        {
+            if (gameStage.getGameState().equals("paused"))
+                pause();
 
-        if (gameStage.getGameState().equals("paused"))
-            pause();
-
-        if (gameStage.getGameState().equals("resume"))
-            gameStage.resumeGame();
+            if (gameStage.getGameState().equals("resume"))
+                gameStage.resumeGame();
+        }
 
         if (isGameOver())
         {
@@ -217,7 +219,8 @@ public class GameScreen implements  Screen {
     }
 
     @Override
-    public void resume() {
+    public void resume()
+    {
         if(!gameStage.isPauseEngaged())
         {
             gameStage.setGameState("resume");
@@ -239,12 +242,29 @@ public class GameScreen implements  Screen {
     }
 
     @Override
-    public void pause()//TODO : Add a method to dispose when ewxiting from pause
+    public void pause()
     {
         //Pause must be disabled in multiplayer
-        pausetime  =  System.currentTimeMillis();
-        gameStage.pauseGame(pausetime);
-
+        if(!isGuest && !isHost)
+        {
+            pausetime  =  System.currentTimeMillis();
+            gameStage.pauseGame(pausetime);
+        }
+        else//Disconnect if focus is lost
+        {
+            if(isHost)
+            {
+                srv.sendGameOver(gameStage.getScore());//Notify the other player that the game is over
+                dispose();
+                game.setScreen(new GameOverScreen(game,gameStage.getScore(),filepath,speed,delay,srv,mode,stage));
+            }
+            else
+            {
+                c.sendGameOver(gameStage.getScore());
+                dispose();
+                game.setScreen(new GameOverScreen(game,gameStage.getScore(),filepath,speed,delay,c,mode,stage));
+            }
+        }
     }
 
     private boolean isGameOver(){

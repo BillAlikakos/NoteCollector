@@ -311,7 +311,7 @@ public  class Assets
         assetManager.unload(Constants.ButtonPressed);
         backgroundGame.dispose();
     }
-    /*public BitmapFont createBimapFont(int size )//TODO : Try the freeType font gen and handle custom background exceptions (e.g. file not found)
+    /*public BitmapFont createBimapFont(int size )
     {
         com.mygdx.notecollector.fonts.SmartFontGenerator fontGen = new com.mygdx.notecollector.fonts.SmartFontGenerator();
 
@@ -442,6 +442,7 @@ public  class Assets
     {
         //FileHandle file = new FileHandle(Constants.getBackgroundMenu());
         Pixmap pixmap200;
+        System.out.println("Pref "+prefs.getString("menuBackground"));
         if(!prefs.getString("menuBackground").equals("data/ui/images/new1080.png"))//If a custom image is defined use external file loader
         {
              pixmap200 = new Pixmap(Gdx.files.external(file.path()));

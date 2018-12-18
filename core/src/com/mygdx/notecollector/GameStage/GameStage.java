@@ -183,6 +183,7 @@ public class GameStage extends Stage implements ContactListener
         this.isGuest = false;
         this.isHost = true;
         this.mode = mode;
+        this.pauseEngaged=false;
         prefs = Gdx.app.getPreferences("NoteCollectorPreferences");
 
         setCollectorSize();
@@ -251,6 +252,7 @@ public class GameStage extends Stage implements ContactListener
         this.isGuest=true;
         this.isHost=false;
         this.mode=mode;
+        this.pauseEngaged=false;
         prefs= Gdx.app.getPreferences("NoteCollectorPreferences");
 
         setCollectorSize();
@@ -556,14 +558,31 @@ public class GameStage extends Stage implements ContactListener
 
             Background=AssetsManager.externalAssets.get(Constants.getBackgroundGame());
         }*/
-        FileHandle file = Gdx.files.internal(Constants.getBackgroundGame());
+
        //AssetsManager.assetManager.load(Constants.getBackgroundGame(),Texture.class);
         //Background = AssetsManager.assetManager.get(Constants.BackgroundGame);
         //Background = AssetsManager.assetManager.get(Constants.getBackgroundGame(),Texture.class);
         //Image mazePreview = new Image(Background);
         //mazePreview = new Image(Background);
         //mazePreview.setScaling(Scaling.fit );
+        //FileHandle file = Gdx.files.internal(Constants.getBackgroundGame());
+        FileHandle file;
+        if(!prefs.getString("gameBackground").equals(Constants.BackgroundGameDef))
+        {
+            file=Gdx.files.external(Constants.getBackgroundGame());
+        }
+        else
+        {
+            file = Gdx.files.internal(Constants.getBackgroundGame());
+        }
+        if(!file.exists())//Error checking code for custom background image. If the file specified doesn't exist the default image is used.
+        {
+            System.out.println("File doesn't exist");
+            Constants.setBackgroundGame(Constants.BackgroundGameDef);
+            file=Gdx.files.internal(Constants.BackgroundGameDef);
+        }
         mazePreview=AssetsManager.scaleGameBackground(file);
+
         addActor(mazePreview);
     }
     private void setUpText() {
@@ -592,7 +611,7 @@ public class GameStage extends Stage implements ContactListener
         addActor(text);
     }
 
-    private void createX()//TODO : Fix collector "hitbox" for 480p
+    private void createX()
     {
             AssetsManager.LoadX();
             Texture X = AssetsManager.assetManager.get(Constants.X);
@@ -784,10 +803,15 @@ produce the corresponding square*/
     }
 
 
-    private void fadeInPause(boolean visible){
-        BackgroundPause.getColor().a=0;
-        BackgroundPause.addAction(Actions.sequence(Actions.fadeIn(0.2f)));
-        BackgroundPause.setVisible(false);
+    private void fadeInPause(boolean visible)
+    {
+        if(!isHost && !isGuest)
+        {
+            BackgroundPause.getColor().a=0;
+            BackgroundPause.addAction(Actions.sequence(Actions.fadeIn(0.2f)));
+            BackgroundPause.setVisible(false);
+        }
+
         //resume.setVisible(visible);
         //quit.setVisible(visible);
     }
@@ -894,7 +918,8 @@ produce the corresponding square*/
      }
 
      //resume the music to play 
-     private void resumeTimer(){
+     private void resumeTimer()
+     {
         GameState ="running";
         pausetime =  System.currentTimeMillis() - pausetime;
         starttime = pausetime + starttime;

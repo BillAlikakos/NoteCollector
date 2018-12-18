@@ -264,7 +264,7 @@ public class LoadingScreen implements Screen {
 
 
     //if the method setupmidi isn't running show the game screen  
-    private void showLoadProgress()//TODO : Try to do loading in a while loop in show() instead of render()
+    private void showLoadProgress()
     {
         if ( !t.isAlive() && AssetsManager.assetManager.update() && AssetsManager.assetManagerFiles.update())
         {
