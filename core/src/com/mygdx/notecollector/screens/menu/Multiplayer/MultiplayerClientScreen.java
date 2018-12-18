@@ -328,8 +328,8 @@ public class MultiplayerClientScreen implements  Screen
                 }
             }
         };
-            //final ClientClass client= new ClientClass();
-            hosts=client.discoverServers();
+        //final ClientClass client= new ClientClass();
+        hosts=client.discoverServers();
 
         if(hosts.size()==0)
             {

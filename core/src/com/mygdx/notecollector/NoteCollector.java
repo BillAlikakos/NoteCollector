@@ -90,7 +90,7 @@ public class NoteCollector extends Game {
 	public void create()
     {
 		//initialize asset manager and audio for click
-		Constants.viewportDimensions();
+		//Constants.viewportDimensions();
 		AssetsManager = new Assets();
 
         Preferences prefs = Gdx.app.getPreferences("NoteCollectorPreferences");

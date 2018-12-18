@@ -120,13 +120,21 @@ public class IntroScreen implements Screen {
     }
     private void fadeBackground()
     {
-        /*FileHandle file = Gdx.files.internal(Constants.getBackgroundMenu());
-        Image background=noteCollector.getAssetsManager().scaleBackground(file);
-        stage.addActor(background);
-        stage.addAction(Actions.sequence(Actions.alpha(0), Actions.fadeIn(2f)));
-        background.getColor().a=0;
-        background.addAction(Actions.fadeIn(0.2f));*/
-        FileHandle file = Gdx.files.internal(Constants.getBackgroundMenu());
+        FileHandle file;
+        if(!prefs.getString("menuBackground").equals(Constants.BackgroundMenuDef))
+        {
+            file=Gdx.files.external(Constants.getBackgroundMenu());
+        }
+        else
+        {
+            file = Gdx.files.internal(Constants.getBackgroundMenu());
+        }
+        if(!file.exists())//Error checking code for custom background image. If the file specified doesn't exist the default image is used.
+        {
+            System.out.println("File doesn't exist");
+            Constants.setBackgroundMenu(Constants.BackgroundMenuDef);
+            file=Gdx.files.internal(Constants.BackgroundMenuDef);
+        }
         Image background=noteCollector.getAssetsManager().scaleBackground(file);
         stage.addActor(background);
         background.getColor().a=0;

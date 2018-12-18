@@ -81,8 +81,8 @@ public class ClientClass extends Listener
     public ArrayList<InetAddress> discoverServers()//Get an arraylist of available servers
     {
         ArrayList<InetAddress> addresses;
-        //addresses= (ArrayList<InetAddress>) client.discoverHosts(udpPort,2000);
-        addresses= (ArrayList<InetAddress>) client.discoverHosts(udpPort,500);
+        //addresses= (ArrayList<InetAddress>) client.discoverHosts(udpPort,500);
+        addresses= (ArrayList<InetAddress>) client.discoverHosts(udpPort,100);
         return  addresses;
     }
 
