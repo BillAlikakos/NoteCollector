@@ -205,6 +205,7 @@ public class MainMenuScreen implements Screen {
                 if(scoreButton.isPressed())
                 {
                     playSound(prefs);
+                    scoreButton.removeListener(this);//Remove listener to avoid handling double clicks
                     table.addAction(Actions.sequence(Actions.fadeOut(0.35f)));//Fade out table
                     top.addAction(Actions.sequence(Actions.fadeOut(0.35f)));//Fade out icon table
                     Timer.schedule(new Timer.Task()
@@ -229,6 +230,7 @@ public class MainMenuScreen implements Screen {
                 if(logInButton.isPressed())
                 {
                     playSound(prefs);
+                    logInButton.removeListener(this);//Remove listener to avoid handling double clicks
                     table.addAction(Actions.sequence(Actions.fadeOut(0.35f)));//Fade out table
                     top.addAction(Actions.sequence(Actions.fadeOut(0.35f)));//Fade out icon table
                     Timer.schedule(new Timer.Task()
@@ -254,6 +256,7 @@ public class MainMenuScreen implements Screen {
                 if(helpButton.isPressed())
                 {
                     playSound(prefs);
+                    helpButton.removeListener(this);//Remove listener to avoid handling double clicks
                     table.addAction(Actions.sequence(Actions.fadeOut(0.35f)));//Fade out table
                     top.addAction(Actions.sequence(Actions.fadeOut(0.35f)));//Fade out icon table
                     Timer.schedule(new Timer.Task()
@@ -278,6 +281,7 @@ public class MainMenuScreen implements Screen {
                 if(settingsButton.isPressed())
                 {
                     playSound(prefs);
+                    settingsButton.removeListener(this);//Remove listener to avoid handling double clicks
                     table.addAction(Actions.sequence(Actions.fadeOut(0.35f)));//Fade out table
                     top.addAction(Actions.sequence(Actions.fadeOut(0.35f)));//Fade out icon table
                     Timer.schedule(new Timer.Task()
@@ -302,6 +306,7 @@ public class MainMenuScreen implements Screen {
                 if(exitButton.isPressed())
                 {
                     playSound(prefs);
+                    exitButton.removeListener(this);//Remove listener to avoid handling double clicks
                     table.addAction(Actions.sequence(Actions.fadeOut(0.35f)));//Fade out table
                     top.addAction(Actions.sequence(Actions.fadeOut(0.35f)));//Fade out icon table
                     Timer.schedule(new Timer.Task()
@@ -351,6 +356,7 @@ public class MainMenuScreen implements Screen {
                          {
                           noteCollector.getClick().play();
                          }
+                        MenuButton.removeListener(this);//Remove listener to avoid handling double clicks
                         table.addAction(Actions.sequence(Actions.fadeOut(0.35f)));//Fade out table
                         top.addAction(Actions.sequence(Actions.fadeOut(0.35f)));//Fade out icon table
                         Timer.schedule(new Timer.Task() {

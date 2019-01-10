@@ -439,6 +439,7 @@ public class ScoresScreen implements Screen {
                     if (prefs.getBoolean("sound")) {
                         noteCollector.getClick().play();
                     }
+                    MenuButton.removeListener(this);
                     //table.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out table
                     exitBtnTable.addAction(Actions.sequence(Actions.fadeOut(0.4f)));
                     table.addAction(Actions.sequence(Actions.fadeOut(0.4f)));

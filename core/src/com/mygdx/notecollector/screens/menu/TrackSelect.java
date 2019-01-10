@@ -255,6 +255,7 @@ public class TrackSelect implements Screen
                     if (prefs.getBoolean("sound")) {
                         noteCollector.getClick().play();
                     }
+                    MenuButton.removeListener(this);
                     table.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out table
                     btn.addAction(Actions.sequence(Actions.fadeOut(0.4f)));
                     Timer.schedule(new Timer.Task() {
@@ -396,7 +397,6 @@ public class TrackSelect implements Screen
         }
         return res.toString();
     }
-//TODO : Change list styling , align to center etc.
     private void getInstruments(File file)//Method that finds all the instruments that are used in each track
     {
         item = new ArrayList<>();

@@ -74,8 +74,8 @@ public  class Assets
     public void LoadMenuAssets()
     {
         LoadTexture(Constants.ButtonImage);
-        LoadTexture(Constants.logo);
-        LoadTexture(Constants.text);
+        //LoadTexture(Constants.logo);
+        //LoadTexture(Constants.text);
         LoadTexture(Constants.ButtonPressed);
         LoadTexture(Constants.exitImage);
         LoadTexture(Constants.scoresImage);
@@ -100,7 +100,7 @@ public  class Assets
     public void LoadAssets()
     {
         LoadTexture(Constants.ButtonImage);
-        LoadTexture(Constants.logo);
+        //LoadTexture(Constants.logo);
         LoadTexture(Constants.ButtonPressed);
         assetManager.finishLoading();
     }
@@ -122,7 +122,7 @@ public  class Assets
     public void LoadGameOverAssets()
     {
         LoadTexture(Constants.ButtonImage);
-        LoadTexture(Constants.GameOver);
+        //LoadTexture(Constants.GameOver);
         LoadTexture(Constants.ButtonPressed);
         assetManager.finishLoading();
     }
@@ -134,7 +134,7 @@ public  class Assets
         this.fontList.dispose();*/
         this.logo.dispose();
         assetManager.unload(Constants.ButtonImage);
-        assetManager.unload(Constants.logo);
+        //assetManager.unload(Constants.logo);
         assetManager.unload(Constants.ButtonPressed);
     }
 
@@ -142,7 +142,7 @@ public  class Assets
     {
         this.logo.dispose();
         assetManager.unload(Constants.ButtonImage);
-        assetManager.unload(Constants.logo);
+        //assetManager.unload(Constants.logo);
         assetManager.unload(Constants.ButtonPressed);
         assetManager.unload(Constants.SelectionColor);
         assetManager.unload(Constants.skinAtlas);
@@ -153,7 +153,7 @@ public  class Assets
     {
         this.logo.dispose();
         assetManager.unload(Constants.ButtonImage);
-        assetManager.unload(Constants.GameOver);
+        //assetManager.unload(Constants.GameOver);
         assetManager.unload(Constants.ButtonPressed);
     }
 
@@ -175,8 +175,8 @@ public  class Assets
         //this.fontList.dispose();
         this.logo.dispose();
         assetManager.unload(Constants.ButtonImage);
-        assetManager.unload(Constants.logo);
-        assetManager.unload(Constants.text);
+        //assetManager.unload(Constants.logo);
+        //assetManager.unload(Constants.text);
         assetManager.unload(Constants.ButtonPressed);
         assetManager.unload(Constants.exitImage);
         assetManager.unload(Constants.scoresImage);

@@ -122,6 +122,7 @@ public class OptionsScreen implements Screen{
                {
                    noteCollector.getClick().play();
                }
+               soundOptions.removeListener(this);
                table.addAction(Actions.fadeOut(0.4f));
                exitBtnTable.addAction(Actions.fadeOut(0.4f));
                Timer.schedule(new Timer.Task() {
@@ -145,6 +146,7 @@ public class OptionsScreen implements Screen{
                {
                    noteCollector.getClick().play();
                }
+               gameOptions.removeListener(this);
                table.addAction(Actions.fadeOut(0.4f));
                exitBtnTable.addAction(Actions.fadeOut(0.4f));
                Timer.schedule(new Timer.Task()
@@ -167,6 +169,7 @@ public class OptionsScreen implements Screen{
                {
                    noteCollector.getClick().play();
                }
+               miscOptions.removeListener(this);
                table.addAction(Actions.fadeOut(0.4f));
                exitBtnTable.addAction(Actions.fadeOut(0.4f));
                Timer.schedule(new Timer.Task()
@@ -200,6 +203,7 @@ public class OptionsScreen implements Screen{
                     if (prefs.getBoolean("sound")) {
                         noteCollector.getClick().play();
                     }
+                    MenuButton.removeListener(this);
                     table.addAction(Actions.fadeOut(0.4f));
                     exitBtnTable.addAction(Actions.fadeOut(0.4f));
                     Timer.schedule(new Timer.Task() {

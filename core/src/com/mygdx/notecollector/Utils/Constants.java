@@ -94,7 +94,11 @@ public class Constants {
     public static  final String logo = "data/ui/images/logo1000.png";
     public static  final String noConn = "data/ui/images/noWiFi.png";
     public static  final String IntroImage = "data/ui/images/IntroImage.jpg";
-    public static  final String text = "data/ui/images/text.gif";
+    //public static  final String text = "data/ui/images/text.gif";
+    public static  final String text = "data/ui/images/how-to.png";
+    public static  final String multiplayerText = "data/ui/images/how-to-mp.png";
+    public static  final String trackSearchText = "data/ui/images/how-to-ts.png";
+    public static  final String logInText = "data/ui/images/how-to-lg.png";
 
     public static  final String GameOver = "data/Game Images/failed.png";
 

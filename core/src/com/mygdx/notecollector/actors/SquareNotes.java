@@ -77,7 +77,7 @@ public class SquareNotes extends GameActor {
     private int valueTime;
     private boolean paused;
     private boolean mode;
-
+    private float Xaxis;
 
     public SquareNotes(Body body, Assets AssetsManager, int speed, long delay,boolean mode) {
         super(body, AssetsManager);
@@ -377,15 +377,17 @@ public class SquareNotes extends GameActor {
 
     public void StartNote(float Xaxis)
     {
-        if (TimeUtils.millis() - lastFlyTime > delay) {
-
+        if (TimeUtils.millis() - lastFlyTime > delay)
+        {
+            this.Xaxis=Xaxis;
             noteflying.add(new Pair(Xaxis));
             lastFlyTime = TimeUtils.millis();
         }
-
-
     }
-
+    public float getX()
+    {
+        return Xaxis;
+    }
     private Color getRandomColor() {
         Random rand = new Random();
         int value = rand.nextInt(30);
@@ -405,8 +407,6 @@ class Pair {
     Rectangle note;
     private float Yaxis = Constants.SquareNoteStartY;
     private float Xaxis;
-    int padX;
-    int padY;
     private static final int VIEWPORT_WIDTH = Constants.APP_WIDTH;
     private static final int VIEWPORT_HEIGHT = Constants.APP_HEIGHT;
 

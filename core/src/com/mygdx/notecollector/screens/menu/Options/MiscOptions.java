@@ -171,6 +171,7 @@ public class MiscOptions implements Screen
                     if (prefs.getBoolean("sound")) {
                         noteCollector.getClick().play();
                     }
+                    MenuButton.removeListener(this);
                     table.addAction(Actions.fadeOut(0.4f));
                     exitBtnTable.addAction(Actions.fadeOut(0.4f));
                     Timer.schedule(new Timer.Task() {
@@ -366,6 +367,9 @@ public class MiscOptions implements Screen
             {
                 assetsManager.disposeBackground();//Unload old background
                 Image background=noteCollector.getAssetsManager().scaleBackground(Gdx.files.internal(Constants.getBackgroundMenu()));//Scale the new one and add it to stage
+                System.out.println( stage.getRoot().findActor("bg").getZIndex());
+                stage.getRoot().findActor("bg").remove();//Remove old background actor from stage
+                background.setName("bg");
                 stage.getRoot().addActorAt(2,background);
             }
         });

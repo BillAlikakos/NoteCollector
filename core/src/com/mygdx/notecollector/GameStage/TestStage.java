@@ -1,6 +1,5 @@
 package com.mygdx.notecollector.GameStage;
 
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.audio.Music;
@@ -8,7 +7,6 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
@@ -43,11 +41,11 @@ import com.mygdx.notecollector.actors.Score;
 import com.mygdx.notecollector.actors.SquareNotes;
 import com.mygdx.notecollector.actors.Text;
 import com.mygdx.notecollector.midilib.MidiNote;
+import com.mygdx.notecollector.screens.menu.HelpScreen;
 import com.mygdx.notecollector.screens.menu.MainMenuScreen;
 
 import org.apache.commons.net.ntp.NTPUDPClient;
 import org.apache.commons.net.ntp.TimeInfo;
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -56,12 +54,10 @@ import java.util.ArrayList;
 
 import static com.badlogic.gdx.graphics.Color.RED;
 
-//import com.mygdx.notecollector.Utils.Pair;
-
 /**
  * Created by bill on 6/18/16.
  */
-public class GameStage extends Stage implements ContactListener
+public class TestStage extends Stage implements ContactListener
 {
 
     private World world;
@@ -130,7 +126,7 @@ public class GameStage extends Stage implements ContactListener
     private Image x5;
     private Dpad dpad;
 
-    public GameStage(NoteCollector noteCollector, float TickPerMsec, ArrayList<MidiNote> notes, int speed, long delay,boolean mode,Stage stage)
+    public TestStage(NoteCollector noteCollector, float TickPerMsec, ArrayList<MidiNote> notes, int speed, long delay,boolean mode,Stage stage)
     {
         super(new ScalingViewport(Scaling.stretch, VIEWPORT_WIDTH, VIEWPORT_HEIGHT, new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)));
         noteCollector.setInGame(true);
@@ -165,156 +161,6 @@ public class GameStage extends Stage implements ContactListener
         createPauseLabels();
         createBackgroundPause();
         addActorSPause();
-
-    }
-
-    public GameStage(NoteCollector noteCollector, float TickPerMsec, ArrayList<MidiNote> notes, int speed, long delay, ServerClass srv, boolean mode,Stage stage,long StartTime,long diff)
-    {
-        super(new ScalingViewport(Scaling.stretch, VIEWPORT_WIDTH, VIEWPORT_HEIGHT, new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)));
-        noteCollector.setInGame(true);
-        this.stage = stage;
-        squarewidth = 32f;
-        squareheight = 32f;
-        this.AssetsManager = noteCollector.getAssetsManager();
-        this.noteCollector = noteCollector;
-        this.notes = notes;
-        this.TickPerMsec = TickPerMsec;
-        this.srv = srv;
-        this.isGuest = false;
-        this.isHost = true;
-        this.mode = mode;
-        this.pauseEngaged=false;
-        prefs = Gdx.app.getPreferences("NoteCollectorPreferences");
-
-        setCollectorSize();
-        addGameOverListener();
-        message = "";
-
-        GameState = "running";
-        redcounts = 0;
-        fisttime = true;
-        //fontbutton = AssetsManager.createFont();
-        createObjects();
-        createBackground();
-        setupWorld();
-        setupCamera();
-        setupActros(speed, delay);
-        SetupMusic();
-        /*String TIME_SERVER = "0.gr.pool.ntp.org";
-        NTPUDPClient timeClient = new NTPUDPClient();
-        InetAddress inetAddress = null;
-        try
-        {
-            inetAddress = InetAddress.getByName(TIME_SERVER);
-        }
-        catch (UnknownHostException e)
-        {
-            e.printStackTrace();
-        }
-        TimeInfo timeInfo = null;
-        try
-        {
-            timeInfo = timeClient.getTime(inetAddress);
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-        //long returnTime = timeInfo.getMessage().getTransmitTimeStamp().getTime();
-        long time = timeInfo.getMessage().getTransmitTimeStamp().getTime();
-        long diffTime=time-System.currentTimeMillis();
-        System.out.println("Current time: "+time);
-        System.out.println("Starting time: "+StartTime);
-        long tmp=System.currentTimeMillis()+(diffTime);
-        while(tmp<=StartTime)
-        {
-            if(tmp==StartTime)
-            {
-                System.out.println("Starting time");
-                StartTimer();
-            }
-            tmp=System.currentTimeMillis()+(diffTime);
-        }*/
-        checkTime(StartTime);
-    }
-    public GameStage(NoteCollector noteCollector, float TickPerMsec, ArrayList<MidiNote> notes, int speed, long delay, ClientClass c, boolean mode,Stage stage,long StartTime)
-    {
-        super(new ScalingViewport(Scaling.stretch, VIEWPORT_WIDTH, VIEWPORT_HEIGHT, new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)));
-        noteCollector.setInGame(true);
-        this.stage=stage;
-        squarewidth=32f;
-        squareheight=32f;
-        this.AssetsManager =noteCollector.getAssetsManager();
-        this.noteCollector=noteCollector;
-        this.notes =notes;
-        this.TickPerMsec = TickPerMsec;
-        this.c=c;
-        this.isGuest=true;
-        this.isHost=false;
-        this.mode=mode;
-        this.pauseEngaged=false;
-        prefs= Gdx.app.getPreferences("NoteCollectorPreferences");
-
-        setCollectorSize();
-        addGameOverListener();
-        message ="";
-        GameState ="running";
-        redcounts =0;
-        fisttime =true;
-        //fontbutton = AssetsManager.createFont();
-        createObjects();
-        createBackground();
-        setupWorld();
-        setupCamera();
-        setupActros(speed,delay);
-        SetupMusic();
-        checkTime(StartTime);
-
-    }
-    private void checkTime(long StartTime)
-    {
-        System.out.println("In CheckTime");
-        String TIME_SERVER = "0.gr.pool.ntp.org";//NTP Server to ping
-        NTPUDPClient timeClient = new NTPUDPClient();
-        InetAddress inetAddress = null;
-        try
-        {
-            inetAddress = InetAddress.getByName(TIME_SERVER);
-        }
-        catch (UnknownHostException e)
-        {
-            e.printStackTrace();
-        }
-        TimeInfo timeInfo = null;
-        try
-        {
-            timeInfo = timeClient.getTime(inetAddress);
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-        //long returnTime = timeInfo.getMessage().getTransmitTimeStamp().getTime();
-        long time = timeInfo.getMessage().getTransmitTimeStamp().getTime();//Get the NTP Server time
-        long diffTime=time-System.currentTimeMillis();//Get difference between the System time and the NTP time
-        long tmp=System.currentTimeMillis()+(diffTime);
-        while(tmp<=StartTime)
-        {
-
-            //System.out.println("Current time: "+tmp);
-            //System.out.println("Starting time: "+StartTime);
-            if(tmp==StartTime)//When the time equals to the set match time , begin.
-            {
-                System.out.println("Start time: "+tmp);
-                StartTimer();
-            }
-            tmp=System.currentTimeMillis()+(diffTime);
-        }
-        if(tmp>StartTime)
-        {
-            System.out.println("Starting time: "+StartTime);
-            System.out.println("Time now: "+tmp);
-        }
     }
 
     private void setCollectorSize()//Set the size of the collector according to resolution and preferred size
@@ -333,88 +179,8 @@ public class GameStage extends Stage implements ContactListener
         {
             squarewidth =48f*VIEWPORT_WIDTH/800;
             squareheight=48f*VIEWPORT_HEIGHT/480;
-
         }
     }
-
-   private void addGameOverListener()//If the one player loses the other player wins automatically
-   {
-       if(isHost)
-       {
-           srv.getServer().addListener(new Listener()//Wait for client to load
-           {
-               public void received (Connection connection, Object object)
-               {
-                   if (object instanceof ServerClass.gameOver)//When host receives the client's score
-                   {
-                       System.out.println("Client lost");
-                       ServerClass.gameOver request = (ServerClass.gameOver)object;
-                       GameState ="finished";
-                   }
-
-               }
-           });
-
-       }
-       else if(isGuest)
-       {
-           c.getClient().addListener(new Listener()
-           {
-               public void received (Connection connection, Object object)
-               {
-                   if (object instanceof ClientClass.gameOver)
-                   {
-                       System.out.println("Host lost");
-                       ClientClass.gameOver request = (ClientClass.gameOver)object;
-                       GameState ="finished";
-                   }
-
-               }
-           });
-       }
-   }
-
-    private void receiveScore()
-    {
-        if(isHost)
-        {
-
-            srv.getServer().addListener(new Listener()//Wait for client to load
-            {
-
-                public void received (Connection connection, Object object)
-                {
-                    if (object instanceof ServerClass.scoreObj)//When host receives the client's score
-                    {
-                        //System.out.println("Host received score");
-                        ServerClass.scoreObj request = (ServerClass.scoreObj)object;
-                        //System.out.println(request.score);
-                        score2.setScore(Integer.parseInt(request.score));//Convert to int
-                    }
-
-                }
-            });
-
-        }
-        else if(isGuest)
-        {
-           c.getClient().addListener(new Listener()
-            {
-                public void received (Connection connection, Object object)
-                {
-                    if (object instanceof ClientClass.scoreObj)//When client receives the Host's score
-                    {
-                        //System.out.println("Client received score");
-                        ClientClass.scoreObj request = (ClientClass.scoreObj)object;
-                        //System.out.println(request.score);
-                        score2.setScore(Integer.parseInt(request.score));
-                    }
-
-                }
-            });
-        }
-    }
-
 
     private void createObjects(){
         touchPoint = new Vector3();
@@ -426,7 +192,7 @@ public class GameStage extends Stage implements ContactListener
     }
     private void createPauseLabels()
     {
-       // fontbutton = AssetsManager.createBimapFont(45);
+        // fontbutton = AssetsManager.createBimapFont(45);
         //fontbutton = AssetsManager.createFont();
         String name=  AssetsManager.MusicName;
         if(name.contains("/"))
@@ -492,8 +258,8 @@ public class GameStage extends Stage implements ContactListener
                             @Override
                             public boolean touchDown(InputEvent event,float x,float y,int pointer,int button)
                             {
-                                GameStage.super.getRoot().removeActor(resume);
-                                GameStage.super.getRoot().removeActor(quit);
+                                TestStage.super.getRoot().removeActor(resume);
+                                TestStage.super.getRoot().removeActor(quit);
                                 title.addAction(Actions.fadeOut(0.2f));
                                 setPauseEngaged(false);
                                 GameState ="resume";
@@ -512,7 +278,7 @@ public class GameStage extends Stage implements ContactListener
                                     @Override
                                     public void run() {
                                         dispose();
-                                        noteCollector.setScreen(new MainMenuScreen(noteCollector,stage));
+                                        noteCollector.setScreen(new HelpScreen(noteCollector,stage));
                                     }
                                 },2f );
                                 return true;
@@ -537,10 +303,6 @@ public class GameStage extends Stage implements ContactListener
     }
     private void setupActros(int speed,long delay){
         setupCollector();
-        if(prefs.getBoolean("pad"))//If dpad is preferred input type
-        {
-            setupDpad();
-        }
         setupSquareNotes(speed,delay);
         setupPiano();
         setUpScore();
@@ -549,23 +311,6 @@ public class GameStage extends Stage implements ContactListener
     }
     private void createBackground()
     {
-        /*if (prefs.getString("gameBackground").equals(Constants.BackgroundGameDef))
-        {
-            Background = AssetsManager.assetManager.get(Constants.getBackgroundGame());
-        }
-        else
-        {
-
-            Background=AssetsManager.externalAssets.get(Constants.getBackgroundGame());
-        }*/
-
-       //AssetsManager.assetManager.load(Constants.getBackgroundGame(),Texture.class);
-        //Background = AssetsManager.assetManager.get(Constants.BackgroundGame);
-        //Background = AssetsManager.assetManager.get(Constants.getBackgroundGame(),Texture.class);
-        //Image mazePreview = new Image(Background);
-        //mazePreview = new Image(Background);
-        //mazePreview.setScaling(Scaling.fit );
-        //FileHandle file = Gdx.files.internal(Constants.getBackgroundGame());
         FileHandle file;
         if(!prefs.getString("gameBackground").equals(Constants.BackgroundGameDef))
         {
@@ -613,29 +358,29 @@ public class GameStage extends Stage implements ContactListener
 
     private void createX()
     {
-            AssetsManager.LoadX();
-            Texture X = AssetsManager.assetManager.get(Constants.X);
-            x1=new Image(X);
-            x2=new Image(X);
-            x3=new Image(X);
-            x4=new Image(X);
-            x5=new Image(X);
-            x1.setSize(50*VIEWPORT_WIDTH/1920,50*VIEWPORT_HEIGHT/1080);
-            x2.setSize(50*VIEWPORT_WIDTH/1920,50*VIEWPORT_HEIGHT/1080);
-            x3.setSize(50*VIEWPORT_WIDTH/1920,50*VIEWPORT_HEIGHT/1080);
-            x4.setSize(50*VIEWPORT_WIDTH/1920,50*VIEWPORT_HEIGHT/1080);
-            x5.setSize(50*VIEWPORT_WIDTH/1920,50*VIEWPORT_HEIGHT/1080);
+        AssetsManager.LoadX();
+        Texture X = AssetsManager.assetManager.get(Constants.X);
+        x1=new Image(X);
+        x2=new Image(X);
+        x3=new Image(X);
+        x4=new Image(X);
+        x5=new Image(X);
+        x1.setSize(50*VIEWPORT_WIDTH/1920,50*VIEWPORT_HEIGHT/1080);
+        x2.setSize(50*VIEWPORT_WIDTH/1920,50*VIEWPORT_HEIGHT/1080);
+        x3.setSize(50*VIEWPORT_WIDTH/1920,50*VIEWPORT_HEIGHT/1080);
+        x4.setSize(50*VIEWPORT_WIDTH/1920,50*VIEWPORT_HEIGHT/1080);
+        x5.setSize(50*VIEWPORT_WIDTH/1920,50*VIEWPORT_HEIGHT/1080);
 
-            x1.setPosition(getCamera().viewportWidth  / 64, getCamera().viewportHeight * 62 / 70-25*VIEWPORT_HEIGHT/480);
-            x2.setPosition(getCamera().viewportWidth  / 64+50*VIEWPORT_WIDTH/1920, getCamera().viewportHeight * 62 / 70-25*VIEWPORT_HEIGHT/480);
-            x3.setPosition(getCamera().viewportWidth  / 64+100*VIEWPORT_WIDTH/1920, getCamera().viewportHeight * 62 / 70-25*VIEWPORT_HEIGHT/480);
-            x4.setPosition(getCamera().viewportWidth  / 64+150*VIEWPORT_WIDTH/1920, getCamera().viewportHeight * 62 / 70-25*VIEWPORT_HEIGHT/480);
-            x5.setPosition(getCamera().viewportWidth  / 64+200*VIEWPORT_WIDTH/1920, getCamera().viewportHeight * 62 / 70-25*VIEWPORT_HEIGHT/480);
-            addActor(x1);
-            addActor(x2);
-            addActor(x3);
-            addActor(x4);
-            addActor(x5);
+        x1.setPosition(getCamera().viewportWidth  / 64, getCamera().viewportHeight * 62 / 70-25*VIEWPORT_HEIGHT/480);
+        x2.setPosition(getCamera().viewportWidth  / 64+50*VIEWPORT_WIDTH/1920, getCamera().viewportHeight * 62 / 70-25*VIEWPORT_HEIGHT/480);
+        x3.setPosition(getCamera().viewportWidth  / 64+100*VIEWPORT_WIDTH/1920, getCamera().viewportHeight * 62 / 70-25*VIEWPORT_HEIGHT/480);
+        x4.setPosition(getCamera().viewportWidth  / 64+150*VIEWPORT_WIDTH/1920, getCamera().viewportHeight * 62 / 70-25*VIEWPORT_HEIGHT/480);
+        x5.setPosition(getCamera().viewportWidth  / 64+200*VIEWPORT_WIDTH/1920, getCamera().viewportHeight * 62 / 70-25*VIEWPORT_HEIGHT/480);
+        addActor(x1);
+        addActor(x2);
+        addActor(x3);
+        addActor(x4);
+        addActor(x5);
     }
 
     private void setupWorld(){
@@ -652,35 +397,6 @@ public class GameStage extends Stage implements ContactListener
     }
 
 
-    private void setupDpad()
-    {
-        this.dpad=new Dpad(this);
-        dpad.setupDpad();
-    }
-    private void handleInput()//Handle input in action thread
-    {
-        if(dpad.isUpPressed())
-        {
-            collector.moveUp();
-            collectorPosition.set(collector.getXaxis(),collector.getYaxis(),squarewidth,squareheight);
-        }
-        if(dpad.isDownPressed())
-        {
-            collector.moveDown();
-            collectorPosition.set(collector.getXaxis(),collector.getYaxis(),squarewidth,squareheight);
-        }
-        if(dpad.isLeftPressed())
-        {
-            collector.moveLeft();
-            collectorPosition.set(collector.getXaxis(),collector.getYaxis(),squarewidth,squareheight);
-        }
-        if(dpad.isRightPressed())
-        {
-            collector.moveRight();
-            collectorPosition.set(collector.getXaxis(),collector.getYaxis(),squarewidth,squareheight);
-        }
-    }
-
     private void setupPiano()
     {
         piano = new Piano(WorldUtils.CreatePianoKeyboard(world), AssetsManager);
@@ -695,37 +411,20 @@ public class GameStage extends Stage implements ContactListener
                 getCamera().viewportHeight * 62 / 64, getCamera().viewportWidth / 4,
                 getCamera().viewportHeight / 6);
         score = new Score(scoreBounds, AssetsManager);
-        if(this.isHost || this.isGuest)
-        {
-            Rectangle scoreBounds2 = new Rectangle(getCamera().viewportWidth * 57  / 64 -(145*getCamera().viewportWidth/1920),
-                    getCamera().viewportHeight * 52 / 64, getCamera().viewportWidth / 4,
-                    getCamera().viewportHeight / 6);
-            if(isHost)
-            {
-                score2 = new Score(scoreBounds2, AssetsManager,srv);
-            }
-            else
-            {
-                score2 = new Score(scoreBounds2, AssetsManager,c);
-            }
-            addActor(score2);
-            receiveScore();
-        }
-
         addActor(score);
 
     }
 
-     private void setupCamera() {
-         camera = new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT);
-         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0f);
-         camera.update();
-     }
+    private void setupCamera() {
+        camera = new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT);
+        camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0f);
+        camera.update();
+    }
 
     private void StartTimer(){
         createTimer();
         //SetupMusic();//With this method create the object of music class to play the music track
-/*Check if the player have select to play without sound*/
+        /*Check if the player have select to play without sound*/
         if (prefs.getBoolean("music")) music.setVolume(100f);
         else music.setVolume(0f);
 
@@ -742,7 +441,7 @@ public class GameStage extends Stage implements ContactListener
             public void run() {
                 if(GameState.equals("running")) {
                     /*find the millisecond with computing the subtract the starttime of task from current time in milliseconds
-*/
+                     */
                     msec = System.currentTimeMillis()- starttime;
                     prevTick =  curretnTick;
                     curretnTick =  (msec / TickPerMsec);
@@ -759,7 +458,7 @@ produce the corresponding square*/
     private void SetupMusic(){
         music =AssetsManager.assetManagerFiles.get(AssetsManager.MusicName,Music.class);
         music.setOnCompletionListener(new Music.OnCompletionListener() {
-           //if the music track is ended set the state of game in finished for stopping the game
+            //if the music track is ended set the state of game in finished for stopping the game
             @Override
             public void onCompletion(Music music) {
                 GameState ="finished";
@@ -777,13 +476,12 @@ produce the corresponding square*/
     private Label createLabel(String text){
         Label.LabelStyle labelstyle = new Label.LabelStyle(AssetsManager.getFont(), Color.WHITE);
         return new Label(text, labelstyle);
-
     }
 
     private void pauseTimer(long paused){
         if (music == null)
             return;
-        //pause the music 
+        //pause the music
         if (music.isPlaying()) {
             this.pausetime = paused;
             long   msec = System.currentTimeMillis() - starttime;
@@ -795,7 +493,7 @@ produce the corresponding square*/
         timer.stop();
     }
 
-// pause all the objects of game
+    // pause all the objects of game
     private void pauseObjects(boolean paused){
         squareNotes.setPaused(paused);
         collector.setPaused(paused);
@@ -815,73 +513,75 @@ produce the corresponding square*/
         //resume.setVisible(visible);
         //quit.setVisible(visible);
     }
-     public void pauseGame(long paused){
-         pauseTimer(paused);
-         pauseObjects(true);
-         fadeInPause(true);
+    public void pauseGame(long paused)
+    {
+        System.out.println("Paused ?");
+        pauseTimer(paused);
+        pauseObjects(true);
+        fadeInPause(true);
 
-     }
+    }
     @Override
-     public void act(float delta) {
-         super.act(delta);
-         if(prefs.getBoolean("pad"))
-         {
-             handleInput();
-         }
-         squareNotes.setCollector(collectorPosition);
-         redcounts = squareNotes.getRedcounts();
-         if(redcounts==1)//Change color of X's depending on the number of redcounts
-         {
-             x1.setColor(RED);
-         }
-         else if(redcounts==2)
-         {
-             x2.setColor(RED);
-         }
-         else if(redcounts==3)
-         {
-             x3.setColor(RED);
-         }
-         else if(redcounts==4)
-         {
-             x4.setColor(RED);
-         }
-         else if(redcounts==5)
-         {
-             x5.setColor(RED);
-         }
-         score.setScore(squareNotes.getScore());
-         if(getGameState().equals("running"))
-         {
-             if(isHost)//Send score to host/guest
-             {
-                 Integer s=score.getScore();
-                 srv.sendScore(s.toString());
-             }
-             else if(isGuest)
-             {
-                 Integer s=score.getScore();
-                 c.sendScore(s.toString());
-             }
-         }
+    public void act(float delta) {
+        super.act(delta);
+        squareNotes.setCollector(collectorPosition);
+        redcounts = squareNotes.getRedcounts();
+
+        collectorPosition.set(squareNotes.getX()-squarewidth/2,240f,squarewidth,squareheight);//TODO : Optimize x axis position to fit the notes and y axis. Also determine if notes are red in order to avoid them. Get noteflying index ? (from squarenotes class)
+        collector.changeposition(squareNotes.getX()-squarewidth/2,240f);//Set the collector sprite higher
+
+        if(redcounts==1)//Change color of X's depending on the number of redcounts
+        {
+            x1.setColor(RED);
+        }
+        else if(redcounts==2)
+        {
+            x2.setColor(RED);
+        }
+        else if(redcounts==3)
+        {
+            x3.setColor(RED);
+        }
+        else if(redcounts==4)
+        {
+            x4.setColor(RED);
+        }
+        else if(redcounts==5)
+        {
+            x5.setColor(RED);
+        }
+        score.setScore(squareNotes.getScore());
+        if(getGameState().equals("running"))
+        {
+            if(isHost)//Send score to host/guest
+            {
+                Integer s=score.getScore();
+                srv.sendScore(s.toString());
+            }
+            else if(isGuest)
+            {
+                Integer s=score.getScore();
+                c.sendScore(s.toString());
+            }
+        }
 
 
-         //refresh the score    
-         MessageScore = String.valueOf(squareNotes.getScore());
+        //refresh the score
+        MessageScore = String.valueOf(squareNotes.getScore());
 
 
-         checkMessages();
+        checkMessages();
 
-         accumulator += delta;
-         while (accumulator >= delta){
-             world.step(TIME_STEP, 6, 2);
-             accumulator -= TIME_STEP;
-         }
+        accumulator += delta;
+        while (accumulator >= delta){
+            world.step(TIME_STEP, 6, 2);
+            accumulator -= TIME_STEP;
+        }
 
 
-     }
+    }
 
-     //check what type of message is; to print it
+    //check what type of message is; to print it
     private void checkMessages(){
         if (squareNotes.getSquareColor() == 3 && fisttime && squareNotes.getTypeOfFailure() == 1) {
             createMessage(RED,"Collector disabled for ");
@@ -914,12 +614,12 @@ produce the corresponding square*/
     }
 
     public int getRedcounts() {
-         return redcounts;
-     }
+        return redcounts;
+    }
 
-     //resume the music to play 
-     private void resumeTimer()
-     {
+    //resume the music to play
+    private void resumeTimer()
+    {
         GameState ="running";
         pausetime =  System.currentTimeMillis() - pausetime;
         starttime = pausetime + starttime;
@@ -927,100 +627,48 @@ produce the corresponding square*/
         timer.start();
     }
 
-   //reusme the game
+    //reusme the game
     public void resumeGame(){
         pauseObjects(false);
         fadeInPause(false);
         resumeTimer();
     }
 
-     @Override
-     public void draw() {
+    @Override
+    public void draw() {
 
         super.draw();
-         this.getBatch().setProjectionMatrix(camera.combined);
-     }
-
-   /* @Override
-    public boolean touchDown(int x, int y, int pointer, int button) {
-    if(isGuest || isHost) //disable pause for multiplayer
-    {
-
+        this.getBatch().setProjectionMatrix(camera.combined);
     }
-    else
-    {
-        translateScreenToWorldCoordinates(x,y);
-        getCamera().unproject(PuttonPoint.set(x,y,0));
-        // check the touch of selections on pause screen
-        if ( GameState=="paused" && checkPositionButtons(PuttonPoint.y) ) {
-            GameState ="resume";
-            return false;
-        }else if( GameState=="paused" && checkPositionButtons(PuttonPoint.y) == false)//Old pause menu
-        {
-            dispose();
-            noteCollector.setScreen(new MainMenuScreen(noteCollector,stage));
-            return  false;
-        }
-        if(VIEWPORT_WIDTH==800 && VIEWPORT_HEIGHT==480)//Change dimensions of pause button for different resolutions
-        {
-            if (PuttonPoint.y <56f && PuttonPoint.x<800f && GameState !="paused")
-            {
-                GameState = "paused";
-            }
-        }
-        if(VIEWPORT_WIDTH==1080 && VIEWPORT_HEIGHT==720)
-        {
-            if (PuttonPoint.y <56f && PuttonPoint.x<800f+120 && GameState !="paused")//Calculate position for pause button according to resolution (considering the padding operation that occurs when drawing the keyboard
-            {
-                GameState = "paused";
-            }
-        }
-        if(VIEWPORT_WIDTH>1080 && VIEWPORT_HEIGHT>720)
-        {
-            if (PuttonPoint.y <56f && PuttonPoint.x>250 && PuttonPoint.x <1770 && GameState !="paused")
-            {
-                GameState = "paused";
-            }
-        }
-    }
-    return true;
-}*/
 
-
-   /* @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button)
-    {
-        translateScreenToWorldCoordinates(screenX,screenY);
-        return true;
-    }*/
-
-   @Override
+    @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-       if(prefs.getBoolean("touch"))
-       {
-           translateScreenToWorldCoordinates(screenX,screenY);
+        /*-if(prefs.getBoolean("touch"))
+        {
+            translateScreenToWorldCoordinates(screenX,screenY);
 
-           if (GameState.equals("paused"))
-           {
-               return false;
-           }
-           //set bound on collector and change position when drag the square
-           if (touchPoint.x+ 32f  >getCamera().viewportWidth || touchPoint.y +32f >getCamera().viewportHeight || touchPoint.y+32f < 56f ) {
-               return false;
-           }
-           else
-           {
-               //collectorPosition.set(touchPoint.x,touchPoint.y,squarewidth,squareheight);
-               collectorPosition.set(touchPoint.x,touchPoint.y+collector.getSprite().getHeight(),squarewidth,squareheight);
-               collector.changeposition(touchPoint.x, touchPoint.y+collector.getSprite().getHeight());//Set the collector sprite higher
+            if (GameState.equals("paused"))
+            {
+                return false;
+            }
+            //set bound on collector and change position when drag the square
+            if (touchPoint.x+ 32f  >getCamera().viewportWidth || touchPoint.y +32f >getCamera().viewportHeight || touchPoint.y+32f < 56f ) {
+                return false;
+            }
+            else
+            {
+                //collectorPosition.set(touchPoint.x,touchPoint.y,squarewidth,squareheight);
+                collectorPosition.set(touchPoint.x,touchPoint.y+collector.getSprite().getHeight(),squarewidth,squareheight);
+                collector.changeposition(touchPoint.x, touchPoint.y+collector.getSprite().getHeight());//Set the collector sprite higher
 
-           }
-           return true;
-       }
-       else
-       {
-           return false;
-       }
+            }
+            return true;
+        }
+        else
+        {
+            return false;
+        }*/
+        return false;//Disable input
     }
 
     private boolean checkPositionButtons(float y){

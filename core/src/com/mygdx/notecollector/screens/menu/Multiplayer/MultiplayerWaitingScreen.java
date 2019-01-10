@@ -82,7 +82,7 @@ public class MultiplayerWaitingScreen implements Screen
         table.addAction(Actions.sequence(Actions.fadeIn(0.2f)));
     }
 
-    private void setDifficultyParams(String difficulty)//TODO : Remove
+    private void setDifficultyParams(String difficulty)
     {
         switch (difficulty)
         {

@@ -296,6 +296,7 @@ public class GameOverScreen implements Screen {
                     if (prefs.getBoolean("sound")) {
                         notecollector.getClick().play();
                     }
+                    MenuButton.removeListener(this);
                     menu.addAction(Actions.fadeOut(0.4f));
                     if(!isGuest && !isHost)
                     {

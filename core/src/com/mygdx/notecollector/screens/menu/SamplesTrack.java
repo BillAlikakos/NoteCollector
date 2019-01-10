@@ -221,6 +221,7 @@ public class SamplesTrack implements Screen {
                     if (prefs.getBoolean("sound")) {
                         noteCollector.getClick().play();
                     }
+                    MenuButton.removeListener(this);
                     table.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out table
                     btn.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out icon table
                     Timer.schedule(new Timer.Task() {

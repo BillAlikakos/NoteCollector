@@ -31,6 +31,7 @@ import com.mygdx.notecollector.Utils.Constants;
 import com.mygdx.notecollector.midilib.MidiManipulator;
 import com.mygdx.notecollector.midilib.MidiNote;
 import com.mygdx.notecollector.midilib.MidiTrack;
+import com.mygdx.notecollector.screens.DemoScreen;
 import com.mygdx.notecollector.screens.GameScreen;
 import com.mygdx.notecollector.screens.menu.Multiplayer.MultiplayerPreMatchLobby;
 
@@ -73,6 +74,7 @@ public class LoadingScreen implements Screen {
     private boolean isHost;
     private boolean isGuest;
     private boolean mode;
+    private boolean isDemo=false;
    // private boolean flag ;
     private String difficulty;
     private boolean done=false;
@@ -89,6 +91,21 @@ public class LoadingScreen implements Screen {
         this.delay = delay;
         this.speed = speed;
         this.mode=mode;
+    }
+    public LoadingScreen(NoteCollector noteCollector,boolean mode,Stage stage)//Demonstration loading screen
+    {
+        this.stage=stage;
+        this.noteCollector = noteCollector;
+        this.filepath = Gdx.files.getExternalStoragePath()+"Note Collector/Sample Tracks/Albeniz - Espana (Spain) Op-165 Capricho Catalan.midi";
+        f = new File(filepath);
+        System.out.println(filepath);
+        AssetsManager = noteCollector.getAssetsManager();
+        AssetsManager.LoadLoadingAssets(filepath);
+        LoadAssets();
+        this.delay = 200;
+        this.speed = 130*VIEWPORT_HEIGHT/480;
+        this.mode=mode;
+        this.isDemo=true;
     }
     public LoadingScreen(NoteCollector noteCollector,String filepath,int speed,long delay,MidiTrack track,boolean mode,Stage stage)//Constructor for split track midi file
     {
@@ -306,7 +323,16 @@ public class LoadingScreen implements Screen {
                         {
 
                             dispose();
-                            noteCollector.setScreen(new GameScreen(noteCollector,TickPerMsec,notes,filepath,speed,delay,mode,stage));
+                            if(isDemo)
+                            {
+                                System.out.println(filepath);
+                                noteCollector.setScreen(new DemoScreen(noteCollector,TickPerMsec,notes,filepath,speed,delay,mode,stage));
+                            }
+                            else
+                            {
+                                System.out.println(filepath);
+                                noteCollector.setScreen(new GameScreen(noteCollector,TickPerMsec,notes,filepath,speed,delay,mode,stage));
+                            }
                             done=true;
                         }
                     }

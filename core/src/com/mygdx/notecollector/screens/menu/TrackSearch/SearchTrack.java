@@ -325,7 +325,10 @@ public class SearchTrack implements Screen {
                         ByArtist.setStyle(createButtonStyle(selectionColorPressed));
                         ByName.setStyle(createButtonStyle(selectionColor));
                     }
-
+                    if(text.equals("Back"))
+                    {
+                        MenuButton.removeListener(this);
+                    }
                     if(!networkAccess)
                     {
                         err1.addAction(Actions.fadeOut(0.4f));
