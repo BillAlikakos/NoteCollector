@@ -203,6 +203,7 @@ public class MultiplayerClientScreen implements  Screen
                     if (prefs.getBoolean("sound")) {
                         noteCollector.getClick().play();
                     }
+                    MenuButton.removeListener(this);
                     table.addAction(Actions.sequence(Actions.fadeOut(0.4f)));
                     btn.addAction(Actions.sequence(Actions.fadeOut(0.4f)));
                     Timer.schedule(new Timer.Task() {
@@ -278,11 +279,12 @@ public class MultiplayerClientScreen implements  Screen
     }
 
 
-    private void addListener(Actor actor){
+    private void addListener(final Actor actor){
         actor.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y)
             {
+                actor.removeListener(this);
                 String hostName=names.get(list.getSelectedIndex());
                 String address=hosts.get(list.getSelectedIndex()).toString();
                 InetAddress adr=hosts.get(list.getSelectedIndex());

@@ -140,6 +140,7 @@ public class SignUpScreen implements Screen
         password = new TextField("", createTextFieldStyle());
         password.setMessageText("Password");
         password.setPasswordMode(true);
+        password.setPasswordCharacter('*');
         password.setHeight(100*VIEWPORT_HEIGHT/1080);
         password.setWidth(360*VIEWPORT_WIDTH/1920);
         Yaxis=(stage.getCamera().viewportHeight)/2-VIEWPORT_HEIGHT/1080;
@@ -333,6 +334,7 @@ public class SignUpScreen implements Screen
                     switch (text)
                     {
                         case "Back":
+                            MenuButton.removeListener(this);
                             //notecollector.adsHandler.showAds(1);
                             table.addAction(Actions.fadeOut(0.4f));
                             exitBtnTable.addAction(Actions.fadeOut(0.4f));

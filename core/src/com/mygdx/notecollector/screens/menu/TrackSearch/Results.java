@@ -202,6 +202,7 @@ public class Results implements Screen {
                     if (prefs.getBoolean("sound")) {
                         noteCollector.getClick().play();
                     }
+                    MenuButton.removeListener(this);
                     table.addAction(Actions.fadeOut(0.4f));
                     btn.addAction(Actions.fadeOut(0.4f));
                     Timer.schedule(new Timer.Task() {

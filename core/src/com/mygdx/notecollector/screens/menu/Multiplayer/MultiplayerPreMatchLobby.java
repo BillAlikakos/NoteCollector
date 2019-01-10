@@ -179,7 +179,6 @@ public class MultiplayerPreMatchLobby implements Screen
             {
                 e.printStackTrace();
             }
-            System.out.println("Got time ?");
             timeClient.close();
             //long returnTime = timeInfo.getMessage().getTransmitTimeStamp().getTime();
             final long time = timeInfo.getMessage().getTransmitTimeStamp().getTime();
@@ -246,7 +245,7 @@ public class MultiplayerPreMatchLobby implements Screen
                                 {
                                     // t.interrupt();
                                     dispose();
-                                    noteCollector.setScreen(new GameScreen(noteCollector,TickPerMsec,notes,filepath,speed,delay,srv,mode,stage,request.loaded,diff));//TODO : Sync better between slow and fast phones (Pause state until second player joins ? Fix label ordering in game end screen)
+                                    noteCollector.setScreen(new GameScreen(noteCollector,TickPerMsec,notes,filepath,speed,delay,srv,mode,stage,request.loaded,diff));
                                     //t.interrupt();
                                     //this.wait(1000);
 

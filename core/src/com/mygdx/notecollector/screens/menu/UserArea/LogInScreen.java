@@ -245,6 +245,7 @@ public class LogInScreen implements Screen
                     switch (text)
                     {
                         case "Back":
+                            MenuButton.removeListener(this);
                             //notecollector.adsHandler.showAds(1);
                             Timer.schedule(new Timer.Task() {
 

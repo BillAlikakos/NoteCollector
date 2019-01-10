@@ -376,6 +376,7 @@ public class EndGameScreen implements Screen {
                     if (prefs.getBoolean("sound")) {
                         notecollector.getClick().play();
                     }
+                    MenuButton.removeListener(this);
                     table.addAction(Actions.fadeOut(0.4f));
                     Timer.schedule(new Timer.Task() {
                         @Override

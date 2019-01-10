@@ -136,7 +136,9 @@ public class IntroScreen implements Screen {
             file=Gdx.files.internal(Constants.BackgroundMenuDef);
         }
         Image background=noteCollector.getAssetsManager().scaleBackground(file);
+        background.setName("bg");
         stage.addActor(background);
+        //stage.getRoot().addActorAt(0,background);
         background.getColor().a=0;
         background.addAction(Actions.fadeIn(2f));
     }

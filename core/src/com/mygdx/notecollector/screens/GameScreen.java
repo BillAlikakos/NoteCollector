@@ -100,7 +100,6 @@ public class GameScreen implements  Screen {
         gameStage.setGameState("running");
         Gdx.input.setInputProcessor(gameStage);
     }
-
     @Override
     public void show()
     {

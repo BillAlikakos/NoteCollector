@@ -265,6 +265,7 @@ public class ResultScreen implements Screen
                     if (prefs.getBoolean("sound")) {
                         notecollector.getClick().play();
                     }
+                    MenuButton.removeListener(this);
                     switch (text)
                     {
                         case "Menu":
