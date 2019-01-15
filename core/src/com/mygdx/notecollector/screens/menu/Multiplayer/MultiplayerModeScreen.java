@@ -52,6 +52,7 @@ public class MultiplayerModeScreen implements Screen
     private float sizeX;
     private float sizeY;
     private boolean networkAccess;
+    private boolean buttonPressed=false;
 
     public MultiplayerModeScreen(NoteCollector noteCollector,Stage stage)
     {
@@ -192,8 +193,9 @@ public class MultiplayerModeScreen implements Screen
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button)
             {
                 Preferences prefs = Gdx.app.getPreferences("NoteCollectorPreferences");
-                if (MenuButton.isPressed())
+                if (MenuButton.isPressed() && !buttonPressed)
                 {
+                    buttonPressed=true;
                     if (prefs.getBoolean("sound"))
                     {
                         noteCollector.getClick().play();

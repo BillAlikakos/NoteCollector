@@ -52,6 +52,7 @@ public class ModeSelect implements Screen
     private Table exitBtnTable;
     private boolean multiplayer;
     private ServerClass srv;
+    private boolean buttonPressed=false;
 
 
     public ModeSelect(NoteCollector noteCollector,Stage stage)
@@ -169,7 +170,9 @@ public class ModeSelect implements Screen
                 Preferences prefs = Gdx.app.getPreferences("NoteCollectorPreferences");
 
 
-                if (MenuButton.isPressed()) {
+                if (MenuButton.isPressed() && !buttonPressed)
+                {
+                    buttonPressed=true;
                     if (prefs.getBoolean("sound")) {
                         noteCollector.getClick().play();
                     }

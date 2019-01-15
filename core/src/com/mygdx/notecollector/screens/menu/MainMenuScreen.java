@@ -65,7 +65,7 @@ public class MainMenuScreen implements Screen {
     private float sizeX;
     private float sizeY;
     private float[] size;
-
+    private boolean buttonPressed=false;
 
     public MainMenuScreen(NoteCollector noteCollector)
     {
@@ -105,9 +105,9 @@ public class MainMenuScreen implements Screen {
         sizeY=size[1];
         createLogo();
         textButtonStyle = createButtonStyle(selectionColor);
-        createButton("Single Player");
-        createButton("Multiplayer");
-        createButton("Search Tracks");
+        createButton("Single Player").setName("Singleplayer");
+        createButton("Multiplayer").setName("Multiplayer");
+        createButton("Search Tracks").setName("SearchTracks");
         createIcons();
         //createBackground();
         table.padTop(VIEWPORT_HEIGHT*0.1f);
@@ -180,7 +180,6 @@ public class MainMenuScreen implements Screen {
         table.add(MenuButton).size(sizeX,sizeY);
         table.row();
         return MenuButton;
-
     }
 
     private void createIcons()//Set styles, event handlers etc.
@@ -202,8 +201,9 @@ public class MainMenuScreen implements Screen {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button)
             {
                 Preferences prefs = Gdx.app.getPreferences("NoteCollectorPreferences");
-                if(scoreButton.isPressed())
+                if(scoreButton.isPressed() && !buttonPressed)
                 {
+                    buttonPressed=true;
                     playSound(prefs);
                     scoreButton.removeListener(this);//Remove listener to avoid handling double clicks
                     table.addAction(Actions.sequence(Actions.fadeOut(0.35f)));//Fade out table
@@ -227,8 +227,9 @@ public class MainMenuScreen implements Screen {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button)
             {
                 Preferences prefs = Gdx.app.getPreferences("NoteCollectorPreferences");
-                if(logInButton.isPressed())
+                if(logInButton.isPressed() && !buttonPressed)
                 {
+                    buttonPressed=true;
                     playSound(prefs);
                     logInButton.removeListener(this);//Remove listener to avoid handling double clicks
                     table.addAction(Actions.sequence(Actions.fadeOut(0.35f)));//Fade out table
@@ -253,8 +254,9 @@ public class MainMenuScreen implements Screen {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button)
             {
                 Preferences prefs = Gdx.app.getPreferences("NoteCollectorPreferences");
-                if(helpButton.isPressed())
+                if(helpButton.isPressed() && !buttonPressed)
                 {
+                    buttonPressed=true;
                     playSound(prefs);
                     helpButton.removeListener(this);//Remove listener to avoid handling double clicks
                     table.addAction(Actions.sequence(Actions.fadeOut(0.35f)));//Fade out table
@@ -278,8 +280,9 @@ public class MainMenuScreen implements Screen {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button)
             {
                 Preferences prefs = Gdx.app.getPreferences("NoteCollectorPreferences");
-                if(settingsButton.isPressed())
+                if(settingsButton.isPressed() && !buttonPressed)
                 {
+                    buttonPressed=true;
                     playSound(prefs);
                     settingsButton.removeListener(this);//Remove listener to avoid handling double clicks
                     table.addAction(Actions.sequence(Actions.fadeOut(0.35f)));//Fade out table
@@ -303,8 +306,9 @@ public class MainMenuScreen implements Screen {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button)
             {
                 Preferences prefs = Gdx.app.getPreferences("NoteCollectorPreferences");
-                if(exitButton.isPressed())
+                if(exitButton.isPressed() && !buttonPressed)
                 {
+                    buttonPressed=true;
                     playSound(prefs);
                     exitButton.removeListener(this);//Remove listener to avoid handling double clicks
                     table.addAction(Actions.sequence(Actions.fadeOut(0.35f)));//Fade out table
@@ -350,13 +354,14 @@ public class MainMenuScreen implements Screen {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 Preferences prefs = Gdx.app.getPreferences("NoteCollectorPreferences");
 
-                    if (MenuButton.isPressed())
+                    if (MenuButton.isPressed() && !buttonPressed)
                     {
+                        buttonPressed=true;
                          if (prefs.getBoolean("sound"))
                          {
                           noteCollector.getClick().play();
                          }
-                        MenuButton.removeListener(this);//Remove listener to avoid handling double clicks
+                        //MenuButton.removeListener(this);//Remove listener to avoid handling double clicks
                         table.addAction(Actions.sequence(Actions.fadeOut(0.35f)));//Fade out table
                         top.addAction(Actions.sequence(Actions.fadeOut(0.35f)));//Fade out icon table
                         Timer.schedule(new Timer.Task() {

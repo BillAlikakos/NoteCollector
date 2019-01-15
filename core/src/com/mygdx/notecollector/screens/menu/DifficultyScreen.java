@@ -53,6 +53,7 @@ public class DifficultyScreen implements Screen
     private boolean multiplayer;
     private ServerClass srv;
     private boolean mode;//Flag for game mode (True= Competitive , False= Practice )
+    private boolean buttonPressed=false;
 
     public DifficultyScreen(NoteCollector noteCollector,boolean mode,Stage stage)
     {
@@ -171,7 +172,9 @@ public class DifficultyScreen implements Screen
                 Preferences prefs = Gdx.app.getPreferences("NoteCollectorPreferences");
 
 
-                if (MenuButton.isPressed()) {
+                if (MenuButton.isPressed() && !buttonPressed)
+                {
+                    buttonPressed=true;
                     if (prefs.getBoolean("sound")) {
                         noteCollector.getClick().play();
                     }

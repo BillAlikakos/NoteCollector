@@ -49,7 +49,8 @@ public class HelpScreen implements Screen {
     private float sizeX;
     private float sizeY;
     private Table table;
-    private boolean isTutorial=false;//Flags for each tutorial image
+    private boolean isTutorial=false;//Flag for tutorial image
+    private boolean buttonPressed=false;//Flag for tutorial image
     private Image img;
 
     public HelpScreen(NoteCollector noteCollector,Stage stage)
@@ -160,7 +161,9 @@ public class HelpScreen implements Screen {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 Preferences prefs = Gdx.app.getPreferences("NoteCollectorPreferences");
-                if (MenuButton.isPressed()) {
+                if (MenuButton.isPressed() && !buttonPressed)
+                {
+                    buttonPressed=true;
                     if (prefs.getBoolean("sound")) {
                         noteCollector.getClick().play();
                     }
@@ -172,7 +175,7 @@ public class HelpScreen implements Screen {
                             Timer.schedule(new Timer.Task() {
                             @Override
                             public void run() {
-                            table.addAction(Actions.fadeOut(0.4f));
+                            //table.addAction(Actions.fadeOut(0.4f));
                             displayImage(Constants.text);
                         }
 
@@ -273,6 +276,7 @@ public class HelpScreen implements Screen {
         img.addAction(Actions.fadeIn(0.4f));
         img.setPosition(VIEWPORT_WIDTH / 2 - img.getWidth() / 2, VIEWPORT_HEIGHT / 2 - img.getHeight() / 2);
         stage.addActor(img);
+        buttonPressed=false;
     }
 
     private ImageTextButton.ImageTextButtonStyle createButtonStyle(TextureRegionDrawable ButtonImage){
