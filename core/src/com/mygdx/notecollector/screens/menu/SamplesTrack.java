@@ -77,6 +77,7 @@ public class SamplesTrack implements Screen {
     private ServerClass srv;
     private boolean mode;
     private String difficulty;
+    private boolean buttonPressed=false;
 
     public SamplesTrack(NoteCollector noteCollector,int speed,long delay,boolean mode,Stage stage)
     {
@@ -217,7 +218,9 @@ public class SamplesTrack implements Screen {
 
                 Preferences prefs = Gdx.app.getPreferences("NoteCollectorPreferences");
 
-                if (MenuButton.isPressed()) {
+                if (MenuButton.isPressed() && !buttonPressed)
+                {
+                    buttonPressed=true;
                     if (prefs.getBoolean("sound")) {
                         noteCollector.getClick().play();
                     }
@@ -322,42 +325,36 @@ public class SamplesTrack implements Screen {
         actor.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                table.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out table
-                btn.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out icon table
-                Timer.schedule(new Timer.Task()
+                if(!buttonPressed)
                 {
-                    @Override
-                    public void run()
+                    buttonPressed=true;
+                    table.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out table
+                    btn.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out icon table
+                    Timer.schedule(new Timer.Task()
                     {
-                        dispose();
-                        if (!multiplayer)
+                        @Override
+                        public void run()
                         {
-                            File file = new File(path.get(list.getSelectedIndex()));
+                            dispose();
+                            if (!multiplayer)
+                            {
+                                File file = new File(path.get(list.getSelectedIndex()));
+                                System.out.println(path.size());
+                                //filepath = file.getAbsolutePath();
+                                noteCollector.setScreen(new TrackSelect(noteCollector, speed, delay, file, mode,stage));//
+                            /*File file = new File(path.get(list.getSelectedIndex()));
                             System.out.println(path.size());
                             //filepath = file.getAbsolutePath();
-                            noteCollector.setScreen(new TrackSelect(noteCollector, speed, delay, file, mode,stage));//
-                        }
-                        else
-                        {
-                            File file = new File(path.get(list.getSelectedIndex()));
-                            /*filepath = file.getAbsolutePath();
-                            byte[] arr = new byte[1250000];//1,25Mb buffer
-                            try
-                            {
-                                arr = readFileToByteArray(file);
-                            } catch (IOException e)
-                            {
-                                e.printStackTrace();
+                            noteCollector.setScreen(new TrackSelect(noteCollector, speed, delay, file, mode,stage));*/
                             }
-                            //srv.sendGameObj(arr,speed,delay,false,mode);//Old
-                            srv.sendGameObj(arr, difficulty, false, mode);
-                            System.out.println("Sent game obj to client");*/
-                            //noteCollector.setScreen(new LoadingScreen(noteCollector,filepath,speed,delay));
-                            noteCollector.setScreen(new TrackSelect(noteCollector, speed, delay, file, srv, mode, difficulty,stage));
+                            else
+                            {
+                                File file = new File(path.get(list.getSelectedIndex()));
+                                noteCollector.setScreen(new TrackSelect(noteCollector, speed, delay, file, srv, mode, difficulty,stage));
+                            }
                         }
-                    }
-                },0.4f);
-
+                    },0.4f);
+                }
             }
         });
     }

@@ -70,6 +70,9 @@ public class EndGameScreen implements Screen {
     private ClientClass c;
     private Thread t;
     private ScoreClass score;
+    private Label scoreLabel;
+    private Label score2Label;
+    private boolean buttonPressed=false;
 
     public EndGameScreen(NoteCollector notecollector,String Score,String Difficulty,Stage stage,String gameMode)
     {
@@ -204,7 +207,8 @@ public class EndGameScreen implements Screen {
                         if(isGuest || isHost)
                         {
                             //createLabel("Opponent's Score:"+Score2,stage.getCamera().viewportHeight/2);
-                            createLabel("Opponent's Score:"+Score2,Yaxis*VIEWPORT_HEIGHT/1080);
+                            //createLabel("Opponent's Score:"+Score2,Yaxis*VIEWPORT_HEIGHT/1080);
+                            score2Label.setText("Opponent's Score:"+Score2);
                         }
                         //t.interrupt();
                     }
@@ -228,7 +232,9 @@ public class EndGameScreen implements Screen {
                     float Yaxis=stage.getCamera().viewportHeight/2-30;
                      if(isGuest || isHost)
                      {
-                         createLabel("Opponent's Score:"+Score2,Yaxis*VIEWPORT_HEIGHT/1080);
+                         //createLabel("Opponent's Score:"+Score2,Yaxis*VIEWPORT_HEIGHT/1080);
+                         System.out.println(Score2);
+                         score2Label.setText("Opponent's Score:"+Score2);
                      }
                     //t.interrupt();
                  }
@@ -252,10 +258,11 @@ public class EndGameScreen implements Screen {
         float Yaxis2=stage.getCamera().viewportHeight/2+30;
         createLabel("Game finished!",Yaxis1*VIEWPORT_HEIGHT/1080);
         createLabel("Your Score:"+Score,Yaxis2*VIEWPORT_HEIGHT/1080);
-        /*if(isGuest || isHost)
+        if(isGuest || isHost)
         {
-            createLabel("Opponent's Score:"+Score2,stage.getCamera().viewportHeight/2);
-        }*/
+            score2Label=createLabel("Opponent's Score:",stage.getCamera().viewportHeight/2);
+            //createLabel("Opponent's Score:"+Score2,stage.getCamera().viewportHeight/2);
+        }
 
     }
     @Override
@@ -307,16 +314,18 @@ public class EndGameScreen implements Screen {
 
 
 
-    private void createLabel(String text,float Yaxis){
+    private Label createLabel(String text,float Yaxis){
         Label.LabelStyle labelstyle = new Label.LabelStyle(AssetsManager.getFont(), Color.WHITE);
         Label label = new Label(text, labelstyle);
         //label.setPosition((stage.getCamera().viewportWidth-label.getWidth())/2,Yaxis);
-        label.setPosition((stage.getCamera().viewportWidth)/2-label.getWidth(),Yaxis);
+        label.setPosition((stage.getCamera().viewportWidth)/2,Yaxis);
         //stage.addActor(label);
        // table.center();
-        table.center().add(label);
+       // table.center().add(label);
+        table.add(label).colspan(2);
         table.row();
         label.addAction(Actions.fadeIn(0.2f));
+        return label;
     }
     //create a table to organize buttons and labels
     private void createTable(){
@@ -372,7 +381,9 @@ public class EndGameScreen implements Screen {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 Preferences prefs = Gdx.app.getPreferences("NoteCollectorPreferences");
 
-                if (MenuButton.isPressed()) {
+                if (MenuButton.isPressed() && !buttonPressed)
+                {
+                    buttonPressed=true;
                     if (prefs.getBoolean("sound")) {
                         notecollector.getClick().play();
                     }

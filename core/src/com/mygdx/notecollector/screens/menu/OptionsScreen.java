@@ -68,6 +68,7 @@ public class OptionsScreen implements Screen{
     private float sizeY;
     private float[] size;
     private Preferences prefs;
+    private boolean buttonPressed=false;
 
     public OptionsScreen(NoteCollector noteCollector,Stage stage) {
         this.noteCollector = noteCollector;
@@ -118,23 +119,27 @@ public class OptionsScreen implements Screen{
         {
            @Override public boolean touchDown(InputEvent event, float x, float y, int pointer, int button)
            {
-               if (prefs.getBoolean("sound"))
+               if(!buttonPressed)
                {
-                   noteCollector.getClick().play();
-               }
-               soundOptions.removeListener(this);
-               table.addAction(Actions.fadeOut(0.4f));
-               exitBtnTable.addAction(Actions.fadeOut(0.4f));
-               Timer.schedule(new Timer.Task() {
-
-                   @Override
-                   public void run() {
-                       dispose();
-                       noteCollector.setScreen(new SoundOptions(noteCollector,stage));
-
+                   buttonPressed=true;
+                   if (prefs.getBoolean("sound"))
+                   {
+                       noteCollector.getClick().play();
                    }
+                   soundOptions.removeListener(this);
+                   table.addAction(Actions.fadeOut(0.4f));
+                   exitBtnTable.addAction(Actions.fadeOut(0.4f));
+                   Timer.schedule(new Timer.Task() {
 
-               }, 0.4f);
+                       @Override
+                       public void run() {
+                           dispose();
+                           noteCollector.setScreen(new SoundOptions(noteCollector,stage));
+
+                       }
+
+                   }, 0.4f);
+               }
                return true;
            }
         });
@@ -142,22 +147,27 @@ public class OptionsScreen implements Screen{
         {
            @Override public boolean touchDown(InputEvent event, float x, float y, int pointer, int button)
            {
-               if (prefs.getBoolean("sound"))
+               if (!buttonPressed)
                {
-                   noteCollector.getClick().play();
-               }
-               gameOptions.removeListener(this);
-               table.addAction(Actions.fadeOut(0.4f));
-               exitBtnTable.addAction(Actions.fadeOut(0.4f));
-               Timer.schedule(new Timer.Task()
-               {
-                   @Override
-                   public void run()
+                   buttonPressed = true;
+                   if (prefs.getBoolean("sound"))
                    {
-                       dispose();
-                       noteCollector.setScreen(new GameOptions(noteCollector,stage));
+                       noteCollector.getClick().play();
                    }
-               }, 0.4f);
+                   gameOptions.removeListener(this);
+                   table.addAction(Actions.fadeOut(0.4f));
+                   exitBtnTable.addAction(Actions.fadeOut(0.4f));
+                   Timer.schedule(new Timer.Task()
+                   {
+                       @Override
+                       public void run()
+                       {
+                           dispose();
+                           noteCollector.setScreen(new GameOptions(noteCollector, stage));
+                       }
+                   }, 0.4f);
+
+               }
                return true;
            }
         });
@@ -165,22 +175,26 @@ public class OptionsScreen implements Screen{
         {
            @Override public boolean touchDown(InputEvent event, float x, float y, int pointer, int button)
            {
-               if (prefs.getBoolean("sound"))
+               if (!buttonPressed)
                {
-                   noteCollector.getClick().play();
-               }
-               miscOptions.removeListener(this);
-               table.addAction(Actions.fadeOut(0.4f));
-               exitBtnTable.addAction(Actions.fadeOut(0.4f));
-               Timer.schedule(new Timer.Task()
-               {
-                   @Override
-                   public void run()
+                   buttonPressed = true;
+                   if (prefs.getBoolean("sound"))
                    {
-                       dispose();
-                       noteCollector.setScreen(new MiscOptions(noteCollector,stage));
+                       noteCollector.getClick().play();
                    }
-               }, 0.4f);
+                   miscOptions.removeListener(this);
+                   table.addAction(Actions.fadeOut(0.4f));
+                   exitBtnTable.addAction(Actions.fadeOut(0.4f));
+                   Timer.schedule(new Timer.Task()
+                   {
+                       @Override
+                       public void run()
+                       {
+                           dispose();
+                           noteCollector.setScreen(new MiscOptions(noteCollector, stage));
+                       }
+                   }, 0.4f);
+               }
                return true;
            }
         });
@@ -199,7 +213,9 @@ public class OptionsScreen implements Screen{
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
 
-                if (MenuButton.isPressed()) {
+                if (MenuButton.isPressed() && !buttonPressed)
+                {
+                    buttonPressed=true;
                     if (prefs.getBoolean("sound")) {
                         noteCollector.getClick().play();
                     }

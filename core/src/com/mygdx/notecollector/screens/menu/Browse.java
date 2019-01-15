@@ -77,6 +77,8 @@ public class Browse implements Screen {
     private boolean multiplayer;
     private boolean mode;
     private String difficulty;
+    private boolean buttonPressed=false;
+    private boolean itemPressed=false;
 
     public Browse(NoteCollector noteCollector,int speed,long delay,boolean mode)
     {
@@ -213,7 +215,9 @@ public class Browse implements Screen {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 Preferences prefs = Gdx.app.getPreferences("NoteCollectorPreferences");
 
-                if (MenuButton.isPressed()) {
+                if (MenuButton.isPressed() && !buttonPressed)
+                {
+                    buttonPressed=true;
                     if (prefs.getBoolean("sound")) {
                         noteCollector.getClick().play();
                     }

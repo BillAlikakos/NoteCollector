@@ -69,6 +69,7 @@ public class GameOverScreen implements Screen {
     private boolean isHost;
     private boolean isGuest;
     private boolean mode;
+    private boolean buttonPressed=false;
 
     public GameOverScreen(NoteCollector notecollector,String Score,String filepath,int speed,long delay,boolean mode,Stage stage) {
         this.notecollector = notecollector;
@@ -292,7 +293,9 @@ public class GameOverScreen implements Screen {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 Preferences prefs = Gdx.app.getPreferences("NoteCollectorPreferences");
 
-                if (MenuButton.isPressed()) {
+                if (MenuButton.isPressed() && !buttonPressed)
+                {
+                    buttonPressed=true;
                     if (prefs.getBoolean("sound")) {
                         notecollector.getClick().play();
                     }

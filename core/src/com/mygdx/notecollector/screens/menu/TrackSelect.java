@@ -87,6 +87,7 @@ public class TrackSelect implements Screen
     private boolean isGuest;
     private boolean mode;
     private String difficulty;
+    private boolean buttonPressed=false;
 
     public TrackSelect(NoteCollector noteCollector,int speed,long delay,File file,boolean mode,Stage stage)
     {
@@ -251,7 +252,9 @@ public class TrackSelect implements Screen
 
                 Preferences prefs = Gdx.app.getPreferences("NoteCollectorPreferences");
 
-                if (MenuButton.isPressed()) {
+                if (MenuButton.isPressed() && !buttonPressed)
+                {
+                    buttonPressed=true;
                     if (prefs.getBoolean("sound")) {
                         noteCollector.getClick().play();
                     }
@@ -340,39 +343,41 @@ public class TrackSelect implements Screen
             @Override
             public void clicked(InputEvent event, float x, float y)
             {
-
-                final MidiTrack t = track.get(list.getSelectedIndex());//Get the selected track
-                String program = item.get(list.getSelectedIndex());//Get the selected instrument
-                System.out.println("Selected Track: " + t.toString());
-                System.out.println("Selected Instrument: " + program);
-                filepath = file.getAbsolutePath();
-                table.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out table
-                btn.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out icon table
-                Timer.schedule(new Timer.Task()
+                if(!buttonPressed)
                 {
-                    @Override
-                    public void run()
+                    buttonPressed=true;
+                    final MidiTrack t = track.get(list.getSelectedIndex());//Get the selected track
+                    String program = item.get(list.getSelectedIndex());//Get the selected instrument
+                    System.out.println("Selected Track: " + t.toString());
+                    System.out.println("Selected Instrument: " + program);
+                    filepath = file.getAbsolutePath();
+                    table.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out table
+                    btn.addAction(Actions.sequence(Actions.fadeOut(0.4f)));//Fade out icon table
+                    Timer.schedule(new Timer.Task()
                     {
-                        dispose();
-                        if(isHost)
+                        @Override
+                        public void run()
                         {
-                            //dispose();
-                            noteCollector.setScreen((new LoadingScreen(noteCollector,filepath,speed,delay,t,srv,mode,stage,difficulty)));
+                            dispose();
+                            if(isHost)
+                            {
+                                //dispose();
+                                noteCollector.setScreen((new LoadingScreen(noteCollector,filepath,speed,delay,t,srv,mode,stage,difficulty)));
+                            }
+                            else if(isGuest)
+                            {
+                                System.out.println("Guest");
+                                //dispose();
+                                noteCollector.setScreen((new LoadingScreen(noteCollector,filepath,speed,delay,t,c,mode,stage)));
+                            }
+                            else
+                            {
+                                //dispose();
+                                noteCollector.setScreen(new LoadingScreen(noteCollector,filepath,speed,delay,t,mode,stage));
+                            }
                         }
-                        else if(isGuest)
-                        {
-                            System.out.println("Guest");
-                            //dispose();
-                            noteCollector.setScreen((new LoadingScreen(noteCollector,filepath,speed,delay,t,c,mode,stage)));
-                        }
-                        else
-                        {
-                            //dispose();
-                            noteCollector.setScreen(new LoadingScreen(noteCollector,filepath,speed,delay,t,mode,stage));
-                        }
-                    }
-                }, 0.4f);
-
+                    }, 0.4f);
+                }
             }
         });
     }

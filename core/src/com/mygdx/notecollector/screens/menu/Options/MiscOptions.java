@@ -370,7 +370,7 @@ public class MiscOptions implements Screen
                 System.out.println( stage.getRoot().findActor("bg").getZIndex());
                 stage.getRoot().findActor("bg").remove();//Remove old background actor from stage
                 background.setName("bg");
-                stage.getRoot().addActorAt(2,background);
+                stage.getRoot().addActorAt(1,background);
             }
         });
     }
