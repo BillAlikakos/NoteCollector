@@ -144,7 +144,22 @@ public class MultiplayerWaitingScreen implements Screen
                         }
                     }, 0.4f);
                 }
-
+                if(object instanceof  ClientClass.SessionAbandoned)
+                {
+                    //if (((ClientClass.SessionAbandoned) object).isAbandoned)
+                    {
+                        System.out.println("Session abandoned");
+                        Timer.schedule(new Timer.Task()
+                        {
+                            @Override
+                            public void run()
+                            {
+                                dispose();
+                                noteCollector.setScreen(new MultiplayerModeScreen(noteCollector,stage));//
+                            }
+                        }, 0.4f);
+                    }
+                }
             }
         });
     }
