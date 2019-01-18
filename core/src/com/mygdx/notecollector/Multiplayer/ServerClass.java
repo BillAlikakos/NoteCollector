@@ -28,6 +28,7 @@ public class ServerClass
             kryo.register(SomeRequest.class);
             kryo.register(SomeResponse.class);
             kryo.register(GameParamObject.class);
+            kryo.register(SessionAbandoned.class);
             kryo.register(fileLoaded.class);
             kryo.register(scoreObj.class);
             kryo.register(gameOver.class);
@@ -123,6 +124,14 @@ public class ServerClass
         c.sendTCP(msg);
     }
 
+    public void AbandonSession()
+    {
+        SessionAbandoned msg=new SessionAbandoned();
+        msg.isAbandoned=true;
+        System.out.println("Dismissing session.");
+        c.sendTCP(msg);
+    }
+
     public void closeServer()
     {
         this.getServer().close();
@@ -171,6 +180,15 @@ Static classes for communication. All classes must contain zero argument constru
         public boolean mode;
         public GameParamObject()
         {
+        }
+    }
+
+    public static class SessionAbandoned
+    {
+        public boolean isAbandoned;
+        public SessionAbandoned()
+        {
+
         }
     }
 

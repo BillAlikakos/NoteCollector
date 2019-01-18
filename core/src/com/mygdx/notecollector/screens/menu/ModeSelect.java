@@ -210,6 +210,7 @@ public class ModeSelect implements Screen
                                             noteCollector.setScreen(new DifficultyScreen(noteCollector,srv,true,stage));
                                             break;
                                         case "Back":
+                                            srv.AbandonSession();
                                             srv.closeServer();
                                             noteCollector.setScreen(new MainMenuScreen(noteCollector,stage));
                                             break;

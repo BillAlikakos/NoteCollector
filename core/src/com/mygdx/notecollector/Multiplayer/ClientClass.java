@@ -26,6 +26,7 @@ public class ClientClass extends Listener
         client.getKryo().register(SomeRequest.class);//Register objects
         client.getKryo().register(SomeResponse.class);
         client.getKryo().register(GameParamObject.class);
+        client.getKryo().register(SessionAbandoned.class);
         client.getKryo().register(fileLoaded.class);
         client.getKryo().register(scoreObj.class);
         client.getKryo().register(gameOver.class);
@@ -228,6 +229,14 @@ Static classes for communication. All classes must contain zero argument constru
         }
     }
 
+    public static class SessionAbandoned
+    {
+        public boolean isAbandoned;
+        public SessionAbandoned()
+        {
+
+        }
+    }
     public static class scoreObj
     {
         public String score;
